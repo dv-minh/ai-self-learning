@@ -1,0 +1,119 @@
+---
+title: Ma trận và ký hiệu
+description: Kích thước, phần tử, hàng và cột, ma trận vuông, chuyển vị
+lesson: "1.3"
+prerequisites: ["1.1"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExShapeEntry from '../../../generated/lesson-1-3/shape-entry.mdx';
+import ExTransposeSmall from '../../../generated/lesson-1-3/transpose-small.mdx';
+import ExTransposeLarge from '../../../generated/lesson-1-3/transpose-large.mdx';
+import ExMistakeIndex from '../../../generated/lesson-1-3/mistake-index.mdx';
+import PropEntryT from '../../../generated/lesson-1-3/prop-entry-t.mdx';
+import PropSymmetric from '../../../generated/lesson-1-3/prop-symmetric.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Đọc kích thước $m \times n$ của một ma trận và nói số hàng, số cột.
+- Tìm phần tử $a_{ij}$ và hiểu thứ tự chỉ số (hàng trước, cột sau).
+- Nhận biết ma trận vuông, ma trận hàng, ma trận cột.
+- Viết chuyển vị của một ma trận.
+
+## Trực giác
+
+Ma trận là một bảng số xếp thành hàng và cột. Trong Machine Learning, bảng này thường là **dữ liệu**: mỗi hàng là một mẫu, mỗi cột là một đặc trưng. Bảng điểm của một lớp học là ví dụ quen thuộc: hàng là học sinh, cột là môn học.
+
+Chuyển vị là "lật" bảng qua đường chéo chính: hàng biến thành cột và cột biến thành hàng.
+
+## Định nghĩa
+
+Ma trận $\mathbf{A}$ có $m$ hàng và $n$ cột, viết $\mathbf{A} \in \R^{m \times n}$:
+
+$$
+\mathbf{A} = \begin{bmatrix} a_{11} & a_{12} & \cdots & a_{1n} \\ a_{21} & a_{22} & \cdots & a_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ a_{m1} & a_{m2} & \cdots & a_{mn} \end{bmatrix}.
+$$
+
+Đọc bằng lời: $a_{ij}$ là phần tử nằm ở **hàng $i$, cột $j$**. Chỉ số hàng đứng trước, chỉ số cột đứng sau. Kích thước viết "số hàng nhân số cột".
+
+Một vector cột là ma trận $n \times 1$, một vector hàng là ma trận $1 \times n$. **Ma trận vuông (square matrix)** có số hàng bằng số cột. Các phần tử $a_{11}, a_{22}, \dots$ tạo thành **đường chéo chính**.
+
+**Chuyển vị (transpose)** của $\mathbf{A} \in \R^{m \times n}$ là $\mathbf{A}\T \in \R^{n \times m}$ xác định bởi
+
+$$
+(\mathbf{A}\T)_{ij} = a_{ji}.
+$$
+
+Đọc bằng lời: phần tử hàng $i$, cột $j$ của $\mathbf{A}\T$ chính là phần tử hàng $j$, cột $i$ của $\mathbf{A}$.
+
+## Ví dụ
+
+### Kích thước và phần tử
+
+<ExShapeEntry />
+
+### Chuyển vị của ma trận nhỏ
+
+<ExTransposeSmall />
+
+### Chuyển vị của ma trận lớn hơn
+
+<ExTransposeLarge />
+
+## Tính chất
+
+1. **Chuyển vị hai lần trở lại ban đầu:** $(\mathbf{A}\T)\T = \mathbf{A}$ (xem ví dụ chuyển vị lớn hơn ở trên).
+2. **Phần tử của chuyển vị:** $(\mathbf{A}\T)_{ij} = a_{ji}$. Kiểm tra bằng số:
+
+<PropEntryT />
+
+3. **Ma trận đối xứng (symmetric):** ma trận vuông thỏa $\mathbf{S} = \mathbf{S}\T$, tức $s_{ij} = s_{ji}$ với mọi $i, j$. Ví dụ:
+
+<PropSymmetric />
+
+## Lỗi thường gặp
+
+**Lỗi 1: đảo thứ tự chỉ số.**
+
+<ExMistakeIndex />
+
+**Lỗi 2: nhầm số hàng với số cột khi viết kích thước.** Kích thước $m \times n$ luôn là số hàng trước. Một ma trận có nhiều hàng hơn cột là ma trận "cao", ngược lại là ma trận "rộng".
+
+**Lỗi 3: chuyển vị mà không đổi kích thước.** Nếu $\mathbf{A}$ không vuông thì $\mathbf{A}\T$ có kích thước đảo lại.
+
+**Lỗi 4: lẫn lộn chỉ số bắt đầu từ $1$ (toán) với chỉ số bắt đầu từ $0$ (NumPy).** Phần tử $a_{11}$ trong toán là `A[0, 0]` trong NumPy. Bài 2.2 sẽ nói kỹ.
+
+## Liên hệ với ML
+
+- **Ma trận dữ liệu** $\mathbf{X} \in \R^{N \times d}$: $N$ mẫu, $d$ đặc trưng, mỗi hàng là một mẫu. Mọi mô hình học có giám sát đều bắt đầu từ ma trận này.
+- **Ảnh xám** là ma trận điểm ảnh; một tập ảnh trải phẳng cho ma trận dữ liệu.
+- **Ma trận hiệp phương sai** là ma trận đối xứng (sẽ gặp ở Phần 4 và bài 1.13).
+
+## Tóm tắt
+
+| Khái niệm | Ký hiệu |
+| --- | --- |
+| Kích thước | $m \times n$: $m$ hàng, $n$ cột |
+| Phần tử | $a_{ij}$: hàng $i$, cột $j$ |
+| Ma trận vuông | $m = n$ |
+| Chuyển vị | $(\mathbf{A}\T)_{ij} = a_{ji}$, kích thước $n \times m$ |
+| Đối xứng | $\mathbf{A} = \mathbf{A}\T$ |
+
+<MarkRead client:visible lesson="1.3" />
+
+## Bài tập
+
+<ExercisePlayer
+  client:visible
+  lesson="1.3"
+  types={["mat-shape", "mat-entry", "mat-transpose"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Ký hiệu ma trận, phần tử, chuyển vị: MIT 18.06 (Gilbert Strang), phần về ma trận và hệ phương trình, [ocw.mit.edu](https://ocw.mit.edu).
+- Định nghĩa ma trận, chuyển vị, ma trận đối xứng: *Mathematics for Machine Learning*, mục về ma trận, [mml-book.github.io](https://mml-book.github.io).

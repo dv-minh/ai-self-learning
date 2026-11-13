@@ -1,0 +1,109 @@
+---
+title: Hồi quy tuyến tính
+description: Bình phương tối thiểu (OLS), phương trình chuẩn, các độ đo MSE, MAE, R²
+lesson: "6.1"
+prerequisites: ["1.9", "5.1", "5.7"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExNormal from '../../../generated/lesson-6-1/ols-normal-equations.mdx';
+import ExR2 from '../../../generated/lesson-6-1/r-squared.mdx';
+import PropRes from '../../../generated/lesson-6-1/prop-residuals.mdx';
+import ExMistake from '../../../generated/lesson-6-1/mistake-no-intercept.mdx';
+
+## Mục tiêu
+
+- Viết mô hình tuyến tính dưới dạng ma trận và giải phương trình chuẩn $\mathbf{X}\T\mathbf{X}\mathbf{w} = \mathbf{X}\T\mathbf{y}$.
+- Khớp đường thẳng và mô hình nhiều đặc trưng bằng bình phương tối thiểu (ordinary least squares, OLS).
+- Tính MSE, MAE, RMSE, $R^2$ và $R^2$ hiệu chỉnh.
+- Nhận biết vai trò của hệ số chặn $b$ và tính chất của phần dư.
+
+## Trực giác
+
+Có $n$ điểm dữ liệu $(x_i, y_i)$ và ta muốn một đường thẳng đi "gần" mọi điểm nhất. "Gần" được đo bằng tổng bình phương khoảng cách thẳng đứng từ điểm đến đường. Hình học: vector dự đoán $\mathbf{X}\mathbf{w}$ là hình chiếu của $\mathbf{y}$ lên không gian cột của $\mathbf{X}$ (bài 1.2 và 1.15), nên phần dư vuông góc với mọi cột của $\mathbf{X}$.
+
+## Định nghĩa
+
+Với $n$ mẫu và $d$ đặc trưng, ma trận thiết kế $\mathbf{X} \in \R^{n\times d}$ (thêm một cột toàn số $1$ nếu có hệ số chặn $b$), vector nhãn $\mathbf{y} \in \R^{n}$, dự đoán $\hat{\mathbf{y}} = \mathbf{X}\mathbf{w}$.
+
+$$
+J(\mathbf{w}) = \frac{1}{2}\|\mathbf{X}\mathbf{w} - \mathbf{y}\|_2^2,\qquad \nabla J = \mathbf{X}\T(\mathbf{X}\mathbf{w} - \mathbf{y}) = \mathbf{0}
+\;\Longrightarrow\; \mathbf{X}\T\mathbf{X}\,\mathbf{w}^\star = \mathbf{X}\T\mathbf{y}.
+$$
+
+Nếu các cột của $\mathbf{X}$ độc lập tuyến tính thì $\mathbf{X}\T\mathbf{X}$ khả nghịch và $\mathbf{w}^\star = (\mathbf{X}\T\mathbf{X})^{-1}\mathbf{X}\T\mathbf{y}$. Với một đặc trưng và hệ số chặn:
+
+$$
+w = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2},\qquad b = \bar{y} - w\bar{x}.
+$$
+
+**Độ đo** (với sai số $e_i = \hat{y}_i - y_i$):
+
+| Độ đo | Công thức |
+| --- | --- |
+| MSE | $\dfrac{1}{n}\sum_i e_i^2$ |
+| RMSE | $\sqrt{\mathrm{MSE}}$ (cùng đơn vị với $y$) |
+| MAE | $\dfrac{1}{n}\sum_i \lvert e_i \rvert$ |
+| $R^2$ | $1 - \dfrac{\sum_i e_i^2}{\sum_i (y_i - \bar{y})^2}$ |
+| $R^2$ hiệu chỉnh | $1 - (1 - R^2)\dfrac{n-1}{n-p-1}$ với $p$ đặc trưng |
+
+## Ví dụ
+
+### Phương trình chuẩn
+
+<ExNormal />
+
+### Hệ số xác định $R^2$
+
+<ExR2 />
+
+## Tính chất
+
+- **Phần dư** của OLS có hệ số chặn có tổng bằng $0$ và vuông góc với từng đặc trưng. Kiểm tra bằng số:
+
+<PropRes />
+
+- $R^2 \le 1$; $R^2 = 1$ khi khớp hoàn hảo; $R^2 = 0$ khi mô hình không hơn dự đoán trung bình $\bar{y}$ (và có thể âm trên dữ liệu kiểm tra).
+- OLS đường thẳng luôn đi qua điểm trung bình $(\bar{x}, \bar{y})$.
+- MSE nhạy với ngoại lai (bình phương), MAE thì bền hơn.
+- $R^2$ không bao giờ giảm khi thêm đặc trưng; $R^2$ hiệu chỉnh phạt việc thêm đặc trưng vô ích.
+
+## Lỗi thường gặp
+
+**Lỗi 1: quên hệ số chặn.**
+
+<ExMistake />
+
+**Lỗi 2: nhầm chiều của $\mathbf{X}$.** $\mathbf{X}$ có $n$ hàng (mẫu) và $d$ cột (đặc trưng); $\mathbf{X}\T\mathbf{X}$ là ma trận $d\times d$.
+
+**Lỗi 3: các cột phụ thuộc tuyến tính** (ví dụ hai đặc trưng giống hệt nhau): $\mathbf{X}\T\mathbf{X}$ suy biến, phương trình chuẩn không có nghiệm duy nhất. Ridge (bài 5.7) khắc phục.
+
+**Lỗi 4: dùng $R^2$ trên tập huấn luyện để so sánh mô hình phức tạp khác nhau.** Hãy đánh giá trên tập validation hoặc bằng cross-validation (bài 6.3).
+
+## Liên hệ với ML
+
+- Hồi quy tuyến tính là mô hình cơ sở cho mọi bài toán hồi quy; nhiều mô hình phức tạp là "hồi quy tuyến tính trên đặc trưng đã biến đổi".
+- OLS chính là ước lượng hợp lý cực đại (MLE, bài 4.5) khi nhiễu là Gauss.
+- Với dữ liệu lớn, thay vì giải phương trình chuẩn ta dùng gradient descent hoặc SGD (bài 5.2, 5.3); với $\mathbf{X}\T\mathbf{X}$ gần suy biến, dùng ridge (bài 5.7) hoặc SVD (bài 1.14).
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Phương trình chuẩn | $\mathbf{X}\T\mathbf{X}\mathbf{w} = \mathbf{X}\T\mathbf{y}$ |
+| Hệ số chặn | thêm cột toàn số $1$ vào $\mathbf{X}$ |
+| Phần dư | tổng bằng $0$, vuông góc với các cột của $\mathbf{X}$ |
+| $R^2$ | tỉ lệ phương sai của $y$ được mô hình giải thích |
+
+<MarkRead client:visible lesson="6.1" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="classical-ml" lesson="6.1" types={["ols-fit", "ols-metrics"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Hồi quy tuyến tính: *Mathematics for Machine Learning*, chương 9, [mml-book.github.io](https://mml-book.github.io).
+- Phương trình chuẩn và hình học bình phương tối thiểu: [machinelearningcoban.com](https://machinelearningcoban.com) (bài về hồi quy tuyến tính).
+- *The Elements of Statistical Learning*, chương 3, [hastie.su.domains/ElemStatLearn](https://hastie.su.domains/ElemStatLearn/).

@@ -1,0 +1,9 @@
+$$
+w = \frac{1}{10}
+$$
+
+$$
+\begin{array}{ccc} n & w^n\ (\text{plain}) & (1+w)^n\ (\text{residual}) \\ \hline 2 & \frac{1}{100} & \frac{121}{100} \\ 4 & \frac{1}{10000} & \frac{14641}{10000} \\ 8 & \frac{1}{100000000} & \frac{214358881}{100000000} \end{array}
+$$
+
+Mạng thường nhân gradient với $w$ ở mỗi khối nên co về $0$; khối residual nhân với $1 + w \approx 1$ nên gradient được giữ.

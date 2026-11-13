@@ -1,0 +1,144 @@
+---
+title: Ánh xạ tuyến tính
+description: Ma trận là phép biến đổi (quay, co giãn, chiếu, trượt); hợp ánh xạ là nhân ma trận
+lesson: "1.11"
+prerequisites: ["1.5", "1.8"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import GridTransform from '../../../components/viz/GridTransform';
+import MarkRead from '../../../components/MarkRead';
+import ExRotate from '../../../generated/lesson-1-11/rotate.mdx';
+import ExShear3d from '../../../generated/lesson-1-11/shear-3d.mdx';
+import ExAreaScale from '../../../generated/lesson-1-11/area-scale.mdx';
+import ExCompose from '../../../generated/lesson-1-11/compose.mdx';
+import PropLinearity from '../../../generated/lesson-1-11/prop-linearity.mdx';
+import PropOrigin from '../../../generated/lesson-1-11/prop-origin.mdx';
+import ExMistakeOrder from '../../../generated/lesson-1-11/mistake-order.mdx';
+import ExMistakeAffine from '../../../generated/lesson-1-11/mistake-affine.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Nhìn một ma trận như một phép biến đổi: biết ảnh của mọi vector khi biết ảnh của các vector cơ sở.
+- Viết ma trận của phép quay, phản xạ, co giãn, chiếu, trượt trong mặt phẳng.
+- Tính ma trận của phép hợp hai (hay ba) phép biến đổi.
+- Giải thích hệ số co giãn diện tích bằng định thức.
+
+## Trực giác
+
+Khi nhân ma trận $\mathbf{A}$ với vector $\mathbf{x}$, ta đang biến $\mathbf{x}$ thành vector mới $\mathbf{A}\mathbf{x}$. Hãy hình dung cả mặt phẳng là một tấm lưới ô vuông: một ma trận kéo giãn, xoay hoặc làm nghiêng toàn bộ tấm lưới, nhưng luôn giữ các đường thẳng thành đường thẳng, giữ gốc tọa độ đứng yên và giữ các đường lưới song song cách đều. Đó là điều "tuyến tính" có nghĩa.
+
+Điều kỳ diệu là chỉ cần biết hai vector cơ sở $\mathbf{e}_1, \mathbf{e}_2$ đi đâu là biết mọi điểm đi đâu. Hãy thử hình minh họa bên dưới để quan sát.
+
+<GridTransform client:visible />
+
+## Định nghĩa
+
+Ánh xạ $T : \R^{n} \to \R^{m}$ là **tuyến tính (linear transformation)** nếu với mọi $\mathbf{u}, \mathbf{v}$ và số $k$:
+
+$$
+T(\mathbf{u}+\mathbf{v}) = T(\mathbf{u}) + T(\mathbf{v}), \qquad T(k\mathbf{u}) = k\,T(\mathbf{u}).
+$$
+
+Đọc bằng lời: biến đổi tổng bằng tổng các biến đổi, và biến đổi bội bằng bội của biến đổi.
+
+Mọi ánh xạ tuyến tính $\R^{n} \to \R^{m}$ có dạng $T(\mathbf{x}) = \mathbf{A}\mathbf{x}$ với một ma trận $\mathbf{A} \in \R^{m \times n}$ duy nhất:
+
+$$
+\mathbf{A} = \begin{bmatrix} T(\mathbf{e}_1) & T(\mathbf{e}_2) & \cdots & T(\mathbf{e}_n) \end{bmatrix}.
+$$
+
+Đọc bằng lời: cột $j$ của $\mathbf{A}$ là ảnh của vector cơ sở thứ $j$ (với $\mathbf{e}_j$ có $1$ ở vị trí $j$ và $0$ ở các vị trí khác).
+
+**Hợp ánh xạ.** Nếu $T_1(\mathbf{x}) = \mathbf{A}\mathbf{x}$ và $T_2(\mathbf{y}) = \mathbf{B}\mathbf{y}$ thì
+
+$$
+(T_2 \circ T_1)(\mathbf{x}) = T_2(T_1(\mathbf{x})) = \mathbf{B}\mathbf{A}\mathbf{x}.
+$$
+
+Đọc bằng lời: làm $T_1$ trước, rồi $T_2$, tương ứng ma trận $\mathbf{B}\mathbf{A}$ (phép làm trước đứng bên phải).
+
+**Hệ số co giãn diện tích.** Trong mặt phẳng, phép $\mathbf{A}$ nhân diện tích mọi hình với $|\det(\mathbf{A})|$ (định thức âm nghĩa là có lật hướng).
+
+Một số ma trận $2\times 2$ quen thuộc: quay, phản xạ qua trục, co giãn $\diag(a, b)$, chiếu lên trục, và trượt (shear); bài tập sẽ cho bạn luyện viết từng loại.
+
+## Ví dụ
+
+### Phép quay trong mặt phẳng
+
+<ExRotate />
+
+### Phép trượt trong không gian ba chiều
+
+<ExShear3d />
+
+### Hệ số co giãn diện tích
+
+<ExAreaScale />
+
+### Hợp hai phép biến đổi
+
+<ExCompose />
+
+## Tính chất
+
+1. **Tuyến tính:** $T(\mathbf{u}+\mathbf{v}) = T(\mathbf{u})+T(\mathbf{v})$ và $T(k\mathbf{u}) = kT(\mathbf{u})$.
+
+<PropLinearity />
+
+2. **Giữ gốc tọa độ:** $T(\mathbf{0}) = \mathbf{0}$.
+
+<PropOrigin />
+
+3. **Hợp ánh xạ là nhân ma trận,** và tính kết hợp của nhân ma trận cho $(T_3\circ T_2)\circ T_1 = T_3 \circ(T_2 \circ T_1)$.
+4. **Hợp ánh xạ nói chung không giao hoán** (vì $\mathbf{AB} \neq \mathbf{BA}$, xem ví dụ ở dưới).
+5. **Ảnh của một ánh xạ** là không gian cột của $\mathbf{A}$ (bài 1.10); ánh xạ có thể đảo ngược khi $\mathbf{A}$ khả nghịch (bài 1.9).
+
+## Lỗi thường gặp
+
+**Lỗi 1: viết ma trận của phép hợp theo thứ tự đọc.**
+
+<ExMistakeOrder />
+
+**Lỗi 2: coi phép cộng thêm một vector cố định là tuyến tính.**
+
+<ExMistakeAffine />
+
+**Lỗi 3: xếp ảnh của $\mathbf{e}_j$ thành hàng thay vì cột.** Cột $j$ của $\mathbf{A}$ là $T(\mathbf{e}_j)$.
+
+**Lỗi 4: quên rằng định thức bằng $0$ nghĩa là phép biến đổi ép dẹt** không gian xuống số chiều thấp hơn và không đảo ngược được.
+
+## Liên hệ với ML
+
+- **Một lớp tuyến tính** $\mathbf{x} \mapsto \mathbf{W}\mathbf{x}$ là một ánh xạ tuyến tính; mạng neural nhiều lớp là hợp của các ánh xạ tuyến tính xen kẽ với hàm phi tuyến.
+- **Hai lớp tuyến tính liên tiếp không có hàm kích hoạt** gộp thành một lớp ($\mathbf{W}_2\mathbf{W}_1$): đó là lý do cần hàm kích hoạt phi tuyến giữa các lớp.
+- **Tăng cường dữ liệu ảnh (augmentation)** như quay, co giãn, lật là các phép biến đổi tuyến tính (hoặc affine) lên tọa độ điểm ảnh.
+
+## Tóm tắt
+
+| Nội dung | Quy tắc |
+| --- | --- |
+| Ma trận của $T$ | cột $j$ là $T(\mathbf{e}_j)$ |
+| Áp dụng | $T(\mathbf{x}) = \mathbf{A}\mathbf{x}$ |
+| Hợp $T_2 \circ T_1$ | $\mathbf{B}\mathbf{A}$ |
+| Diện tích | nhân với $\lvert\det(\mathbf{A})\rvert$ |
+| Tuyến tính | $T(\mathbf{0}) = \mathbf{0}$, giữ phép cộng và nhân vô hướng |
+
+<MarkRead client:visible lesson="1.11" />
+
+## Bài tập
+
+<ExercisePlayer
+  client:visible
+  lesson="1.11"
+  types={["transform-apply", "transform-find", "transform-compose"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Ánh xạ tuyến tính và ma trận của nó, hợp ánh xạ: MIT 18.06 (Gilbert Strang), phần về phép biến đổi tuyến tính, [ocw.mit.edu](https://ocw.mit.edu).
+- Ánh xạ tuyến tính, ma trận biến đổi, hợp ánh xạ: *Mathematics for Machine Learning*, mục về ánh xạ tuyến tính, [mml-book.github.io](https://mml-book.github.io).
+- Trực quan hình học về ma trận như phép biến đổi và hợp của chúng: *Essence of Linear Algebra*, [3blue1brown.com](https://www.3blue1brown.com).

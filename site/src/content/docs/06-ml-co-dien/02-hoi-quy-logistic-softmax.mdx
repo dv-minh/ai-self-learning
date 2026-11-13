@@ -1,0 +1,107 @@
+---
+title: Hồi quy logistic và softmax
+description: Sigmoid, log-loss, gradient p − y, biên quyết định, hồi quy softmax nhiều lớp
+lesson: "6.2"
+prerequisites: ["6.1", "3.3", "4.6"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExLog from '../../../generated/lesson-6-2/logistic-gradient.mdx';
+import ExSoft from '../../../generated/lesson-6-2/softmax-gradient.mdx';
+import ExBoundary from '../../../generated/lesson-6-2/decision-boundary.mdx';
+import PropSym from '../../../generated/lesson-6-2/prop-sigmoid-symmetry.mdx';
+import ExMistake from '../../../generated/lesson-6-2/mistake-linear-probability.mdx';
+
+## Mục tiêu
+
+- Dùng sigmoid để biến điểm số $z$ thành xác suất và hiểu $z$ là log-odds.
+- Tính gradient của log-loss (cross-entropy nhị phân): $\partial\ell/\partial z = p - y$.
+- Xác định biên quyết định, khoảng cách tới biên và dự đoán lớp.
+- Tính gradient của hồi quy softmax nhiều lớp theo logit và theo ma trận trọng số.
+
+## Trực giác
+
+Hồi quy tuyến tính cho điểm số $z \in \R$ bất kỳ, nhưng xác suất phải nằm trong $[0, 1]$. Hàm **sigmoid** ép $z$ về $(0, 1)$; $z = 0$ ứng với xác suất $1/2$. Mô hình học bằng cách làm cho xác suất gán cho nhãn thật càng lớn càng tốt, tức tối thiểu hóa log-loss. Với $K$ lớp, **softmax** thay sigmoid để các xác suất dương và cộng bằng $1$.
+
+## Định nghĩa
+
+**Hồi quy logistic:** $z = \mathbf{w}\T\mathbf{x} + b$, $p = \sigma(z) = \dfrac{1}{1 + e^{-z}}$, dự đoán lớp $1$ khi $p \ge 1/2 \Leftrightarrow z \ge 0$. Biên quyết định là siêu phẳng $z = 0$, cách điểm $\mathbf{x}$ một khoảng $|z|/\|\mathbf{w}\|$.
+
+**Log-loss** trung bình: $J = -\dfrac{1}{n}\sum_i\big[y_i\ln p_i + (1-y_i)\ln(1-p_i)\big]$. Nhờ $\sigma'(z) = \sigma(z)(1 - \sigma(z))$, đạo hàm gọn:
+
+$$
+\frac{\partial \ell_i}{\partial z_i} = p_i - y_i,\qquad \frac{\partial J}{\partial \mathbf{w}} = \frac{1}{n}\sum_i (p_i - y_i)\,\mathbf{x}_i,\qquad \frac{\partial J}{\partial b} = \frac{1}{n}\sum_i (p_i - y_i).
+$$
+
+**Softmax** với $K$ lớp: $\mathbf{z} = \mathbf{W}\mathbf{x}$, $p_k = \dfrac{e^{z_k}}{\sum_j e^{z_j}}$, và cross-entropy $\ell = -\ln p_t$ với lớp thật $t$. Gradient theo logit và theo $\mathbf{W}$ ($\mathbf{y}$ là vector one-hot):
+
+$$
+\nabla_{\mathbf{z}}\ell = \mathbf{p} - \mathbf{y},\qquad \nabla_{\mathbf{W}}\ell = (\mathbf{p} - \mathbf{y})\,\mathbf{x}\T.
+$$
+
+Với regularization L2 thêm $\lambda\mathbf{w}$ vào gradient theo $\mathbf{w}$ (bài 5.7). Trong các bài tập, xác suất $p$ được cho sẵn để tránh $e^{z}$.
+
+## Ví dụ
+
+### Gradient của hồi quy logistic
+
+<ExLog />
+
+### Gradient của softmax
+
+<ExSoft />
+
+### Biên quyết định
+
+<ExBoundary />
+
+## Tính chất
+
+- **Đối xứng và đạo hàm của sigmoid:**
+
+<PropSym />
+
+- **Gradient mỗi mẫu** $= (p_i - y_i)\mathbf{x}_i$: mẫu bị dự đoán sai nhiều (sai số $|p - y|$ lớn) đóng góp nhiều nhất.
+- **Tổng các thành phần của $\mathbf{p} - \mathbf{y}$ bằng $0$** (softmax): kéo lớp thật lên thì các lớp khác phải bị kéo xuống.
+- Log-loss lồi theo $\mathbf{w}$ (bài 5.1), nên gradient descent không bị kẹt ở cực tiểu địa phương.
+- Nếu dữ liệu tách được tuyến tính hoàn hảo, trọng số không có cực tiểu hữu hạn (ngày càng lớn); regularization giải quyết.
+
+## Lỗi thường gặp
+
+**Lỗi 1: coi $z$ là xác suất.**
+
+<ExMistake />
+
+**Lỗi 2: sai dấu gradient.** Gradient là $p - y$ (dự đoán trừ nhãn), không phải $y - p$; cập nhật là $\mathbf{w} \leftarrow \mathbf{w} - \eta\nabla J$.
+
+**Lỗi 3: quên chia $n$** khi lấy trung bình trên batch, hoặc cộng $\lambda\mathbf{w}$ vào gradient của $b$.
+
+**Lỗi 4: quên $\mathbf{x}\T$** khi tính gradient theo $\mathbf{W}$: $\nabla_{\mathbf{W}}\ell$ có cùng kích thước với $\mathbf{W}$ ($K \times d$), là tích ngoài của $(\mathbf{p} - \mathbf{y})$ và $\mathbf{x}$.
+
+## Liên hệ với ML
+
+- **Phân loại nhị phân** (spam, bệnh/khỏe) và là "lớp cuối" của mạng neural: sigmoid cho nhị phân, softmax cho nhiều lớp.
+- **Cross-entropy** chính là mất mát chuẩn cho phân loại (bài 4.6); gradient $\mathbf{p} - \mathbf{y}$ là điểm khởi đầu của lan truyền ngược (Phần 7).
+- **Ngưỡng $1/2$** có thể đổi tùy chi phí sai lầm; khi đó biên quyết định dịch song song (bài 6.4 bàn về precision/recall).
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Sigmoid | $\sigma(z) = 1/(1+e^{-z})$, $\sigma(0) = 1/2$ |
+| Biên quyết định | $\mathbf{w}\T\mathbf{x} + b = 0$, khoảng cách $\lvert z\rvert / \lVert\mathbf{w}\rVert$ |
+| Gradient logistic | $\frac{1}{n}\sum (p_i - y_i)\mathbf{x}_i$ |
+| Gradient softmax | theo logit $\mathbf{p} - \mathbf{y}$, theo $\mathbf{W}$: $(\mathbf{p} - \mathbf{y})\mathbf{x}\T$ |
+
+<MarkRead client:visible lesson="6.2" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="classical-ml" lesson="6.2" types={["logreg-grad", "softmax-grad", "logreg-decision"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Hồi quy logistic và softmax: *Dive into Deep Learning*, chương Linear Neural Networks for Classification, [d2l.ai](https://d2l.ai).
+- [machinelearningcoban.com](https://machinelearningcoban.com): bài về hồi quy logistic và softmax regression.
+- Bishop, *Pattern Recognition and Machine Learning*, mục 4.3 (mô hình phân biệt xác suất: logistic và softmax), [microsoft.com/en-us/research/publication/pattern-recognition-machine-learning](https://www.microsoft.com/en-us/research/publication/pattern-recognition-machine-learning/).

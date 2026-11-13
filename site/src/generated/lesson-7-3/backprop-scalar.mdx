@@ -1,0 +1,11 @@
+$$
+h = \mathrm{ReLU}(w_1x) = 6,\quad \hat{y} = w_2h = -6,\quad L = \tfrac{1}{2}(\hat{y} - y)^2 = \frac{49}{2}
+$$
+
+$$
+\dfrac{\partial L}{\partial\hat{y}} = \hat{y} - y = -7,\quad \dfrac{\partial L}{\partial w_2} = -7\cdot h = -42
+$$
+
+$$
+\dfrac{\partial L}{\partial h} = -7\cdot w_2 = 7,\quad \dfrac{\partial L}{\partial w_1} = 7\cdot\mathrm{ReLU}'(w_1x)\cdot x = 21
+$$

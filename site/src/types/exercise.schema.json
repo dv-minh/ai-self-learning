@@ -1,0 +1,431 @@
+{
+  "$defs": {
+    "Answer": {
+      "properties": {
+        "kind": {
+          "enum": [
+            "number",
+            "vector",
+            "matrix",
+            "shape",
+            "choice",
+            "multi",
+            "boolean",
+            "expression",
+            "solution-set"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "rows": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rows"
+        },
+        "cols": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cols"
+        },
+        "entries": {
+          "anyOf": [
+            {
+              "items": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entries"
+        },
+        "undefined": {
+          "default": false,
+          "title": "Undefined",
+          "type": "boolean"
+        },
+        "correct": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Correct"
+        },
+        "particular": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Particular"
+        },
+        "basis": {
+          "anyOf": [
+            {
+              "items": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Basis"
+        },
+        "variables": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Variables"
+        }
+      },
+      "required": [
+        "kind",
+        "value",
+        "rows",
+        "cols",
+        "entries",
+        "undefined",
+        "correct",
+        "particular",
+        "basis",
+        "variables"
+      ],
+      "title": "Answer",
+      "type": "object"
+    },
+    "Check": {
+      "properties": {
+        "mode": {
+          "default": "exact",
+          "enum": [
+            "exact",
+            "eigvec",
+            "span",
+            "solution-set",
+            "numeric"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "tolerance": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Sai số tương đối cho mode numeric.",
+          "title": "Tolerance"
+        },
+        "a": {
+          "anyOf": [
+            {
+              "items": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "A"
+        },
+        "b": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "B"
+        },
+        "lam": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lam"
+        }
+      },
+      "required": [
+        "mode",
+        "tolerance",
+        "a",
+        "b",
+        "lam"
+      ],
+      "title": "Check",
+      "type": "object"
+    },
+    "Exercise": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        },
+        "lesson": {
+          "title": "Lesson",
+          "type": "string"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "level": {
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Level",
+          "type": "integer"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
+        "prompt": {
+          "$ref": "#/$defs/Prompt"
+        },
+        "answer": {
+          "$ref": "#/$defs/Answer"
+        },
+        "check": {
+          "$ref": "#/$defs/Check"
+        },
+        "choices": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Choices"
+        },
+        "hints": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Hints",
+          "type": "array"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/Step"
+          },
+          "title": "Steps",
+          "type": "array"
+        },
+        "verified": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Verified",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "seed",
+        "lesson",
+        "type",
+        "level",
+        "tags",
+        "prompt",
+        "answer",
+        "check",
+        "choices",
+        "hints",
+        "steps",
+        "verified"
+      ],
+      "title": "Exercise",
+      "type": "object"
+    },
+    "Prompt": {
+      "properties": {
+        "text": {
+          "description": "Đề bài, có thể chứa $...$ (KaTeX).",
+          "title": "Text",
+          "type": "string"
+        },
+        "display": {
+          "description": "Công thức display, mỗi phần tử một khối.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Display",
+          "type": "array"
+        },
+        "code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Đoạn code NumPy (Phần 2), chỉ để đọc.",
+          "title": "Code"
+        }
+      },
+      "required": [
+        "text",
+        "display",
+        "code"
+      ],
+      "title": "Prompt",
+      "type": "object"
+    },
+    "Step": {
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "latex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Latex"
+        }
+      },
+      "required": [
+        "text",
+        "latex"
+      ],
+      "title": "Step",
+      "type": "object"
+    }
+  },
+  "description": "Một file kho: tất cả bài của một dạng.",
+  "properties": {
+    "version": {
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "lesson": {
+      "title": "Lesson",
+      "type": "string"
+    },
+    "type": {
+      "title": "Type",
+      "type": "string"
+    },
+    "exercises": {
+      "items": {
+        "$ref": "#/$defs/Exercise"
+      },
+      "title": "Exercises",
+      "type": "array"
+    }
+  },
+  "required": [
+    "version",
+    "lesson",
+    "type",
+    "exercises"
+  ],
+  "title": "ExerciseBank",
+  "type": "object"
+}

@@ -1,0 +1,95 @@
+---
+title: Gradient boosting
+description: Cộng dần các cây nhỏ khớp vào phần dư, shrinkage, boosting là gradient descent trong không gian hàm
+lesson: "6.8"
+prerequisites: ["6.7", "5.2"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExRound from '../../../generated/lesson-6-8/gbm-one-round.mdx';
+import ExTwo from '../../../generated/lesson-6-8/gbm-two-rounds.mdx';
+import PropGrad from '../../../generated/lesson-6-8/prop-residual-gradient.mdx';
+import ExMistake from '../../../generated/lesson-6-8/mistake-no-shrinkage.mdx';
+
+## Mục tiêu
+
+- Thực hiện một vòng gradient boosting với mất mát bình phương: phần dư, khớp stump, cập nhật có shrinkage.
+- Chọn ngưỡng tách của stump bằng SSE của phần dư.
+- Hiểu vì sao phần dư là âm gradient và vì sao boosting là gradient descent trong không gian hàm.
+
+## Trực giác
+
+Random forest trồng nhiều cây độc lập rồi lấy trung bình. Gradient boosting làm khác: trồng các cây **nối tiếp**, mỗi cây nhỏ (thường rất nông) sửa lỗi của tổng các cây trước. Bắt đầu bằng một dự đoán hằng (trung bình), tính phần dư, khớp một cây nhỏ vào phần dư, cộng một phần (shrinkage $\nu$) của cây đó vào mô hình, lặp lại. Mỗi vòng giảm bớt sai số còn lại.
+
+## Định nghĩa
+
+Với mất mát bình phương $\ell = \frac{1}{2}(y - F)^2$:
+
+1. **Khởi tạo:** $F_0(x) = \bar{y}$ (hằng số làm $\sum (y_i - c)^2$ nhỏ nhất).
+2. Với $m = 1, 2, \dots, M$:
+   - **Phần dư:** $r_i = y_i - F_{m-1}(x_i)$ (chính là $-\partial\ell/\partial F$).
+   - **Khớp một cây $h_m$** vào $(x_i, r_i)$; với stump (cây một nút) tách ở ngưỡng $t$, giá trị lá là **trung bình phần dư** trong lá. Ngưỡng được chọn làm tổng bình phương sai số (SSE) của phần dư sau tách nhỏ nhất.
+   - **Cập nhật:** $F_m(x) = F_{m-1}(x) + \nu\,h_m(x)$ với $0 < \nu \le 1$ là shrinkage (learning rate).
+
+Với mất mát khác (log-loss, v.v.) thì $r_i$ là âm gradient $-\partial\ell/\partial F$ tại $F_{m-1}(x_i)$ (gọi là **phần dư giả**, pseudo-residual); khung thuật toán giữ nguyên.
+
+## Ví dụ
+
+### Một vòng boosting
+
+<ExRound />
+
+### Hai vòng liên tiếp
+
+<ExTwo />
+
+## Tính chất
+
+- **Phần dư là âm gradient** của mất mát theo dự đoán, nên boosting là gradient descent trong không gian hàm:
+
+<PropGrad />
+
+- **Giá trị lá là trung bình phần dư** vì với mất mát bình phương, trung bình là hằng số tối thiểu hóa SSE trong lá.
+- **SSE luôn không tăng:** với $\nu \in (0, 1]$, mỗi vòng không làm tổng bình phương sai số tăng.
+- **Cây nông (stump đến độ sâu 3–6)** là các "bộ học yếu" (weak learner); độ phức tạp tổng đến từ việc cộng nhiều cây.
+- **$\nu$ nhỏ + nhiều cây** thường tổng quát hóa tốt hơn $\nu = 1$.
+
+## Lỗi thường gặp
+
+**Lỗi 1: không dùng shrinkage.**
+
+<ExMistake />
+
+**Lỗi 2: khớp cây vào $y$ thay vì vào phần dư** ở các vòng sau vòng đầu.
+
+**Lỗi 3: dùng phần dư của $F_0$ ở mọi vòng.** Phần dư phải tính lại từ $F_{m-1}$ ở đầu mỗi vòng.
+
+**Lỗi 4: quên nhân $\nu$** khi cập nhật, hoặc nhân vào giá trị lá khi tính SSE.
+
+## Liên hệ với ML
+
+- **XGBoost, LightGBM, CatBoost** là các cài đặt gradient boosting nhanh, thường là lựa chọn số một cho dữ liệu dạng bảng.
+- **Chống overfit:** shrinkage, giới hạn độ sâu, subsampling (stochastic gradient boosting), dừng sớm theo validation.
+- So với random forest: boosting giảm **bias** (sửa dần lỗi), random forest giảm **variance** (trung bình).
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Khởi tạo | $F_0 = \bar{y}$ |
+| Phần dư | $r_i = y_i - F_{m-1}(x_i)$ (âm gradient) |
+| Cây yếu | stump khớp phần dư; lá = trung bình phần dư |
+| Cập nhật | $F_m = F_{m-1} + \nu h_m$ |
+
+<MarkRead client:visible lesson="6.8" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="classical-ml" lesson="6.8" types={["gbm-round"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Friedman (2001), "Greedy Function Approximation: A Gradient Boosting Machine", *Annals of Statistics*.
+- *The Elements of Statistical Learning*, chương 10, [hastie.su.domains/ElemStatLearn](https://hastie.su.domains/ElemStatLearn/).
+- Chen và Guestrin (2016), "XGBoost: A Scalable Tree Boosting System", [arxiv.org/abs/1603.02754](https://arxiv.org/abs/1603.02754).

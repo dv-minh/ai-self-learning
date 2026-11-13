@@ -1,0 +1,103 @@
+---
+title: Fine-tuning, LoRA và đọc code PyTorch
+description: Thích ứng mô hình đã huấn luyện, LoRA hạng thấp, và suy luận shape khi đọc code PyTorch
+lesson: "7.7"
+prerequisites: ["1.14", "7.6"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExLora from '../../../generated/lesson-7-7/lora-params-example.mdx';
+import ExMerge from '../../../generated/lesson-7-7/lora-merge-example.mdx';
+import ExShape from '../../../generated/lesson-7-7/torch-shape-example.mdx';
+import ExMistake from '../../../generated/lesson-7-7/mistake-freeze.mdx';
+
+## Mục tiêu
+
+- Phân biệt fine-tuning toàn bộ, linear probe và LoRA.
+- Tính số tham số của LoRA, tỉ lệ so với ma trận gốc và ma trận đã gộp $\mathbf{W}'$.
+- Đọc một đoạn code PyTorch và suy ra shape của tensor ở từng dòng.
+
+## Trực giác
+
+Huấn luyện một mô hình lớn từ đầu tốn kém. **Fine-tuning** bắt đầu từ mô hình đã huấn luyện trước (pretrained) rồi tiếp tục huấn luyện trên dữ liệu của bài toán mới. Cập nhật toàn bộ hàng tỉ tham số thì tốn bộ nhớ; thực nghiệm cho thấy **thay đổi cần thiết của trọng số có hạng thấp**. **LoRA** (low-rank adaptation) đóng băng $\mathbf{W}$ và chỉ học hai ma trận nhỏ $\mathbf{B}, \mathbf{A}$ có tích $\mathbf{B}\mathbf{A}$ là bản cập nhật hạng thấp. Khi đọc code PyTorch, thành thạo suy luận shape là kỹ năng thiết yếu để gỡ lỗi.
+
+## Định nghĩa
+
+**LoRA** cho $\mathbf{W} \in \R^{d_{\mathrm{out}}\times d_{\mathrm{in}}}$:
+
+$$
+\mathbf{W}' = \mathbf{W} + \frac{\alpha}{r}\,\mathbf{B}\mathbf{A},\qquad \mathbf{B} \in \R^{d_{\mathrm{out}}\times r},\ \mathbf{A} \in \R^{r\times d_{\mathrm{in}}},\ r \ll \min(d_{\mathrm{in}}, d_{\mathrm{out}}).
+$$
+
+Đọc bằng lời: giữ nguyên $\mathbf{W}$, cộng thêm một ma trận hạng không quá $r$, nhân hệ số $\alpha/r$. Chỉ $\mathbf{A}, \mathbf{B}$ huấn luyện: $r(d_{\mathrm{in}} + d_{\mathrm{out}})$ tham số thay vì $d_{\mathrm{in}}d_{\mathrm{out}}$. Thường $\mathbf{B}$ khởi tạo bằng $0$ (nên lúc đầu $\mathbf{W}' = \mathbf{W}$).
+
+**Các chiến lược fine-tuning:**
+
+| Cách | Huấn luyện | Chi phí |
+| --- | --- | --- |
+| Toàn bộ | mọi tham số | cao nhất |
+| Linear probe | chỉ lớp cuối mới thêm | thấp nhất |
+| LoRA/adapter | tham số bổ sung nhỏ | thấp, gần chất lượng đầy đủ |
+
+**Quy tắc shape của PyTorch:** `nn.Linear(a, b)` đổi chiều cuối từ $a$ thành $b$; `view`/`reshape` giữ tổng số phần tử; `transpose(i, j)` hoán hai chiều; `A @ B` nhân ma trận trên hai chiều cuối và giữ các chiều batch; `mean(dim=k)` bỏ chiều $k$; `torch.cat(dim=k)` cộng độ dài chiều $k$.
+
+## Ví dụ
+
+### Số tham số của LoRA
+
+<ExLora />
+
+### Gộp LoRA vào trọng số
+
+<ExMerge />
+
+### Suy luận shape
+
+<ExShape />
+
+## Tính chất
+
+- **Gộp không đổi kết quả:** $\mathbf{W}'\mathbf{x} = \mathbf{W}\mathbf{x} + \frac{\alpha}{r}\mathbf{B}(\mathbf{A}\mathbf{x})$, nên sau huấn luyện có thể gộp để suy luận không chậm hơn.
+- **Hạng của $\mathbf{B}\mathbf{A}$ không quá $r$**, liên hệ với xấp xỉ hạng thấp và SVD (bài 1.14).
+- **Trạng thái của bộ tối ưu** (Adam giữ $m, v$) chỉ cần cho tham số LoRA, tiết kiệm nhiều bộ nhớ.
+- **Một mô hình gốc, nhiều bộ LoRA nhỏ** cho nhiều tác vụ.
+
+## Lỗi thường gặp
+
+**Lỗi 1: fine-tune mạnh tay.**
+
+<ExMistake />
+
+**Lỗi 2: nhầm shape của $\mathbf{B}$ và $\mathbf{A}$.** $\mathbf{B}\mathbf{A}$ phải có kích thước $d_{\mathrm{out}}\times d_{\mathrm{in}}$ giống $\mathbf{W}$.
+
+**Lỗi 3: `view` sau `transpose` không liên tục (contiguous)** gây lỗi; dùng `reshape` hoặc `.contiguous()`.
+
+**Lỗi 4: quên hệ số $\alpha/r$** khi gộp.
+
+## Liên hệ với ML
+
+- **Fine-tune LLM** trên một GPU phổ thông thường dùng LoRA hoặc biến thể lượng tử hóa (QLoRA).
+- **Chuyển giao học (transfer learning)** trong thị giác máy tính (bài 8.5) dùng ý tưởng tương tự.
+- **Đọc code** của các mô hình (Hugging Face, PyTorch) bắt đầu bằng việc theo dõi shape.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| LoRA | $\mathbf{W}' = \mathbf{W} + \frac{\alpha}{r}\mathbf{B}\mathbf{A}$ |
+| Tham số LoRA | $r(d_{\mathrm{in}} + d_{\mathrm{out}})$ |
+| Gộp | $\mathbf{W}'$ dùng như một ma trận bình thường |
+| Shape | `Linear` đổi chiều cuối; `@` giữ chiều batch |
+
+<MarkRead client:visible lesson="7.7" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="deep-learning" lesson="7.7" types={["lora-calc", "torch-shape"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Hu và cộng sự (2021), "LoRA: Low-Rank Adaptation of Large Language Models", [arxiv.org/abs/2106.09685](https://arxiv.org/abs/2106.09685).
+- Dettmers và cộng sự (2023), "QLoRA", [arxiv.org/abs/2305.14314](https://arxiv.org/abs/2305.14314).
+- Tài liệu PyTorch: [pytorch.org/docs](https://pytorch.org/docs/stable/index.html) (`nn.Linear`, `torch.Tensor.view`, `torch.matmul`).

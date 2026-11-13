@@ -1,0 +1,8 @@
+```python
+x = torch.randn(2, 5, 8)                                  # (2, 5, 8)
+q = x.view(2, 5, 2, 4).transpose(1, 2)                   # (2, 2, 5, 4)
+scores = q @ q.transpose(-2, -1)                          # (2, 2, 5, 5)
+out = (scores @ q).transpose(1, 2).reshape(2, 5, 8)        # (2, 5, 8)
+```
+
+Các shape ở chú thích do NumPy tính trên cùng dãy phép biến đổi.

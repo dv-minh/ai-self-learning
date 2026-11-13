@@ -1,0 +1,140 @@
+---
+title: Ma trận nghịch đảo
+description: Điều kiện khả nghịch, công thức 2×2, Gauss–Jordan, nghịch đảo của tích, giải hệ bằng nghịch đảo
+lesson: "1.9"
+prerequisites: ["1.7", "1.8"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExInv2 from '../../../generated/lesson-1-9/inv2.mdx';
+import ExGaussJordan from '../../../generated/lesson-1-9/gauss-jordan.mdx';
+import ExSingular from '../../../generated/lesson-1-9/singular.mdx';
+import ExSolve from '../../../generated/lesson-1-9/solve.mdx';
+import ExProductInverse from '../../../generated/lesson-1-9/product-inverse.mdx';
+import ExMistakeOrder from '../../../generated/lesson-1-9/mistake-order.mdx';
+import PropInverseInverse from '../../../generated/lesson-1-9/prop-inverse-inverse.mdx';
+import PropTransposeInverse from '../../../generated/lesson-1-9/prop-transpose-inverse.mdx';
+import PropDetInverse from '../../../generated/lesson-1-9/prop-det-inverse.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Quyết định một ma trận vuông có khả nghịch hay không.
+- Tính nghịch đảo $2\times 2$ bằng công thức và nghịch đảo cấp lớn hơn bằng Gauss–Jordan.
+- Dùng $(\mathbf{AB})^{-1} = \mathbf{B}^{-1}\mathbf{A}^{-1}$.
+- Giải $\mathbf{A}\mathbf{x} = \mathbf{b}$ bằng $\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}$.
+
+## Trực giác
+
+Nếu $\mathbf{A}$ là một cỗ máy biến vector $\mathbf{x}$ thành $\mathbf{A}\mathbf{x}$, thì nghịch đảo $\mathbf{A}^{-1}$ là cỗ máy chạy ngược, đưa kết quả trở lại ban đầu. Cỗ máy chạy ngược được chỉ khi cỗ máy xuôi không làm mất thông tin, tức là không ép hai đầu vào khác nhau thành cùng một đầu ra. Điều đó đúng đúng khi định thức khác $0$.
+
+Mặc áo rồi mặc khoác ngoài thì cởi ra phải cởi khoác trước, rồi mới cởi áo: nghịch đảo của một tích đảo thứ tự các thừa số.
+
+## Định nghĩa
+
+Ma trận vuông $\mathbf{A} \in \R^{n \times n}$ là **khả nghịch (invertible)** nếu tồn tại ma trận $\mathbf{A}^{-1}$ sao cho
+
+$$
+\mathbf{A}\mathbf{A}^{-1} = \mathbf{A}^{-1}\mathbf{A} = \mathbf{I}_n.
+$$
+
+Đọc bằng lời: nhân $\mathbf{A}$ với $\mathbf{A}^{-1}$ (theo cả hai thứ tự) cho ma trận đơn vị. Nghịch đảo, nếu có, là duy nhất. Ma trận không khả nghịch gọi là **suy biến (singular)**.
+
+**Điều kiện:** $\mathbf{A}$ khả nghịch $\iff \det(\mathbf{A}) \neq 0 \iff \rank(\mathbf{A}) = n$.
+
+**Công thức cấp $2$:**
+
+$$
+\begin{bmatrix} a & b \\ c & d \end{bmatrix}^{-1} = \frac{1}{ad-bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}.
+$$
+
+Đọc bằng lời: hoán vị hai phần tử đường chéo chính, đổi dấu hai phần tử đường chéo phụ, rồi chia cho định thức.
+
+**Gauss–Jordan:** đưa $[\mathbf{A} \mid \mathbf{I}]$ về dạng $[\mathbf{I} \mid \mathbf{A}^{-1}]$ bằng biến đổi hàng. Nếu vế trái không thể thành $\mathbf{I}$ thì $\mathbf{A}$ suy biến.
+
+**Giải hệ:** nếu $\mathbf{A}$ khả nghịch thì $\mathbf{A}\mathbf{x} = \mathbf{b}$ có nghiệm duy nhất $\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}$.
+
+## Ví dụ
+
+### Công thức cấp $2$
+
+<ExInv2 />
+
+### Cấp $3$ bằng Gauss–Jordan
+
+<ExGaussJordan />
+
+### Ma trận suy biến
+
+<ExSingular />
+
+### Giải hệ bằng nghịch đảo
+
+<ExSolve />
+
+### Nghịch đảo của một tích
+
+<ExProductInverse />
+
+## Tính chất
+
+Với các ma trận khả nghịch cùng cỡ:
+
+1. **Nghịch đảo của nghịch đảo:** $(\mathbf{A}^{-1})^{-1} = \mathbf{A}$.
+
+<PropInverseInverse />
+
+2. **Nghịch đảo của tích:** $(\mathbf{AB})^{-1} = \mathbf{B}^{-1}\mathbf{A}^{-1}$ (xem ví dụ nghịch đảo của một tích ở trên).
+3. **Nghịch đảo và chuyển vị:** $(\mathbf{A}\T)^{-1} = (\mathbf{A}^{-1})\T$.
+
+<PropTransposeInverse />
+
+4. **Định thức của nghịch đảo:** $\det(\mathbf{A}^{-1}) = 1/\det(\mathbf{A})$.
+
+<PropDetInverse />
+
+## Lỗi thường gặp
+
+**Lỗi 1: không đảo thứ tự khi nghịch đảo một tích.**
+
+<ExMistakeOrder />
+
+**Lỗi 2: nhầm dấu trong công thức $2\times 2$.** Đường chéo chính **hoán vị** (không đổi dấu), đường chéo phụ **đổi dấu**.
+
+**Lỗi 3: bỏ qua việc kiểm tra định thức trước.** Chia cho $\det(\mathbf{A}) = 0$ là vô nghĩa; hãy kiểm tra trước khi tính.
+
+**Lỗi 4: cho rằng $(\mathbf{A}+\mathbf{B})^{-1} = \mathbf{A}^{-1}+\mathbf{B}^{-1}$.** Nghịch đảo không tuyến tính theo phép cộng.
+
+## Liên hệ với ML
+
+- **Phương trình chuẩn** của hồi quy tuyến tính có $(\mathbf{X}\T\mathbf{X})^{-1}$ (bài 1.15). Nó chỉ khả nghịch khi các cột của $\mathbf{X}$ độc lập tuyến tính.
+- **Trong thực tế, ta hiếm khi tính $\mathbf{A}^{-1}$ để giải hệ.** `np.linalg.solve` (Phần 2) nhanh hơn và ổn định số hơn; nghịch đảo chủ yếu dùng để suy luận lý thuyết.
+- **Ma trận trực giao** có nghịch đảo bằng chuyển vị, nên không phải tính (bài 1.6).
+
+## Tóm tắt
+
+| Nội dung | Quy tắc |
+| --- | --- |
+| Khả nghịch | $\det \neq 0$ (cùng với $\rank = n$) |
+| Cấp $2$ | $\frac{1}{ad-bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$ |
+| Gauss–Jordan | $[\mathbf{A} \mid \mathbf{I}] \to [\mathbf{I} \mid \mathbf{A}^{-1}]$ |
+| Tích | $(\mathbf{AB})^{-1} = \mathbf{B}^{-1}\mathbf{A}^{-1}$ |
+| Giải hệ | $\mathbf{x} = \mathbf{A}^{-1}\mathbf{b}$ |
+
+<MarkRead client:visible lesson="1.9" />
+
+## Bài tập
+
+<ExercisePlayer
+  client:visible
+  lesson="1.9"
+  types={["inv-check", "inv-2x2", "inv-gauss-jordan", "inv-solve"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Nghịch đảo, Gauss–Jordan, nghịch đảo của tích: MIT 18.06 (Gilbert Strang), bài giảng về phép nhân và nghịch đảo ma trận, [ocw.mit.edu](https://ocw.mit.edu).
+- Định nghĩa ma trận nghịch đảo, điều kiện khả nghịch, giải hệ: *Mathematics for Machine Learning*, mục về nghịch đảo và giải hệ phương trình tuyến tính, [mml-book.github.io](https://mml-book.github.io).

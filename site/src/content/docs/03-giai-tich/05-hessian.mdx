@@ -1,0 +1,109 @@
+---
+title: Hessian
+description: Ma trận đạo hàm bậc hai, phân loại điểm dừng
+lesson: "3.5"
+prerequisites: ["3.3", "1.13"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExHessian from '../../../generated/lesson-3-5/hessian-example.mdx';
+import ExMin from '../../../generated/lesson-3-5/classify-min.mdx';
+import ExSaddle from '../../../generated/lesson-3-5/classify-saddle.mdx';
+import PropSymmetry from '../../../generated/lesson-3-5/prop-symmetry.mdx';
+import ExMistake from '../../../generated/lesson-3-5/mistake-second.mdx';
+
+## Mục tiêu
+
+- Tính ma trận Hessian của hàm nhiều biến.
+- Phân loại điểm dừng: cực tiểu, cực đại, yên ngựa, hoặc chưa kết luận.
+- Liên hệ Hessian với tính lồi và với ma trận xác định dương (bài 1.13).
+
+## Trực giác
+
+Gradient nói **độ dốc**; Hessian nói **độ cong**. Quanh một điểm dừng (gradient bằng $0$) bề mặt hàm giống một cái bát nếu cong lên mọi hướng (cực tiểu), một cái mũ nếu cong xuống mọi hướng (cực đại), và một yên ngựa nếu cong lên theo hướng này nhưng cong xuống theo hướng khác. Hessian ghi lại độ cong theo mọi cặp hướng, và dấu các trị riêng của nó cho biết loại điểm dừng.
+
+## Định nghĩa
+
+**Ma trận Hessian (Hessian)** của $f : \R^{n} \to \R$:
+
+$$
+\mathbf{H}_{ij} = \frac{\partial^2 f}{\partial x_i\,\partial x_j}, \qquad \mathbf{H} = \nabla^2 f \in \R^{n\times n}.
+$$
+
+Đọc bằng lời: ma trận các đạo hàm riêng bậc hai; cũng là Jacobian của gradient.
+
+**Phân loại điểm dừng $\mathbf{x}_0$** (với $\nabla f(\mathbf{x}_0) = \mathbf{0}$), dùng các khái niệm của bài 1.13:
+
+| Hessian $\mathbf{H}(\mathbf{x}_0)$ | Kết luận |
+| --- | --- |
+| xác định dương (mọi trị riêng $> 0$) | cực tiểu địa phương |
+| xác định âm (mọi trị riêng $< 0$) | cực đại địa phương |
+| không xác định (trị riêng trái dấu) | điểm yên ngựa |
+| suy biến (có trị riêng $0$) | chưa kết luận được |
+
+Với hai biến: nếu $\det\mathbf{H} > 0$ và $f_{xx} > 0$ thì cực tiểu; nếu $\det\mathbf{H} > 0$ và $f_{xx} < 0$ thì cực đại; nếu $\det\mathbf{H} < 0$ thì yên ngựa.
+
+**Tính lồi.** Nếu $\mathbf{H}(\mathbf{x})$ bán xác định dương với mọi $\mathbf{x}$ thì $f$ là hàm **lồi** (convex): mọi cực tiểu địa phương là cực tiểu toàn cục (Phần 5).
+
+## Ví dụ
+
+### Tính Hessian
+
+<ExHessian />
+
+### Điểm cực tiểu
+
+<ExMin />
+
+### Điểm yên ngựa
+
+<ExSaddle />
+
+## Tính chất
+
+- **Hessian đối xứng** nếu các đạo hàm riêng bậc hai liên tục (định lý Schwarz). Kiểm tra bằng số:
+
+<PropSymmetry />
+
+- **Hàm bậc hai** $f(\mathbf{x}) = \frac{1}{2}\mathbf{x}\T\mathbf{A}\mathbf{x} + \mathbf{b}\T\mathbf{x}$ ($\mathbf{A}$ đối xứng) có Hessian không đổi bằng $\mathbf{A}$.
+- Hessian là ma trận đối xứng thực nên các trị riêng của nó là số thực (bài 1.13).
+
+## Lỗi thường gặp
+
+**Lỗi 1: kết luận khi Hessian suy biến.**
+
+<ExMistake />
+
+**Lỗi 2: phân loại điểm không phải điểm dừng.** Chỉ dùng bảng trên khi $\nabla f = \mathbf{0}$.
+
+**Lỗi 3: nhầm dấu $f_{xx}$** trong tiêu chuẩn hai biến.
+
+**Lỗi 4: tính Hessian theo một biến.** Hessian của hàm hai biến là ma trận $2 \times 2$, không phải $f''(x)$.
+
+## Liên hệ với ML
+
+- **Hồi quy tuyến tính:** $L = \frac{1}{2}\lVert\mathbf{X}\mathbf{w} - \mathbf{y}\rVert^2$ có Hessian $\mathbf{X}\T\mathbf{X}$ (bán xác định dương), nên $L$ lồi và có cực tiểu toàn cục.
+- **Mạng neural:** mất mát không lồi; các điểm yên ngựa rất phổ biến trong không gian trọng số nhiều chiều.
+- **Phương pháp Newton** và các phương pháp bậc hai dùng $\mathbf{H}^{-1}$; Adam xấp xỉ độ cong bằng thông tin bậc nhất (Phần 5).
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Hessian | $H_{ij} = \partial^2 f/\partial x_i\partial x_j$, đối xứng |
+| Xác định dương | cực tiểu địa phương |
+| Xác định âm | cực đại địa phương |
+| Không xác định | yên ngựa |
+| Lồi | Hessian bán xác định dương ở mọi nơi |
+
+<MarkRead client:visible lesson="3.5" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="calculus" lesson="3.5" types={["hessian"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Ma trận Hessian, điều kiện cực trị: *Mathematics for Machine Learning*, chương về giải tích vector và chương về tối ưu hóa liên tục, [mml-book.github.io](https://mml-book.github.io).
+- Ma trận xác định dương và dạng toàn phương: bài 1.13 của khóa này.

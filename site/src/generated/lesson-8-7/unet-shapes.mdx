@@ -1,0 +1,5 @@
+$$
+\begin{array}{cc} \text{stage} & C\times H\times W \\ \hline \mathrm{enc}1 & 32\times 64\times 64 \\ \mathrm{enc}2 & 64\times 32\times 32 \\ \mathrm{enc}3 & 128\times 16\times 16 \\ \mathrm{bottleneck} & 256\times 8\times 8 \\ \mathrm{dec}1\ (\mathrm{upsample + concat}) & 256\times 16\times 16 \\ \mathrm{dec}2\ (\mathrm{upsample + concat}) & 128\times 32\times 32 \\ \mathrm{dec}3\ (\mathrm{upsample + concat}) & 64\times 64\times 64 \end{array}
+$$
+
+U-Net nối (concat) đặc trưng của bộ mã hóa cùng độ phân giải vào bộ giải mã nên số kênh sau nối là tổng hai nhánh.

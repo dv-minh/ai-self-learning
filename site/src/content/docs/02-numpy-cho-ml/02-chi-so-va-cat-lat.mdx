@@ -1,0 +1,95 @@
+---
+title: Chỉ số và cắt lát
+description: Chỉ số bắt đầu từ 0, chỉ số âm, cắt lát start:stop:step, mặt nạ bool
+lesson: "2.2"
+prerequisites: ["1.3", "2.1"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExIndexing from '../../../generated/lesson-2-2/indexing.mdx';
+import ExSlicing from '../../../generated/lesson-2-2/slicing.mdx';
+import ExFromZero from '../../../generated/lesson-2-2/index-from-zero.mdx';
+
+## Mục tiêu
+
+- Chuyển chỉ số toán (từ $1$) sang chỉ số NumPy (từ $0$).
+- Lấy phần tử, hàng, cột bằng chỉ số, chỉ số âm và cắt lát.
+- Dự đoán kết quả của lát cắt `start:stop:step` trên mảng một và hai chiều.
+
+## Toán ↔ NumPy
+
+| Toán | NumPy |
+| --- | --- |
+| phần tử $a_{ij}$ (đếm từ $1$) | `A[i-1, j-1]` |
+| hàng $i$ của $\mathbf{A}$ | `A[i-1]` hoặc `A[i-1, :]` |
+| cột $j$ của $\mathbf{A}$ | `A[:, j-1]` |
+| $m$ hàng đầu | `A[:m]` |
+
+## Trực giác
+
+Chỉ số trong NumPy là **khoảng cách từ đầu mảng**: phần tử đầu cách đầu $0$ bước. Cắt lát lấy một "đoạn liên tiếp" (có thể cách quãng) theo từng trục; dấu phẩy ngăn lát cắt của trục này với trục kia.
+
+## Định nghĩa
+
+- `a[i]`, `a[i, j]`: chỉ số từ $0$. Chỉ số âm đếm từ cuối: `a[-1]` là phần tử cuối.
+- Lát cắt `a[start:stop:step]` lấy từ `start` đến **trước** `stop`, bước `step`. Bỏ qua thành phần nào thì dùng giá trị mặc định (đầu, cuối, $1$). `step` âm đảo chiều.
+- Với mảng hai chiều, `a[r, c]` kết hợp lát cắt hàng `r` và lát cắt cột `c`. Một chỉ số nguyên làm **mất trục** đó (kết quả có ít chiều hơn); một lát cắt thì giữ trục.
+- Mặt nạ bool: `a[a > t]` lấy các phần tử thỏa điều kiện, kết quả là mảng một chiều.
+
+## Ví dụ
+
+### Lấy phần tử
+
+<ExIndexing />
+
+### Cắt lát
+
+<ExSlicing />
+
+### Từ chỉ số toán sang NumPy
+
+<ExFromZero />
+
+## Tính chất
+
+- Lát cắt **không bao giờ báo lỗi** khi vượt biên (chỉ cho mảng ngắn hơn hoặc rỗng), nhưng chỉ số đơn lẻ ngoài biên báo `IndexError`.
+- Lát cắt trả về một **view** (nhìn vào cùng dữ liệu) chứ không sao chép: sửa view sẽ sửa mảng gốc; mặt nạ bool và chỉ số mảng thì sao chép.
+- `a[i][j]` và `a[i, j]` cho cùng giá trị với mảng hai chiều, nhưng `a[i, j]` hiệu quả hơn.
+
+## Lỗi thường gặp
+
+**Lỗi 1: quên rằng chỉ số bắt đầu từ $0$.** $a_{23}$ trong toán là `A[1, 2]`, không phải `A[2, 3]` (xem ví dụ ở trên).
+
+**Lỗi 2: nhầm `stop` được lấy.** `a[1:3]` lấy các chỉ số $1$ và $2$, **không** gồm $3$.
+
+**Lỗi 3: nhầm hàng với cột.** `A[1]` là hàng, `A[:, 1]` là cột; chỉ số đầu luôn là hàng.
+
+**Lỗi 4: tưởng `A[:, 1]` là vector cột.** Kết quả là mảng một chiều (shape `(m,)`); muốn cột thật cần `A[:, 1:2]` hoặc `A[:, [1]]`.
+
+## Liên hệ với ML
+
+- Lấy một **mẫu** là `X[i]`, một **đặc trưng** là `X[:, j]`, một **batch** là `X[i:i+B]`.
+- Chia dữ liệu train/test: `X[:n_train]` và `X[n_train:]`.
+- Lọc dữ liệu bằng mặt nạ: `X[y == 1]` lấy các mẫu thuộc lớp $1$.
+
+## Tóm tắt
+
+| Cú pháp | Ý nghĩa |
+| --- | --- |
+| `a[i]`, `a[-1]` | phần tử thứ $i$ (từ $0$), phần tử cuối |
+| `a[s:e:k]` | từ `s` đến trước `e`, bước `k` |
+| `A[i, j]` | hàng `i`, cột `j` |
+| `A[:, j]` | cột `j` (mất một trục) |
+| `a[mask]` | các phần tử thỏa mặt nạ bool |
+
+<MarkRead client:visible lesson="2.2" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="numpy" lesson="2.2" types={["np-index", "np-slice"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Chỉ số, cắt lát, mặt nạ bool: tài liệu NumPy, mục "Indexing on ndarrays", [numpy.org/doc](https://numpy.org/doc/stable/).
+- Ký hiệu $a_{ij}$ và hàng/cột: bài 1.3.

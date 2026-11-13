@@ -1,0 +1,9 @@
+$$
+L(w) = \tfrac{1}{2}(\mathrm{ReLU}(wx) - y)^2,\ x = 3,\ y = 1,\ w = 2
+$$
+
+$$
+\text{backprop}: 15,\qquad \dfrac{L(w + h) - L(w - h)}{2h} = 15\quad (h = \tfrac{1}{1000})
+$$
+
+Kiểm tra gradient bằng sai phân hữu hạn là cách chuẩn để phát hiện lỗi khi tự cài đặt backpropagation.

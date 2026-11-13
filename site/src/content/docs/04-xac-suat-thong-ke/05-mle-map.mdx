@@ -1,0 +1,112 @@
+---
+title: MLE và MAP
+description: Ước lượng hợp lý cực đại, ước lượng hậu nghiệm cực đại, prior Beta và regularization
+lesson: "4.5"
+prerequisites: ["4.2", "4.4", "3.1"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExMleB from '../../../generated/lesson-4-5/mle-bernoulli.mdx';
+import ExMleG from '../../../generated/lesson-4-5/mle-gaussian.mdx';
+import ExMap from '../../../generated/lesson-4-5/map-vs-mle.mdx';
+import PropPrior from '../../../generated/lesson-4-5/prop-prior-strength.mdx';
+import ExMistake from '../../../generated/lesson-4-5/mistake-mle-variance.mdx';
+
+## Mục tiêu
+
+- Viết hàm hợp lý (likelihood) của dữ liệu độc lập và tìm MLE cho Bernoulli, Gaussian, categorical.
+- Tính posterior Beta và ước lượng MAP; hiểu prior như regularization.
+- So sánh MLE, MAP và trung bình posterior.
+
+## Trực giác
+
+Có dữ liệu và một họ mô hình có tham số $\theta$. **MLE** chọn tham số làm cho dữ liệu quan sát được "ít ngạc nhiên nhất": tham số có khả năng sinh ra dữ liệu cao nhất. **MAP** thêm niềm tin ban đầu (prior) về tham số: nó chọn tham số có xác suất **sau khi thấy dữ liệu** cao nhất. Khi dữ liệu ít, prior giúp tránh kết luận cực đoan (ví dụ tung $5$ lần đều ngửa không có nghĩa $p = 1$).
+
+## Định nghĩa
+
+**Hàm hợp lý** của dữ liệu độc lập $x_1, \dots, x_n$ cho tham số $\theta$: $L(\theta) = \prod_i p(x_i \mid \theta)$. **MLE:**
+
+$$
+\hat{\theta}_{\mathrm{MLE}} = \arg\max_\theta L(\theta) = \arg\max_\theta \sum_i \ln p(x_i \mid \theta).
+$$
+
+Đọc bằng lời: lấy logarit biến tích thành tổng (dễ đạo hàm hơn mà không đổi điểm cực đại); đặt đạo hàm bằng $0$ (bài 3.1).
+
+**Các MLE thường gặp:**
+
+- Bernoulli: $\hat{p} = k/n$ ($k$ thành công trong $n$ lần).
+- Categorical: $\hat{p}_j = n_j/N$ (tần suất tương đối).
+- Gaussian: $\hat{\mu} = \bar{x}$ và $\hat{\sigma}^2 = \dfrac{1}{n}\sum_i (x_i - \bar{x})^2$ (chia cho $n$).
+
+**MAP:** $\hat{\theta}_{\mathrm{MAP}} = \arg\max_\theta\; p(\theta \mid \text{dữ liệu}) = \arg\max_\theta\; \big[\ln L(\theta) + \ln p(\theta)\big]$.
+
+**Prior Beta cho Bernoulli.** Với prior $\mathrm{Beta}(\alpha, \beta)$ và $k$ thành công trong $n$ lần thử, posterior là $\mathrm{Beta}(\alpha + k,\; \beta + n - k)$ (conjugate), và
+
+$$
+\hat{p}_{\mathrm{MAP}} = \frac{\alpha + k - 1}{\alpha + \beta + n - 2}, \qquad \mathbb{E}[p \mid \text{dữ liệu}] = \frac{\alpha + k}{\alpha + \beta + n}.
+$$
+
+Đọc bằng lời: prior hoạt động như $\alpha - 1$ lần thành công và $\beta - 1$ lần thất bại "ảo" cộng thêm vào dữ liệu thật.
+
+## Ví dụ
+
+### MLE cho Bernoulli
+
+<ExMleB />
+
+### MLE cho Gaussian
+
+<ExMleG />
+
+### MAP so với MLE
+
+<ExMap />
+
+## Tính chất
+
+- **Prior mạnh kéo MAP về prior; dữ liệu nhiều thì MAP tiến gần MLE.**
+
+<PropPrior />
+
+- **MLE tương đương cực tiểu hóa mất mát:** với Gaussian, MLE cho hồi quy là bình phương tối thiểu; với categorical, là cross-entropy (bài 4.6).
+- **MAP với prior Gaussian** trên trọng số tương đương thêm penalty $L_2$ (weight decay); với prior Laplace, penalty $L_1$.
+- Khi prior đều (không thông tin), MAP trùng MLE.
+
+## Lỗi thường gặp
+
+**Lỗi 1: nhầm MLE của phương sai với ước lượng không chệch.**
+
+<ExMistake />
+
+**Lỗi 2: tối đa hóa xác suất của dữ liệu theo dữ liệu**, thay vì theo tham số: $L(\theta)$ là hàm của $\theta$ với dữ liệu cố định.
+
+**Lỗi 3: quên rằng MAP có điều kiện $\alpha', \beta' > 1$** để công thức mode của Beta dùng được.
+
+**Lỗi 4: coi likelihood là xác suất của $\theta$.** Likelihood không cộng thành $1$ theo $\theta$.
+
+## Liên hệ với ML
+
+- **Huấn luyện bằng cực tiểu hóa mất mát** thường là MLE: bình phương tối thiểu (Gaussian), cross-entropy (categorical).
+- **Regularization:** weight decay $\Leftrightarrow$ MAP với prior Gaussian.
+- **Dữ liệu ít, phân loại hiếm:** làm trơn Laplace chính là MAP với prior Beta.
+
+## Tóm tắt
+
+| Ước lượng | Công thức |
+| --- | --- |
+| MLE Bernoulli | $k/n$ |
+| MLE Gaussian | $\bar{x}$; $\frac{1}{n}\sum(x_i-\bar{x})^2$ |
+| Posterior Beta | $\mathrm{Beta}(\alpha+k, \beta+n-k)$ |
+| MAP | $\frac{\alpha+k-1}{\alpha+\beta+n-2}$ |
+
+<MarkRead client:visible lesson="4.5" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="probability" lesson="4.5" types={["mle", "map-beta"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- MLE, MAP, prior liên hợp: *Mathematics for Machine Learning*, chương về xác suất và chương về hồi quy tuyến tính (nhìn từ MLE và MAP), [mml-book.github.io](https://mml-book.github.io).
+- MLE và cross-entropy: *Dive into Deep Learning*, phụ lục về xác suất và thống kê, [d2l.ai](https://d2l.ai).

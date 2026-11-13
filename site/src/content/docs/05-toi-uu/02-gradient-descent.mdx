@@ -1,0 +1,130 @@
+---
+title: Gradient descent
+description: Cập nhật ngược gradient, ảnh hưởng của learning rate, điều kiện hội tụ trên hàm bậc hai
+lesson: "5.2"
+prerequisites: ["3.3", "5.1"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import GdPath from '../../../components/viz/GdPath';
+import ExOneD from '../../../generated/lesson-5-2/gd-1d.mdx';
+import ExTwoD from '../../../generated/lesson-5-2/gd-2d.mdx';
+import ExLr from '../../../generated/lesson-5-2/lr-effect.mdx';
+import ExLinreg from '../../../generated/lesson-5-2/linreg-step.mdx';
+import PropDescent from '../../../generated/lesson-5-2/prop-descent.mdx';
+import ExMistake from '../../../generated/lesson-5-2/mistake-sign.mdx';
+
+## Mục tiêu
+
+- Chạy tay từng bước gradient descent cho hàm một và hai biến.
+- Giải thích tác động của learning rate $\eta$: quá nhỏ thì chậm, quá lớn thì dao động hoặc phân kỳ.
+- Tính một bước gradient descent cho hồi quy tuyến tính.
+- Tìm ngưỡng $\eta$ để gradient descent hội tụ trên hàm bậc hai.
+
+## Trực giác
+
+Đứng trên sườn núi trong sương mù, bạn chỉ cảm nhận được độ dốc dưới chân. Cách đơn giản nhất để xuống thung lũng: bước một bước nhỏ theo hướng dốc nhất đi xuống, rồi lặp lại. Gradient $\nabla f$ chỉ hướng tăng nhanh nhất, nên hướng giảm nhanh nhất là $-\nabla f$. Độ dài bước do learning rate quyết định.
+
+## Định nghĩa
+
+**Gradient descent:** từ điểm bắt đầu $\mathbf{x}_0$, lặp
+
+$$
+\mathbf{x}_{t+1} = \mathbf{x}_t - \eta\,\nabla f(\mathbf{x}_t),
+$$
+
+với $\eta > 0$ là **learning rate**. Đọc bằng lời: tính gradient tại điểm hiện tại, nhân với $\eta$, rồi trừ khỏi điểm hiện tại.
+
+**Hàm bậc hai.** Với $f(\mathbf{x}) = \frac{1}{2}\mathbf{x}\T\mathbf{Q}\mathbf{x}$ ($\mathbf{Q}$ đối xứng xác định dương), $\nabla f = \mathbf{Q}\mathbf{x}$ nên
+
+$$
+\mathbf{x}_{t+1} = (\mathbf{I} - \eta\mathbf{Q})\,\mathbf{x}_t.
+$$
+
+Gọi $\lambda_i$ là các trị riêng của $\mathbf{Q}$: theo hướng riêng thứ $i$, $\mathbf{x}$ bị nhân với $1 - \eta\lambda_i$ ở mỗi bước. Gradient descent hội tụ về $\mathbf{0}$ với mọi điểm bắt đầu khi và chỉ khi $|1 - \eta\lambda_i| < 1$ với mọi $i$, tức
+
+$$
+0 < \eta < \frac{2}{\lambda_{\max}}.
+$$
+
+Tốc độ hội tụ mỗi bước là $\rho = \max_i |1 - \eta\lambda_i|$ (càng nhỏ càng nhanh). Với một biến, $\lambda = f''$.
+
+**Hồi quy tuyến tính** với mất mát $L = \dfrac{1}{2n}\sum_i (wx_i + b - y_i)^2$:
+
+$$
+\frac{\partial L}{\partial w} = \frac{1}{n}\sum_i e_i x_i,\qquad \frac{\partial L}{\partial b} = \frac{1}{n}\sum_i e_i,\qquad e_i = wx_i + b - y_i.
+$$
+
+## Ví dụ
+
+### Một biến
+
+<ExOneD />
+
+### Hai biến
+
+<ExTwoD />
+
+### Ảnh hưởng của learning rate
+
+<ExLr />
+
+### Một bước cho hồi quy tuyến tính
+
+<ExLinreg />
+
+### Quỹ đạo gradient descent (hình tương tác)
+
+Kéo thanh trượt để thấy $\eta$ nhỏ thì chậm, $\eta$ vừa thì đi thẳng vào cực tiểu, $\eta$ quá lớn thì dao động rồi phân kỳ. Tăng độ méo $k$ để thấy điều kiện số xấu: quỹ đạo zigzag qua lại thung lũng hẹp.
+
+<GdPath client:visible />
+
+## Tính chất
+
+- **Hướng giảm:** nếu $\nabla f(\mathbf{x}) \ne \mathbf{0}$ thì với $\eta$ đủ nhỏ, $f(\mathbf{x} - \eta\nabla f(\mathbf{x})) < f(\mathbf{x})$. Kiểm tra bằng số:
+
+<PropDescent />
+
+- **Điểm dừng:** nếu $\nabla f(\mathbf{x}^\star) = \mathbf{0}$ thì $\mathbf{x}^\star$ là điểm bất động của gradient descent.
+- **Điều kiện số (conditioning):** khi $\lambda_{\max}/\lambda_{\min}$ lớn, $\eta$ bị $\lambda_{\max}$ giới hạn trong khi hướng ứng với $\lambda_{\min}$ hội tụ rất chậm. Đó là lý do cần momentum và Adam (bài 5.4, 5.5).
+- Với hàm **lồi khả vi có cực tiểu và gradient Lipschitz** (độ cong bị chặn bởi $L$), gradient descent với $\eta \le 1/L$ tiến về cực tiểu toàn cục (bài 5.1). Hàm lồi không có cực tiểu (như $e^x$) thì không có điểm hội tụ.
+
+## Lỗi thường gặp
+
+**Lỗi 1: cộng thay vì trừ gradient.**
+
+<ExMistake />
+
+**Lỗi 2: dùng gradient cũ.** Mỗi bước phải tính lại $\nabla f$ tại điểm **mới nhất**.
+
+**Lỗi 3: cập nhật không đồng thời** $w$ rồi dùng $w$ mới để tính gradient theo $b$. Phải dùng giá trị cũ của cả hai.
+
+**Lỗi 4: nghĩ rằng $\eta$ lớn hơn thì luôn nhanh hơn.** Trên $f(x) = x^2$, $\eta = 1/2$ hội tụ ngay sau một bước nhưng $\eta = 1$ dao động mãi và $\eta > 1$ phân kỳ.
+
+## Liên hệ với ML
+
+- **Huấn luyện mọi mô hình** bằng cách giảm hàm mất mát: gradient descent (và biến thể) là thuật toán cốt lõi.
+- **Chọn learning rate** là siêu tham số quan trọng nhất; thực tế thường dùng lịch giảm learning rate (bài 5.6).
+- **Hồi quy tuyến tính** có nghiệm đóng, nhưng gradient descent là cách duy nhất khả thi cho mô hình lớn.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Cập nhật | $\mathbf{x}_{t+1} = \mathbf{x}_t - \eta\nabla f(\mathbf{x}_t)$ |
+| Hàm bậc hai | $\mathbf{x}_{t+1} = (\mathbf{I} - \eta\mathbf{Q})\mathbf{x}_t$ |
+| Hội tụ | $0 < \eta < 2/\lambda_{\max}$ |
+| Tốc độ | $\rho = \max_i \lvert 1 - \eta\lambda_i \rvert$ |
+
+<MarkRead client:visible lesson="5.2" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="optimization" lesson="5.2" types={["gd-steps", "gd-linreg", "gd-converge", "gd-max-lr"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Gradient descent và điều kiện hội tụ: *Dive into Deep Learning*, chương Tối ưu hóa, [d2l.ai](https://d2l.ai).
+- *Mathematics for Machine Learning*, chương 7 (tối ưu hóa liên tục), [mml-book.github.io](https://mml-book.github.io).
+- Hồi quy tuyến tính bằng gradient descent: [machinelearningcoban.com](https://machinelearningcoban.com).

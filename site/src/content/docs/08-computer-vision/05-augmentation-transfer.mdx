@@ -1,0 +1,102 @@
+---
+title: Augmentation và transfer learning
+description: Tăng cường dữ liệu bằng biến đổi giữ nhãn; linear probe, fine-tuning và đếm tham số huấn luyện được
+lesson: "8.5"
+prerequisites: ["7.7", "8.3"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExAug from '../../../generated/lesson-8-5/aug-example.mdx';
+import ExTransfer from '../../../generated/lesson-8-5/transfer-example.mdx';
+import PropLabel from '../../../generated/lesson-8-5/label-preserving.mdx';
+import ExMistake from '../../../generated/lesson-8-5/mistake-augment-test.mdx';
+
+## Mục tiêu
+
+- Áp dụng lật, quay và cắt lên ảnh nhỏ và tính ảnh kết quả.
+- Phân biệt biến đổi giữ nhãn và biến đổi làm đổi nhãn.
+- Phân biệt linear probe, fine-tuning một phần và toàn bộ; đếm tham số huấn luyện được.
+
+## Trực giác
+
+Dữ liệu có nhãn luôn ít hơn ta muốn. **Augmentation** tạo thêm mẫu bằng các biến đổi mà **không đổi nhãn** (lật, cắt ngẫu nhiên, đổi độ sáng): mô hình thấy nhiều biến thể hơn và học tính bất biến mong muốn. **Transfer learning** tái sử dụng một mô hình đã huấn luyện trên tập dữ liệu rất lớn (ví dụ ImageNet): các lớp đầu đã biết cạnh, kết cấu, bộ phận, chỉ cần thích ứng lớp cuối hoặc vài khối cuối với bài toán mới.
+
+## Định nghĩa
+
+Với ảnh $\mathbf{X} \in \R^{H\times W}$:
+
+- **Lật ngang:** $Y_{ij} = X_{i,\,W-1-j}$ (đảo thứ tự cột). **Lật dọc:** $Y_{ij} = X_{H-1-i,\,j}$ (đảo thứ tự hàng).
+- **Quay $90^\circ$ cùng chiều kim đồng hồ** (ảnh vuông): $Y_{ij} = X_{n-1-j,\,i}$.
+- **Cắt (crop):** lấy một cửa sổ con.
+
+**Các chiến lược thích ứng:**
+
+| Cách | Huấn luyện | Dùng khi |
+| --- | --- | --- |
+| Linear probe | chỉ lớp tuyến tính mới | dữ liệu rất ít, đánh giá chất lượng đặc trưng |
+| Fine-tune khối cuối | vài khối cuối + đầu mới | dữ liệu vừa |
+| Fine-tune toàn bộ | mọi tham số (learning rate nhỏ) | dữ liệu nhiều |
+| LoRA | tham số bổ sung hạng thấp | mô hình rất lớn (bài 7.7) |
+
+Lớp tuyến tính $a\to b$ có chặn: $(a+1)b$ tham số.
+
+## Ví dụ
+
+### Các phép biến đổi trên ảnh $4\times 4$
+
+<ExAug />
+
+### Linear probe
+
+<ExTransfer />
+
+## Tính chất
+
+- **Phép biến đổi phải giữ nhãn:**
+
+<PropLabel />
+
+- **Augmentation là điều chuẩn hóa:** giảm overfit, tương đương thêm dữ liệu (bài 6.3).
+- **Chỉ augment tập huấn luyện;** test/validation dùng tiền xử lý xác định.
+- **Transfer learning hiệu quả** vì đặc trưng ở lớp đầu mang tính tổng quát giữa các bài toán thị giác.
+- Khi fine-tune, dùng **learning rate nhỏ hơn** cho phần đã huấn luyện trước so với đầu mới.
+
+## Lỗi thường gặp
+
+**Lỗi 1: augment cả tập test.**
+
+<ExMistake />
+
+**Lỗi 2: dùng phép biến đổi làm đổi nhãn** (quay $180^\circ$ chữ số, lật ngang văn bản).
+
+**Lỗi 3: nhầm chiều lật và quay.** Lật ngang đảo cột; quay $90^\circ$ biến hàng thành cột.
+
+**Lỗi 4: đếm cả tham số bị đóng băng là huấn luyện được.**
+
+## Liên hệ với ML
+
+- **Pipeline chuẩn:** RandomResizedCrop, lật ngang, ColorJitter, chuẩn hóa; các kỹ thuật nâng cao như MixUp, CutMix, RandAugment.
+- **Mô hình nền tảng** (DINO, CLIP) được dùng làm backbone đóng băng cho nhiều bài toán.
+- Với ít dữ liệu, linear probe trên đặc trưng của backbone mạnh thường là đường cơ sở rất khó thắng.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Lật ngang / dọc | đảo cột / đảo hàng |
+| Quay $90^\circ$ cw | $Y_{ij} = X_{n-1-j,\,i}$ |
+| Giữ nhãn | biến đổi không làm đổi lớp |
+| Linear probe | chỉ đầu mới, backbone đóng băng |
+
+<MarkRead client:visible lesson="8.5" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="computer-vision" lesson="8.5" types={["aug-transform", "transfer-params"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Shorten và Khoshgoftaar (2019), "A survey on Image Data Augmentation for Deep Learning", *Journal of Big Data*.
+- Yosinski và cộng sự (2014), "How transferable are features in deep neural networks?", [arxiv.org/abs/1411.1792](https://arxiv.org/abs/1411.1792).
+- CS231n, ghi chú về transfer learning, [cs231n.github.io/transfer-learning](https://cs231n.github.io/transfer-learning/).

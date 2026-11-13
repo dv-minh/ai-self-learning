@@ -1,0 +1,109 @@
+---
+title: Độ đo phân loại
+description: Ma trận nhầm lẫn, accuracy, precision, recall, F1, ROC và AUC
+lesson: "6.4"
+prerequisites: ["6.2", "4.1"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExConf from '../../../generated/lesson-6-4/confusion-example.mdx';
+import ExAuc from '../../../generated/lesson-6-4/auc-pairs-example.mdx';
+import PropF1 from '../../../generated/lesson-6-4/prop-f1-harmonic.mdx';
+import ExMistake from '../../../generated/lesson-6-4/mistake-accuracy-imbalance.mdx';
+
+## Mục tiêu
+
+- Đọc ma trận nhầm lẫn và tính accuracy, precision, recall, specificity, F1, $F_\beta$.
+- Tính macro-F1 cho bài toán nhiều lớp.
+- Vẽ điểm trên đường ROC từ một ngưỡng và tính AUC bằng cách đếm cặp.
+- Chọn độ đo phù hợp khi dữ liệu mất cân bằng.
+
+## Trực giác
+
+"Độ chính xác" bao nhiêu phần trăm nghe hấp dẫn nhưng dễ đánh lừa: nếu chỉ $1\%$ giao dịch là gian lận, mô hình luôn đoán "không gian lận" đạt $99\%$ mà vô dụng. Cần tách hai loại lỗi: **bỏ sót** mẫu dương (false negative) và **báo nhầm** mẫu âm (false positive). Precision hỏi "những gì tôi báo dương thì đúng bao nhiêu"; recall hỏi "trong các ca dương thật, tôi tìm ra bao nhiêu". Đổi ngưỡng quyết định thì đánh đổi giữa hai thứ đó; đường ROC và AUC tóm tắt mọi ngưỡng.
+
+## Định nghĩa
+
+Ma trận nhầm lẫn nhị phân (lớp dương là $1$):
+
+| | dự đoán $1$ | dự đoán $0$ |
+| --- | --- | --- |
+| thật $1$ | $TP$ | $FN$ |
+| thật $0$ | $FP$ | $TN$ |
+
+$$
+\mathrm{acc} = \frac{TP + TN}{TP + FP + FN + TN},\quad P = \frac{TP}{TP + FP},\quad R = \frac{TP}{TP + FN},\quad \mathrm{spec} = \frac{TN}{TN + FP},
+$$
+
+$$
+F_1 = \frac{2PR}{P + R} = \frac{2\,TP}{2\,TP + FP + FN},\qquad F_\beta = \frac{(1+\beta^2)PR}{\beta^2 P + R}.
+$$
+
+**Nhiều lớp:** với mỗi lớp coi nó là dương, các lớp khác là âm, tính $F_1$ từng lớp; **macro-F1** là trung bình cộng các $F_1$ đó (mọi lớp trọng số như nhau).
+
+**ROC:** với mỗi ngưỡng $\tau$ (dự đoán dương khi score $\ge \tau$) có $\mathrm{TPR} = R$ và $\mathrm{FPR} = FP/(FP + TN)$; đường ROC nối các điểm $(\mathrm{FPR}, \mathrm{TPR})$. **AUC** là diện tích dưới đường ROC, và bằng xác suất một mẫu dương được chấm điểm cao hơn một mẫu âm ngẫu nhiên (cặp bằng nhau tính $1/2$):
+
+$$
+\mathrm{AUC} = \frac{1}{P_{\#}N_{\#}}\sum_{i \in \text{pos}}\sum_{j \in \text{neg}}\Big(\mathbb{1}[s_i > s_j] + \tfrac{1}{2}\mathbb{1}[s_i = s_j]\Big).
+$$
+
+## Ví dụ
+
+### Các độ đo từ ma trận nhầm lẫn
+
+<ExConf />
+
+### AUC bằng cách đếm cặp
+
+<ExAuc />
+
+## Tính chất
+
+- **$F_1$ là trung bình điều hòa** của $P$ và $R$, nên thấp hơn trung bình cộng và phạt sự mất cân bằng giữa chúng:
+
+<PropF1 />
+
+- **$F_\beta$ với $\beta > 1$** ưu tiên recall (ví dụ sàng lọc bệnh), $\beta < 1$ ưu tiên precision.
+- **AUC $= 1/2$** là phân loại ngẫu nhiên, $1$ là hoàn hảo; AUC không phụ thuộc ngưỡng và không nhạy với tỉ lệ lớp.
+- **Hạ ngưỡng** làm TPR (và FPR) tăng: đi dọc đường ROC từ $(0, 0)$ lên $(1, 1)$.
+- Accuracy $= $ trung bình có trọng số của recall và specificity theo tỉ lệ lớp.
+
+## Lỗi thường gặp
+
+**Lỗi 1: dùng accuracy cho dữ liệu mất cân bằng.**
+
+<ExMistake />
+
+**Lỗi 2: nhầm precision và recall.** Mẫu số của precision là số mẫu **dự đoán** dương ($TP + FP$); mẫu số của recall là số mẫu **thật** dương ($TP + FN$).
+
+**Lỗi 3: tính macro-F1 bằng cách lấy trung bình precision và recall rồi mới tính F1.** Phải tính $F_1$ từng lớp trước, sau đó lấy trung bình.
+
+**Lỗi 4: quên tính cặp bằng nhau là $1/2$** khi tính AUC với điểm số trùng nhau.
+
+## Liên hệ với ML
+
+- **Phát hiện gian lận, bệnh hiếm:** precision/recall hoặc AUC-PR thay vì accuracy.
+- **Chọn ngưỡng** theo chi phí: bỏ sót ung thư tốn hơn báo nhầm nên ưu tiên recall (ngưỡng thấp).
+- **So sánh mô hình** độc lập với ngưỡng bằng AUC.
+
+## Tóm tắt
+
+| Độ đo | Công thức | Trả lời câu hỏi |
+| --- | --- | --- |
+| Precision | $TP/(TP+FP)$ | báo dương thì đúng bao nhiêu? |
+| Recall | $TP/(TP+FN)$ | tìm ra bao nhiêu mẫu dương thật? |
+| $F_1$ | $2PR/(P+R)$ | cân bằng $P$ và $R$ |
+| AUC | xác suất dương $>$ âm | chất lượng xếp hạng, mọi ngưỡng |
+
+<MarkRead client:visible lesson="6.4" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="classical-ml" lesson="6.4" types={["confusion-metrics", "auc-pairs"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Độ đo đánh giá phân loại: tài liệu scikit-learn, mục Model evaluation, [scikit-learn.org/stable/modules/model_evaluation.html](https://scikit-learn.org/stable/modules/model_evaluation.html).
+- Fawcett (2006), "An introduction to ROC analysis", *Pattern Recognition Letters*.
+- [machinelearningcoban.com](https://machinelearningcoban.com): bài về đánh giá mô hình phân loại.

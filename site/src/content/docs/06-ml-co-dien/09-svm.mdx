@@ -1,0 +1,113 @@
+---
+title: SVM
+description: Siêu phẳng có lề lớn nhất, support vector, hinge loss và mục tiêu lề mềm
+lesson: "6.9"
+prerequisites: ["6.2", "5.2", "1.2"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExMargin from '../../../generated/lesson-6-9/margin-width.mdx';
+import ExHinge from '../../../generated/lesson-6-9/hinge-loss-values.mdx';
+import ExObj from '../../../generated/lesson-6-9/soft-margin-objective.mdx';
+import PropSv from '../../../generated/lesson-6-9/prop-support-vectors.mdx';
+import ExMistake from '../../../generated/lesson-6-9/mistake-scaling-svm.mdx';
+
+## Mục tiêu
+
+- Tính độ rộng lề $2/\|\mathbf{w}\|$ và khoảng cách từ điểm đến siêu phẳng.
+- Nhận diện support vector qua lề hàm $y(\mathbf{w}\T\mathbf{x} + b) = 1$.
+- Tính hinge loss và mục tiêu SVM lề mềm; thực hiện một bước gradient descent trên mục tiêu đó.
+- Tìm siêu phẳng từ hai support vector.
+
+## Trực giác
+
+Có nhiều đường thẳng phân tách hai lớp. SVM chọn đường **cách đều và xa nhất** hai lớp: lề (margin) lớn nhất. Ý tưởng: ranh giới càng xa dữ liệu thì càng bền với nhiễu. Chỉ những điểm nằm sát lề (support vector) quyết định đường này; bỏ các điểm khác đi thì đường không đổi. Khi dữ liệu không tách hoàn hảo, ta cho phép một vài điểm vi phạm lề với một khoản phạt: SVM lề mềm.
+
+## Định nghĩa
+
+Với nhãn $y_i \in \{-1, +1\}$ và siêu phẳng $\mathbf{w}\T\mathbf{x} + b = 0$. Đặt $z_i = \mathbf{w}\T\mathbf{x}_i + b$.
+
+- **Lề hàm (functional margin):** $y_iz_i$; $> 0$ là phân loại đúng, $\ge 1$ là đúng và nằm ngoài lề.
+- **Hai lề:** $\mathbf{w}\T\mathbf{x} + b = \pm 1$, cách nhau **độ rộng lề** $\dfrac{2}{\|\mathbf{w}\|}$.
+- **Khoảng cách từ $\mathbf{x}$ đến siêu phẳng:** $\dfrac{|\mathbf{w}\T\mathbf{x} + b|}{\|\mathbf{w}\|}$.
+- **SVM lề cứng:** $\min \frac{1}{2}\|\mathbf{w}\|^2$ với ràng buộc $y_iz_i \ge 1$ mọi $i$ (tối đa hóa lề $\Leftrightarrow$ tối thiểu $\|\mathbf{w}\|$).
+- **Support vector (lề cứng):** các điểm với $y_iz_i = 1$ (nằm đúng trên lề). Với lề mềm, các điểm vi phạm lề ($y_iz_i < 1$, kể cả bị phân loại sai) cũng là support vector vì chúng cũng ảnh hưởng đến nghiệm.
+
+**Lề mềm với hinge loss** $\max(0,\ 1 - y_iz_i)$:
+
+$$
+J(\mathbf{w}, b) = \frac{1}{2}\|\mathbf{w}\|^2 + C\sum_{i=1}^{n}\max\big(0,\ 1 - y_i(\mathbf{w}\T\mathbf{x}_i + b)\big).
+$$
+
+Gradient (tại điểm không nằm đúng trên lề), với $V = \{i : y_iz_i < 1\}$ là tập các điểm vi phạm lề:
+
+$$
+\nabla_{\mathbf{w}}J = \mathbf{w} - C\sum_{i \in V} y_i\mathbf{x}_i,\qquad \frac{\partial J}{\partial b} = -C\sum_{i \in V} y_i.
+$$
+
+$C$ lớn: phạt vi phạm mạnh, lề hẹp, dễ overfit; $C$ nhỏ: ưu tiên lề rộng, dễ underfit.
+
+## Ví dụ
+
+### Lề và khoảng cách
+
+<ExMargin />
+
+### Hinge loss
+
+<ExHinge />
+
+### Mục tiêu lề mềm
+
+<ExObj />
+
+## Tính chất
+
+- **Trong SVM lề cứng chỉ support vector quyết định siêu phẳng:** các điểm khác có $y z > 1$ nên hinge loss bằng $0$ và gradient bằng $0$ theo chúng.
+
+<PropSv />
+
+- **Hinge loss lồi** (bài 5.1) nên mục tiêu lề mềm lồi; không có cực tiểu địa phương tồi.
+- **Hinge loss không khả vi** tại $yz = 1$ (dùng dưới gradient); ngoài điểm đó đạo hàm là $-y\mathbf{x}$ khi vi phạm lề, $0$ khi không.
+- **Trường hợp hai support vector** $\mathbf{x}_+$ và $\mathbf{x}_-$: $\mathbf{w}$ song song với $\mathbf{x}_+ - \mathbf{x}_-$, và $\mathbf{w} = \dfrac{2(\mathbf{x}_+ - \mathbf{x}_-)}{\|\mathbf{x}_+ - \mathbf{x}_-\|^2}$.
+- **Kernel:** thay tích vô hướng bằng hàm kernel để có biên phi tuyến (ngoài phạm vi bài này).
+
+## Lỗi thường gặp
+
+**Lỗi 1: không chuẩn hóa đặc trưng.**
+
+<ExMistake />
+
+**Lỗi 2: nhầm nhãn $\{0, 1\}$ với $\{-1, +1\}$.** Công thức $y z$ giả định nhãn $\pm 1$.
+
+**Lỗi 3: lấy độ rộng lề là $1/\|\mathbf{w}\|$.** Khoảng cách từ siêu phẳng đến **một** lề là $1/\|\mathbf{w}\|$; độ rộng giữa **hai** lề là $2/\|\mathbf{w}\|$.
+
+**Lỗi 4: quên điều kiện $C$ ở số hạng sai số** hoặc đặt $C$ vào số hạng chính quy hóa.
+
+## Liên hệ với ML
+
+- **Phân loại văn bản và dữ liệu nhiều chiều**, đặc biệt khi số đặc trưng lớn hơn số mẫu.
+- **Hinge loss** vẫn xuất hiện trong học sâu (SVM làm lớp cuối, hàm mất mát cho học biểu diễn); so sánh với cross-entropy (bài 6.2).
+- Liên hệ chính quy hóa: số hạng $\frac{1}{2}\|\mathbf{w}\|^2$ là L2 (bài 5.7).
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Độ rộng lề | $2/\lVert\mathbf{w}\rVert$ |
+| Support vector | $y(\mathbf{w}\T\mathbf{x} + b) = 1$ |
+| Hinge loss | $\max(0,\ 1 - yz)$ |
+| Lề mềm | $\frac{1}{2}\lVert\mathbf{w}\rVert^2 + C\sum \text{hinge}$ |
+
+<MarkRead client:visible lesson="6.9" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="classical-ml" lesson="6.9" types={["svm-margin", "svm-hinge"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Cortes và Vapnik (1995), "Support-Vector Networks", *Machine Learning*.
+- *The Elements of Statistical Learning*, chương 12, [hastie.su.domains/ElemStatLearn](https://hastie.su.domains/ElemStatLearn/).
+- [machinelearningcoban.com](https://machinelearningcoban.com): bài về Support Vector Machine.

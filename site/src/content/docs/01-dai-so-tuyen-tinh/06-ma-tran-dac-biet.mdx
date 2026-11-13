@@ -1,0 +1,133 @@
+---
+title: Ma trận đặc biệt
+description: Ma trận đơn vị, đường chéo, tam giác, đối xứng, trực giao; lũy thừa ma trận đường chéo
+lesson: "1.6"
+prerequisites: ["1.5"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExGallery from '../../../generated/lesson-1-6/gallery.mdx';
+import ExPowerDiag from '../../../generated/lesson-1-6/power-diag.mdx';
+import ExOrthogonalCheck from '../../../generated/lesson-1-6/orthogonal-check.mdx';
+import ExMistakePower from '../../../generated/lesson-1-6/mistake-power.mdx';
+import PropDiagCommute from '../../../generated/lesson-1-6/prop-diag-commute.mdx';
+import PropOrthInverse from '../../../generated/lesson-1-6/prop-orth-inverse.mdx';
+import PropOrthNorm from '../../../generated/lesson-1-6/prop-orth-norm.mdx';
+import PropSymProduct from '../../../generated/lesson-1-6/prop-sym-product.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Nhận biết ma trận đơn vị, đường chéo, tam giác trên/dưới, đối xứng và trực giao.
+- Tính lũy thừa của ma trận đường chéo.
+- Dùng $(\mathbf{AB})\T = \mathbf{B}\T\mathbf{A}\T$ cho tích nhiều ma trận.
+
+## Trực giác
+
+Một số ma trận có cấu trúc đủ đẹp để tính toán nhanh hơn nhiều. Ma trận đơn vị là "phép biến đổi không làm gì". Ma trận đường chéo chỉ co giãn từng trục riêng lẻ. Ma trận trực giao chỉ quay hoặc phản xạ, không làm méo hình. Ma trận đối xứng xuất hiện khắp nơi (hiệp phương sai, Hessian). Quen với các loại này giúp bạn nhận ra cấu trúc trong các công thức ML.
+
+## Định nghĩa
+
+Cho ma trận vuông $\mathbf{A} \in \R^{n \times n}$.
+
+- **Ma trận đơn vị (identity matrix)** $\mathbf{I}_n$: đường chéo toàn $1$, còn lại toàn $0$. Với mọi ma trận $\mathbf{M}$ có kích thước phù hợp, $\mathbf{I}\mathbf{M} = \mathbf{M}\mathbf{I} = \mathbf{M}$.
+- **Ma trận đường chéo (diagonal matrix):** $a_{ij} = 0$ khi $i \neq j$. Viết $\diag(d_1, \dots, d_n)$.
+- **Ma trận tam giác trên (upper triangular):** $a_{ij} = 0$ khi $i > j$ (dưới đường chéo toàn $0$). **Tam giác dưới (lower triangular):** $a_{ij} = 0$ khi $i < j$.
+- **Ma trận đối xứng (symmetric):** $\mathbf{A} = \mathbf{A}\T$.
+- **Ma trận trực giao (orthogonal):** $\mathbf{A}\T\mathbf{A} = \mathbf{I}$.
+
+**Lũy thừa ma trận đường chéo:**
+
+$$
+\diag(d_1, \dots, d_n)^{k} = \diag(d_1^{k}, \dots, d_n^{k}).
+$$
+
+Đọc bằng lời: lũy thừa $k$ của một ma trận đường chéo là lũy thừa $k$ từng phần tử trên đường chéo.
+
+**Chuyển vị của tích:**
+
+$$
+(\mathbf{AB})\T = \mathbf{B}\T\mathbf{A}\T.
+$$
+
+Đọc bằng lời: chuyển vị một tích thì đảo thứ tự các thừa số và chuyển vị từng thừa số. Với ba thừa số: $(\mathbf{ABC})\T = \mathbf{C}\T\mathbf{B}\T\mathbf{A}\T$.
+
+## Ví dụ
+
+### Bộ sưu tập các loại ma trận
+
+<ExGallery />
+
+### Lũy thừa ma trận đường chéo
+
+<ExPowerDiag />
+
+### Kiểm tra ma trận trực giao
+
+<ExOrthogonalCheck />
+
+## Tính chất
+
+1. **Ma trận đường chéo cùng cỡ giao hoán với nhau:**
+
+<PropDiagCommute />
+
+2. **Ma trận trực giao có nghịch đảo bằng chuyển vị:** $\mathbf{Q}^{-1} = \mathbf{Q}\T$. Từ $\mathbf{Q}\T\mathbf{Q} = \mathbf{I}$ ta thấy $\mathbf{Q}\T$ đóng vai trò nghịch đảo của $\mathbf{Q}$ (khái niệm nghịch đảo ở bài 1.9).
+
+<PropOrthInverse />
+
+3. **Ma trận trực giao giữ nguyên độ dài:** $\norm{\mathbf{Qx}}_2 = \norm{\mathbf{x}}_2$.
+
+<PropOrthNorm />
+
+4. **$\mathbf{A}\T\mathbf{A}$ luôn đối xứng** với mọi ma trận $\mathbf{A}$ (kể cả không vuông):
+
+<PropSymProduct />
+
+## Lỗi thường gặp
+
+**Lỗi 1: lũy thừa từng phần tử cho ma trận không phải đường chéo.**
+
+<ExMistakePower />
+
+**Lỗi 2: cho rằng mọi ma trận trực giao đều là ma trận hoán vị.** Ma trận quay cũng trực giao dù có các phần tử không nguyên. Điều kiện duy nhất là $\mathbf{A}\T\mathbf{A} = \mathbf{I}$.
+
+**Lỗi 3: quên rằng ma trận đường chéo cũng là tam giác trên và tam giác dưới.** Khi đề hỏi "những loại nào", hãy chọn tất cả loại thỏa mãn.
+
+**Lỗi 4: chuyển vị tích mà không đảo thứ tự:** $(\mathbf{AB})\T \neq \mathbf{A}\T\mathbf{B}\T$ nói chung.
+
+## Liên hệ với ML
+
+- **Ma trận Gram** $\mathbf{X}\T\mathbf{X}$ luôn đối xứng; đây là ma trận xuất hiện trong phương trình chuẩn của hồi quy tuyến tính (bài 1.15) và trong ma trận hiệp phương sai.
+- **Khởi tạo trực giao** (orthogonal initialization) giữ độ lớn tín hiệu ổn định khi đi qua nhiều lớp.
+- **Ma trận đường chéo** biểu diễn co giãn từng đặc trưng độc lập (ví dụ chuẩn hóa theo độ lệch chuẩn của từng cột) và là dạng mà phép chéo hóa (bài 1.12) và SVD (bài 1.14) rút gọn về.
+
+## Tóm tắt
+
+| Loại | Điều kiện |
+| --- | --- |
+| Đơn vị | $\mathbf{I}$: đường chéo $1$, còn lại $0$ |
+| Đường chéo | ngoài đường chéo toàn $0$ |
+| Tam giác trên / dưới | dưới / trên đường chéo toàn $0$ |
+| Đối xứng | $\mathbf{A} = \mathbf{A}\T$ |
+| Trực giao | $\mathbf{A}\T\mathbf{A} = \mathbf{I}$ |
+| Lũy thừa đường chéo | lũy thừa từng phần tử trên đường chéo |
+| Chuyển vị của tích | $(\mathbf{AB})\T = \mathbf{B}\T\mathbf{A}\T$ |
+
+<MarkRead client:visible lesson="1.6" />
+
+## Bài tập
+
+<ExercisePlayer
+  client:visible
+  lesson="1.6"
+  types={["mat-identify", "mat-power-diag", "transpose-product"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Các loại ma trận đặc biệt, chuyển vị của tích: MIT 18.06 (Gilbert Strang), phần về ma trận hoán vị, đối xứng và nhân ma trận, [ocw.mit.edu](https://ocw.mit.edu).
+- Ma trận đơn vị, đường chéo, đối xứng, trực giao: *Mathematics for Machine Learning*, các mục về ma trận và phép biến đổi trực giao, [mml-book.github.io](https://mml-book.github.io).

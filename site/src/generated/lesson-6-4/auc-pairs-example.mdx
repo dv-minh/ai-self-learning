@@ -1,0 +1,11 @@
+$$
+s_+ = (\frac{9}{10}, \frac{3}{5}, \frac{2}{5}),\quad s_- = (\frac{7}{10}, \frac{1}{2}, \frac{3}{10})
+$$
+
+$$
+\begin{array}{cccc} s_+ \backslash s_- & \frac{7}{10} & \frac{1}{2} & \frac{3}{10} \\ \hline \frac{9}{10} & 1 & 1 & 1 \\ \frac{3}{5} & 0 & 1 & 1 \\ \frac{2}{5} & 0 & 0 & 1 \end{array}
+$$
+
+Mỗi ô bằng $1$ nếu score của mẫu dương (hàng) lớn hơn score của mẫu âm (cột), ngược lại bằng $0$.
+
+Trong $9$ cặp có $6$ cặp dương cao hơn âm, nên $\mathrm{AUC} = \frac{2}{3}$; diện tích hình thang dưới đường ROC cho đúng cùng giá trị.

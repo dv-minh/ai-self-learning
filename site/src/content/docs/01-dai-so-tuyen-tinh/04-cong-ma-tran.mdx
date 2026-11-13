@@ -1,0 +1,129 @@
+---
+title: Cộng ma trận, nhân vô hướng
+description: Điều kiện cùng kích thước, tính chất giao hoán và kết hợp, tổ hợp tuyến tính của ma trận
+lesson: "1.4"
+prerequisites: ["1.3"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExAddSmall from '../../../generated/lesson-1-4/add-small.mdx';
+import ExAddLarge from '../../../generated/lesson-1-4/add-large.mdx';
+import ExScale from '../../../generated/lesson-1-4/scale.mdx';
+import ExLincomb from '../../../generated/lesson-1-4/lincomb.mdx';
+import ExMixup from '../../../generated/lesson-1-4/mixup.mdx';
+import ExMistakeShape from '../../../generated/lesson-1-4/mistake-shape.mdx';
+import PropAssociative from '../../../generated/lesson-1-4/prop-associative.mdx';
+import PropCommute from '../../../generated/lesson-1-4/prop-commute.mdx';
+import PropDistribute from '../../../generated/lesson-1-4/prop-distribute.mdx';
+import PropTransposeSum from '../../../generated/lesson-1-4/prop-transpose-sum.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Quyết định hai ma trận có cộng được hay không.
+- Cộng, trừ ma trận và nhân ma trận với một số.
+- Tính tổ hợp tuyến tính của các ma trận.
+- Giải một phương trình ma trận đơn giản theo ẩn $\mathbf{X}$.
+
+## Trực giác
+
+Cộng ma trận là cộng "từng ô với ô cùng vị trí", giống như xếp chồng hai bảng số lên nhau. Vì vậy hai bảng phải có cùng hình dạng. Nhân với một số là phóng to hoặc thu nhỏ cả bảng: mọi ô cùng nhân với số đó. Trong xử lý ảnh, hai phép này là trộn hai ảnh và chỉnh độ sáng.
+
+## Định nghĩa
+
+Cho $\mathbf{A}, \mathbf{B} \in \R^{m \times n}$ và số $k$:
+
+$$
+(\mathbf{A}+\mathbf{B})_{ij} = a_{ij} + b_{ij}, \qquad (k\mathbf{A})_{ij} = k\,a_{ij}.
+$$
+
+Đọc bằng lời: cộng các phần tử ở cùng vị trí; nhân mọi phần tử với $k$. Điều kiện: $\mathbf{A}$ và $\mathbf{B}$ **cùng kích thước** (cùng số hàng và cùng số cột). Hiệu $\mathbf{A}-\mathbf{B}$ là $\mathbf{A} + (-1)\mathbf{B}$.
+
+**Tổ hợp tuyến tính** của các ma trận cùng kích thước: $k_1\mathbf{A}_1 + k_2\mathbf{A}_2 + \cdots + k_p\mathbf{A}_p$.
+
+## Ví dụ
+
+### Ví dụ nhỏ: cộng hai ma trận
+
+<ExAddSmall />
+
+### Ví dụ lớn hơn: trừ hai ma trận không vuông
+
+<ExAddLarge />
+
+### Nhân với một số
+
+<ExScale />
+
+### Tổ hợp tuyến tính
+
+<ExLincomb />
+
+## Tính chất
+
+Với các ma trận cùng kích thước:
+
+1. **Giao hoán:** $\mathbf{A}+\mathbf{B} = \mathbf{B}+\mathbf{A}$.
+
+<PropCommute />
+
+2. **Kết hợp:** $(\mathbf{A}+\mathbf{B})+\mathbf{C} = \mathbf{A}+(\mathbf{B}+\mathbf{C})$, nên ta viết $\mathbf{A}+\mathbf{B}+\mathbf{C}$ không cần ngoặc. Tính chất này suy ra từ tính kết hợp của phép cộng số thực áp dụng cho từng phần tử. Kiểm tra bằng số:
+
+<PropAssociative />
+
+3. **Phân phối:** $k(\mathbf{A}+\mathbf{B}) = k\mathbf{A}+k\mathbf{B}$.
+
+<PropDistribute />
+
+4. **Chuyển vị của tổng:** $(\mathbf{A}+\mathbf{B})\T = \mathbf{A}\T+\mathbf{B}\T$.
+
+<PropTransposeSum />
+
+## Lỗi thường gặp
+
+**Lỗi 1: cộng hai ma trận khác kích thước.**
+
+<ExMistakeShape />
+
+**Lỗi 2: quên nhân số vô hướng với một vài phần tử.** $k\mathbf{A}$ nhân $k$ với **mọi** phần tử.
+
+**Lỗi 3: sai dấu khi trừ.** $\mathbf{A}-\mathbf{B}$ trừ từng phần tử; phần tử của $\mathbf{B}$ là số âm thì phép trừ thành phép cộng.
+
+**Lỗi 4: khi giải $\mathbf{A} + k\mathbf{X} = \mathbf{B}$, quên chia cho $k$ ở bước cuối.** Chuyển $\mathbf{A}$ sang vế phải trước, rồi chia **cả** ma trận cho $k$.
+
+## Liên hệ với ML
+
+- **Trộn ảnh (mixup):** tạo mẫu huấn luyện mới bằng $\lambda\mathbf{A} + (1-\lambda)\mathbf{B}$. Ví dụ:
+
+<ExMixup />
+
+- **Cập nhật trọng số** của mạng neural có dạng $\mathbf{W} \leftarrow \mathbf{W} - \eta\,\mathbf{G}$ (trừ đi một bội của gradient), đúng là một tổ hợp tuyến tính các ma trận.
+- **Residual connection** cộng đầu vào với đầu ra của một khối: $\mathbf{X} + f(\mathbf{X})$.
+
+## Tóm tắt
+
+| Phép toán | Quy tắc |
+| --- | --- |
+| Cộng | cùng kích thước; cộng từng phần tử |
+| Nhân vô hướng | nhân mọi phần tử |
+| Giao hoán | $\mathbf{A}+\mathbf{B} = \mathbf{B}+\mathbf{A}$ |
+| Phân phối | $k(\mathbf{A}+\mathbf{B}) = k\mathbf{A}+k\mathbf{B}$ |
+| Chuyển vị | $(\mathbf{A}+\mathbf{B})\T = \mathbf{A}\T+\mathbf{B}\T$ |
+
+<MarkRead client:visible lesson="1.4" />
+
+## Bài tập
+
+<ExercisePlayer
+  client:visible
+  lesson="1.4"
+  types={["mat-add", "mat-scale", "mat-lincomb"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Phép toán trên ma trận: MIT 18.06 (Gilbert Strang), phần mở đầu về ma trận, [ocw.mit.edu](https://ocw.mit.edu).
+- Định nghĩa cộng ma trận và nhân vô hướng, tính chất: *Mathematics for Machine Learning*, mục về ma trận, [mml-book.github.io](https://mml-book.github.io).

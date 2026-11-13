@@ -1,0 +1,100 @@
+---
+title: Jacobian
+description: Ma trận đạo hàm của hàm vector, quy tắc chuỗi dạng ma trận
+lesson: "3.4"
+prerequisites: ["3.3", "1.5"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExJacobian from '../../../generated/lesson-3-4/jacobian.mdx';
+import ExChain from '../../../generated/lesson-3-4/jacobian-chain.mdx';
+import PropLinear from '../../../generated/lesson-3-4/prop-linear-map.mdx';
+import ExMistake from '../../../generated/lesson-3-4/mistake-shape.mdx';
+
+## Mục tiêu
+
+- Tính ma trận Jacobian của một hàm từ $\R^{n}$ vào $\R^{m}$.
+- Biết kích thước và ý nghĩa từng hàng, từng cột của Jacobian.
+- Áp dụng quy tắc chuỗi dạng ma trận cho hàm hợp.
+
+## Trực giác
+
+Hàm một biến có **một** đạo hàm (một số). Hàm $\mathbf{F}$ nhận $n$ biến và cho $m$ đầu ra có $m \times n$ đạo hàm riêng, vì mỗi đầu ra phụ thuộc từng đầu vào. Jacobian xếp tất cả vào một ma trận. Nó là "phép xấp xỉ tuyến tính tốt nhất" của $\mathbf{F}$ quanh một điểm: gần điểm đó $\mathbf{F}$ hành xử như phép nhân với $\mathbf{J}$ (bài 1.11).
+
+## Định nghĩa
+
+Với $\mathbf{F} : \R^{n} \to \R^{m}$, **ma trận Jacobian** $\mathbf{J} \in \R^{m \times n}$:
+
+$$
+J_{ij} = \frac{\partial F_i}{\partial x_j}, \qquad
+\mathbf{J} = \begin{bmatrix} \nabla F_1\T \\ \vdots \\ \nabla F_m\T \end{bmatrix}.
+$$
+
+Đọc bằng lời: hàng $i$ là gradient (viết ngang) của đầu ra thứ $i$; cột $j$ cho biết mọi đầu ra thay đổi thế nào khi chỉ $x_j$ đổi.
+
+**Quy tắc chuỗi dạng ma trận.** Nếu $\mathbf{y} = \mathbf{F}(\mathbf{u})$ và $\mathbf{u} = \mathbf{G}(\mathbf{x})$ thì
+
+$$
+\mathbf{J}_{\mathbf{F}\circ\mathbf{G}}(\mathbf{x}) = \mathbf{J}_{\mathbf{F}}(\mathbf{G}(\mathbf{x}))\;\mathbf{J}_{\mathbf{G}}(\mathbf{x}).
+$$
+
+Đọc bằng lời: Jacobian của hàm hợp là **tích** các Jacobian, với hàm ngoài đứng bên trái. Đây là quy tắc chuỗi một biến (bài 3.2) viết bằng ma trận.
+
+## Ví dụ
+
+### Jacobian của hàm hai biến, hai đầu ra
+
+<ExJacobian />
+
+### Quy tắc chuỗi dạng ma trận
+
+<ExChain />
+
+## Tính chất
+
+- **Hàm tuyến tính** $\mathbf{F}(\mathbf{x}) = \mathbf{W}\mathbf{x} + \mathbf{b}$ có Jacobian không đổi bằng $\mathbf{W}$:
+
+<PropLinear />
+
+- Khi $m = 1$, Jacobian chính là gradient viết dạng vector hàng.
+- Hàm theo từng phần tử ($F_i$ chỉ phụ thuộc $x_i$) có Jacobian **đường chéo**.
+- $|\det\mathbf{J}|$ (khi $m = n$) là hệ số co giãn thể tích cục bộ của phép biến đổi.
+
+## Lỗi thường gặp
+
+**Lỗi 1: sai kích thước Jacobian.**
+
+<ExMistake />
+
+**Lỗi 2: nhân Jacobian sai thứ tự** trong quy tắc chuỗi: hàm ngoài ở bên **trái**.
+
+**Lỗi 3: quên tính tại đúng điểm.** Với hàm phi tuyến, $\mathbf{J}$ thay đổi theo $\mathbf{x}$; khi đề hỏi tại một điểm phải thay số.
+
+**Lỗi 4: nhầm Jacobian với gradient.** Gradient dành cho hàm có đầu ra là **một số**.
+
+## Liên hệ với ML
+
+- **Lớp tuyến tính** $\mathbf{z} = \mathbf{W}\mathbf{x} + \mathbf{b}$ có Jacobian theo $\mathbf{x}$ là $\mathbf{W}$.
+- **Hàm kích hoạt theo từng phần tử** (ReLU, sigmoid) có Jacobian đường chéo với các phần tử $\phi'(z_i)$.
+- **Backpropagation** là việc nhân các Jacobian của từng lớp; trong thực tế ta nhân từ phải sang trái các vector với Jacobian (vector–Jacobian product) để tránh dựng ma trận lớn.
+
+## Tóm tắt
+
+| Nội dung | Quy tắc |
+| --- | --- |
+| Kích thước | $m \times n$ (số đầu ra $\times$ số đầu vào) |
+| Phần tử | $J_{ij} = \partial F_i/\partial x_j$ |
+| Hàm hợp | $\mathbf{J}_{\mathbf{F}}\,\mathbf{J}_{\mathbf{G}}$ |
+| Lớp tuyến tính | $\mathbf{J} = \mathbf{W}$ |
+
+<MarkRead client:visible lesson="3.4" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="calculus" lesson="3.4" types={["jacobian"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Jacobian và quy tắc chuỗi cho hàm vector: *Mathematics for Machine Learning*, chương về giải tích vector, [mml-book.github.io](https://mml-book.github.io).
+- Vector–Jacobian product trong học sâu: *Dive into Deep Learning*, mục về autograd, [d2l.ai](https://d2l.ai).

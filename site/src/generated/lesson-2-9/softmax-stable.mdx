@@ -1,0 +1,21 @@
+```python
+import numpy as np
+
+z = np.array([[1000.0, 1001.0, 1002.0]])
+
+bad = np.exp(z) / np.exp(z).sum(axis=1, keepdims=True)   # e^1000 tràn số
+e = np.exp(z - z.max(axis=1, keepdims=True))             # trừ max trước
+good = e / e.sum(axis=1, keepdims=True)
+
+print(bad)
+print(np.round(good, 6))
+```
+
+Kết quả in ra:
+
+```text
+[[nan nan nan]]
+[[0.090031 0.244728 0.665241]]
+```
+
+Trừ đi giá trị lớn nhất của từng hàng không đổi kết quả softmax (tử và mẫu cùng nhân một hệ số) nhưng tránh tràn số.

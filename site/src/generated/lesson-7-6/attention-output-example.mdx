@@ -1,0 +1,13 @@
+$$
+\mathbf{S} = \ln 2\cdot \begin{bmatrix} 1 & 0 \\ 2 & 1 \end{bmatrix}
+$$
+
+$$
+\mathbf{A} = \mathrm{softmax}(\mathbf{S}) = \begin{bmatrix} \frac{2}{3} & \frac{1}{3} \\ \frac{2}{3} & \frac{1}{3} \end{bmatrix}
+$$
+
+$$
+\mathbf{O} = \mathbf{A}\mathbf{V} = \begin{bmatrix} 2 & 2 \\ 2 & 2 \end{bmatrix}
+$$
+
+Mỗi hàng của $\mathbf{O}$ là trung bình có trọng số các hàng của $\mathbf{V}$; trọng số lớn hơn cho khóa có điểm cao hơn.

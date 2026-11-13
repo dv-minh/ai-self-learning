@@ -1,0 +1,103 @@
+---
+title: Quy tắc chuỗi (chain rule)
+description: Đạo hàm của hàm hợp; nền tảng của backpropagation
+lesson: "3.2"
+prerequisites: ["3.1"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExSimple from '../../../generated/lesson-3-2/chain-simple.mdx';
+import ExNested from '../../../generated/lesson-3-2/chain-nested.mdx';
+import ExSigmoid from '../../../generated/lesson-3-2/chain-sigmoid.mdx';
+import ExLoss from '../../../generated/lesson-3-2/chain-loss.mdx';
+import PropCheck from '../../../generated/lesson-3-2/prop-numeric-check.mdx';
+import ExMistake from '../../../generated/lesson-3-2/mistake-inner.mdx';
+
+## Mục tiêu
+
+- Nhận ra hàm hợp và xác định hàm trong, hàm ngoài.
+- Tính đạo hàm của hàm hợp một, hai và ba tầng.
+- Áp dụng quy tắc chuỗi cho mất mát của một mô hình.
+
+## Trực giác
+
+Nếu $y$ phụ thuộc $u$ và $u$ phụ thuộc $x$, thì thay đổi nhỏ của $x$ làm $u$ đổi một chút, và thay đổi đó làm $y$ đổi tiếp. Tốc độ thay đổi **nhân** lại với nhau: nếu $u$ đổi nhanh gấp $3$ lần $x$ và $y$ đổi nhanh gấp $5$ lần $u$ thì $y$ đổi nhanh gấp $15$ lần $x$. Quy tắc chuỗi chỉ là cách viết chính xác ý này.
+
+## Định nghĩa
+
+Với $y = f(g(x))$:
+
+$$
+\frac{dy}{dx} = f'(g(x))\cdot g'(x).
+$$
+
+Đọc bằng lời: đạo hàm hàm ngoài (tính tại hàm trong, giữ nguyên hàm trong) nhân với đạo hàm của hàm trong. Với ba tầng $y = f(g(h(x)))$: $f'(g(h(x)))\cdot g'(h(x))\cdot h'(x)$.
+
+Viết theo ký hiệu Leibniz: $\dfrac{dy}{dx} = \dfrac{dy}{du}\cdot\dfrac{du}{dx}$ với $u = g(x)$.
+
+## Ví dụ
+
+### Hàm hợp đơn giản
+
+<ExSimple />
+
+### Hàm hợp nhiều tầng
+
+<ExNested />
+
+### Sigmoid
+
+<ExSigmoid />
+
+### Đạo hàm của mất mát theo một tham số
+
+<ExLoss />
+
+## Tính chất
+
+- Quy tắc chuỗi mở rộng cho **bao nhiêu tầng tùy ý**: nhân liên tiếp các đạo hàm từ ngoài vào trong.
+- **Kiểm tra bằng sai phân hữu hạn:** đạo hàm giải tích phải khớp $\dfrac{f(x+h) - f(x-h)}{2h}$ với $h$ nhỏ. Cách kiểm này (gradient checking) dùng trong thực tế để tìm lỗi trong code backpropagation:
+
+<PropCheck />
+
+- Quy tắc chuỗi nhiều biến (bài 3.4) dùng **tích ma trận Jacobian**.
+
+## Lỗi thường gặp
+
+**Lỗi 1: quên đạo hàm của hàm trong.**
+
+<ExMistake />
+
+**Lỗi 2: đạo hàm hàm ngoài tại sai điểm.** $(\sin(2x))' = \cos(2x)\cdot 2$, không phải $\cos(x)\cdot 2$.
+
+**Lỗi 3: nhầm thứ tự tầng.** Hãy xác định hàm ngoài cùng trước (phép tính được thực hiện **cuối**).
+
+**Lỗi 4: áp dụng quy tắc tích khi thực ra là hàm hợp.** $\sin(x^2)$ là hợp của $\sin$ với $x^2$, không phải tích.
+
+## Liên hệ với ML
+
+- **Backpropagation** chính là quy tắc chuỗi áp dụng có hệ thống trên đồ thị tính toán (bài 3.7).
+- **Sigmoid:** $\sigma'(t) = \sigma(t)(1 - \sigma(t))$, thường gặp trong hồi quy logistic và cổng của mạng hồi quy.
+- **Mất mát bình phương** của mô hình $\hat{y} = wx + b$: $\dfrac{d}{dw}\tfrac{1}{2}(wx + b - y)^2 = (wx + b - y)\,x$.
+
+## Tóm tắt
+
+| Dạng | Đạo hàm |
+| --- | --- |
+| $f(g(x))$ | $f'(g(x))\,g'(x)$ |
+| $(ax+b)^n$ | $n a (ax+b)^{n-1}$ |
+| $e^{g(x)}$ | $g'(x)\,e^{g(x)}$ |
+| $\ln g(x)$ | $g'(x)/g(x)$ |
+| $\sigma(t)$ | $\sigma(t)(1-\sigma(t))$ |
+
+<MarkRead client:visible lesson="3.2" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="calculus" lesson="3.2" types={["chain-rule"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Quy tắc chuỗi và gradient của hàm hợp: *Mathematics for Machine Learning*, mục về gradient của hàm nhiều biến và quy tắc chuỗi, [mml-book.github.io](https://mml-book.github.io).
+- Quy tắc chuỗi trong học sâu: *Dive into Deep Learning*, mục về backpropagation, [d2l.ai](https://d2l.ai).

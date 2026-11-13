@@ -1,0 +1,100 @@
+---
+title: Đạo hàm theo vector và ma trận
+description: Gradient của aᵀx, xᵀAx, ‖Ax − b‖² và của mất mát MSE
+lesson: "3.6"
+prerequisites: ["3.3", "3.4", "1.15"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExQuad from '../../../generated/lesson-3-6/grad-quadratic.mdx';
+import ExLs from '../../../generated/lesson-3-6/grad-least-squares.mdx';
+import PropLinear from '../../../generated/lesson-3-6/prop-linear-grad.mdx';
+import ExMistake from '../../../generated/lesson-3-6/mistake-transpose.mdx';
+
+## Mục tiêu
+
+- Dùng các công thức đạo hàm theo vector thay vì tính từng thành phần.
+- Tính gradient của dạng tuyến tính, dạng toàn phương và hàm mất mát bình phương.
+- Rút ra phương trình chuẩn bằng cách đặt gradient bằng $\mathbf{0}$.
+
+## Trực giác
+
+Mất mát của một mô hình có hàng nghìn trọng số không thể đạo hàm riêng từng trọng số bằng tay. Ta viết hàm bằng ký hiệu vector và ma trận rồi dùng các **công thức đạo hàm vector** (giống bảng đạo hàm cơ bản một biến). Chúng đều suy ra được từ đạo hàm riêng, nhưng cho kết quả gọn và tính được cho cả batch bằng phép nhân ma trận.
+
+## Định nghĩa
+
+Gradient theo $\mathbf{x} \in \R^{n}$ của các hàm thường gặp (quy ước gradient là vector cột):
+
+$$
+\nabla_{\mathbf{x}}(\mathbf{a}\T\mathbf{x}) = \mathbf{a}, \qquad
+\nabla_{\mathbf{x}}(\mathbf{x}\T\mathbf{A}\mathbf{x}) = (\mathbf{A} + \mathbf{A}\T)\mathbf{x}, \qquad
+\nabla_{\mathbf{x}}\,\tfrac{1}{2}\lVert\mathbf{A}\mathbf{x} - \mathbf{b}\rVert_2^2 = \mathbf{A}\T(\mathbf{A}\mathbf{x} - \mathbf{b}).
+$$
+
+Đọc bằng lời: gradient của dạng tuyến tính là vector hệ số; của dạng toàn phương là $(\mathbf{A}+\mathbf{A}\T)\mathbf{x}$, bằng $2\mathbf{A}\mathbf{x}$ khi $\mathbf{A}$ đối xứng; của bình phương phần dư là $\mathbf{A}\T$ nhân phần dư.
+
+**Mất mát MSE** $L(\mathbf{w}) = \dfrac{1}{N}\lVert\mathbf{X}\mathbf{w} - \mathbf{y}\rVert_2^2$ có
+
+$$
+\nabla_{\mathbf{w}}L = \frac{2}{N}\mathbf{X}\T(\mathbf{X}\mathbf{w} - \mathbf{y}).
+$$
+
+Đặt $\nabla L = \mathbf{0}$ cho $\mathbf{X}\T\mathbf{X}\mathbf{w} = \mathbf{X}\T\mathbf{y}$: **phương trình chuẩn** (bài 1.15).
+
+## Ví dụ
+
+### Dạng toàn phương
+
+<ExQuad />
+
+### Bình phương tối thiểu và phương trình chuẩn
+
+<ExLs />
+
+## Tính chất
+
+- **Dạng tuyến tính:** $\nabla(\mathbf{a}\T\mathbf{x}) = \mathbf{a}$ không phụ thuộc $\mathbf{x}$. Kiểm tra:
+
+<PropLinear />
+
+- Hessian của $\mathbf{x}\T\mathbf{A}\mathbf{x}$ là $\mathbf{A} + \mathbf{A}\T$; của $\frac{1}{2}\lVert\mathbf{A}\mathbf{x} - \mathbf{b}\rVert^2$ là $\mathbf{A}\T\mathbf{A}$ (bán xác định dương).
+- **Kiểm tra kích thước:** gradient theo $\mathbf{x}$ luôn có cùng kích thước với $\mathbf{x}$; dùng để phát hiện công thức sai.
+
+## Lỗi thường gặp
+
+**Lỗi 1: dùng $2\mathbf{A}\mathbf{x}$ cho ma trận không đối xứng.**
+
+<ExMistake />
+
+**Lỗi 2: quên chuyển vị** ở $\mathbf{A}\T(\mathbf{A}\mathbf{x} - \mathbf{b})$: kích thước sẽ không khớp.
+
+**Lỗi 3: quên hệ số $\frac{1}{2}$ hoặc $\frac{2}{N}$.** Hệ số ở hàm mất mát nhân thẳng vào gradient.
+
+**Lỗi 4: nhầm quy ước hàng/cột.** Trong tài liệu này gradient luôn là vector **cột**.
+
+## Liên hệ với ML
+
+- **Hồi quy tuyến tính** và **ridge**: gradient $\frac{2}{N}\mathbf{X}\T(\mathbf{X}\mathbf{w}-\mathbf{y}) + 2\lambda\mathbf{w}$.
+- **Cập nhật cho cả batch** là một phép nhân ma trận $\mathbf{X}\T\mathbf{r}$, không cần vòng lặp qua mẫu (liên hệ bài 2.9).
+- Mọi công thức ở đây là trường hợp riêng của **backpropagation** cho lớp tuyến tính.
+
+## Tóm tắt
+
+| Hàm | Gradient |
+| --- | --- |
+| $\mathbf{a}\T\mathbf{x}$ | $\mathbf{a}$ |
+| $\mathbf{x}\T\mathbf{A}\mathbf{x}$ | $(\mathbf{A}+\mathbf{A}\T)\mathbf{x}$ |
+| $\frac{1}{2}\lVert\mathbf{A}\mathbf{x}-\mathbf{b}\rVert^2$ | $\mathbf{A}\T(\mathbf{A}\mathbf{x}-\mathbf{b})$ |
+| $\frac{1}{N}\lVert\mathbf{X}\mathbf{w}-\mathbf{y}\rVert^2$ | $\frac{2}{N}\mathbf{X}\T(\mathbf{X}\mathbf{w}-\mathbf{y})$ |
+
+<MarkRead client:visible lesson="3.6" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="calculus" lesson="3.6" types={["vec-deriv"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Gradient theo vector và ma trận, các đồng nhất thức: *Mathematics for Machine Learning*, chương về giải tích vector, [mml-book.github.io](https://mml-book.github.io).
+- Hồi quy tuyến tính và phương trình chuẩn: bài 1.15 và *Mathematics for Machine Learning*, chương về hồi quy tuyến tính.

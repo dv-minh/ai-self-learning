@@ -1,0 +1,134 @@
+---
+title: Hệ phương trình và khử Gauss
+description: Ma trận mở rộng, biến đổi sơ cấp, bậc thang, RREF, nghiệm duy nhất, vô số nghiệm, vô nghiệm
+lesson: "1.7"
+prerequisites: ["1.5"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExRowops from '../../../generated/lesson-1-7/rowops.mdx';
+import ExUnique from '../../../generated/lesson-1-7/unique.mdx';
+import ExInfinite from '../../../generated/lesson-1-7/infinite.mdx';
+import ExInconsistent from '../../../generated/lesson-1-7/inconsistent.mdx';
+import ExRefVsRref from '../../../generated/lesson-1-7/ref-vs-rref.mdx';
+import ExMistakeAug from '../../../generated/lesson-1-7/mistake-aug.mdx';
+import PropSameSolution from '../../../generated/lesson-1-7/prop-same-solution.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Viết hệ phương trình tuyến tính dưới dạng $\mathbf{A}\mathbf{x} = \mathbf{b}$ và ma trận mở rộng.
+- Thực hiện ba phép biến đổi hàng sơ cấp.
+- Đưa ma trận về dạng bậc thang (REF) và bậc thang rút gọn (RREF).
+- Phân loại hệ: nghiệm duy nhất, vô số nghiệm, vô nghiệm, và viết nghiệm tổng quát.
+
+## Trực giác
+
+Giải hệ phương trình bằng cách "khử ẩn" mà bạn đã quen từ phổ thông chính là thuật toán khử Gauss, chỉ là viết gọn bằng ma trận. Mỗi bước, ta cộng một bội của phương trình này vào phương trình kia để làm một ẩn biến mất ở các phương trình còn lại. Những phép làm này không đổi tập nghiệm của hệ, nên khi hệ đã đủ đơn giản ta đọc nghiệm ra trực tiếp.
+
+## Định nghĩa
+
+Hệ $m$ phương trình, $n$ ẩn viết gọn là $\mathbf{A}\mathbf{x} = \mathbf{b}$ với $\mathbf{A} \in \R^{m \times n}$ là ma trận hệ số, $\mathbf{x} \in \R^{n}$ là ẩn, $\mathbf{b} \in \R^{m}$ là vế phải. **Ma trận mở rộng (augmented matrix)** là $[\mathbf{A} \mid \mathbf{b}]$, ghép $\mathbf{b}$ vào làm cột cuối, ngăn bằng vạch đứng.
+
+**Ba phép biến đổi hàng sơ cấp (elementary row operations):**
+
+$$
+R_i \leftrightarrow R_j, \qquad R_i \leftarrow k R_i \;(k \neq 0), \qquad R_i \leftarrow R_i + k R_j.
+$$
+
+Đọc bằng lời: đổi chỗ hai hàng; nhân một hàng với số khác $0$; cộng vào một hàng một bội của hàng khác. Mỗi phép tác động lên **cả hàng của ma trận mở rộng**, kể cả cột vế phải.
+
+**Dạng bậc thang (row echelon form, REF):** mọi hàng toàn $0$ nằm dưới cùng, và phần tử khác $0$ đầu tiên (pivot) của mỗi hàng nằm bên phải pivot của hàng trên. **Dạng bậc thang rút gọn (reduced row echelon form, RREF)** có thêm: mọi pivot bằng $1$ và là phần tử khác $0$ duy nhất trong cột của nó. RREF của một ma trận là **duy nhất**; REF thì không (tùy cách khử).
+
+**Khử Gauss (Gaussian elimination)** đưa về REF; **khử Gauss–Jordan** đưa tiếp về RREF.
+
+**Phân loại nghiệm.** Đặt $r = \rank(\mathbf{A})$ và $r' = \rank([\mathbf{A} \mid \mathbf{b}])$:
+
+- $r < r'$: **vô nghiệm** (xuất hiện hàng dạng $0 = c$ với $c \neq 0$).
+- $r = r' = n$: **nghiệm duy nhất**.
+- $r = r' < n$: **vô số nghiệm**, với $n - r$ ẩn tự do.
+
+Đọc bằng lời: hạng là số pivot. So sánh số pivot của $\mathbf{A}$ với số pivot của ma trận mở rộng và với số ẩn.
+
+**Nghiệm tổng quát** khi vô số nghiệm có dạng $\mathbf{x} = \mathbf{x}_p + t_1\mathbf{v}_1 + \cdots + t_{n-r}\mathbf{v}_{n-r}$: một nghiệm riêng $\mathbf{x}_p$ cộng tổ hợp tuyến tính các vector hướng (một vector cho mỗi ẩn tự do).
+
+## Ví dụ
+
+### Các phép biến đổi hàng
+
+<ExRowops />
+
+### Hệ có nghiệm duy nhất
+
+<ExUnique />
+
+### Hệ có vô số nghiệm
+
+<ExInfinite />
+
+### Hệ vô nghiệm
+
+<ExInconsistent />
+
+### REF và RREF của cùng một ma trận
+
+<ExRefVsRref />
+
+## Tính chất
+
+1. **Phép biến đổi hàng không đổi tập nghiệm.** Hai hệ có ma trận mở rộng biến đổi được cho nhau bằng phép biến đổi hàng có cùng tập nghiệm. Ví dụ:
+
+<PropSameSolution />
+
+2. **RREF là duy nhất:** cùng một ma trận luôn cho cùng một RREF, bất kể thứ tự các phép khử.
+3. **Số ẩn tự do bằng số ẩn trừ hạng:** $n - r$.
+4. **Hệ thuần nhất $\mathbf{A}\mathbf{x} = \mathbf{0}$ luôn có nghiệm** $\mathbf{x} = \mathbf{0}$, nên chỉ có hai khả năng: nghiệm duy nhất (chỉ $\mathbf{0}$) hoặc vô số nghiệm.
+
+## Lỗi thường gặp
+
+**Lỗi 1: chỉ biến đổi vế trái.**
+
+<ExMistakeAug />
+
+**Lỗi 2: nhầm tên phép biến đổi.** Ở $R_i \leftarrow R_i + kR_j$, hàng bị thay đổi là $R_i$, còn $R_j$ giữ nguyên.
+
+**Lỗi 3: kết luận "nghiệm duy nhất" chỉ vì có hàng $0 = 0$.** Hàng toàn $0$ (kể cả vế phải) không gây vô nghiệm, nhưng nó có thể làm giảm hạng và dẫn tới vô số nghiệm. Chỉ hàng $0 = c$ với $c \neq 0$ mới gây vô nghiệm.
+
+**Lỗi 4: quên đổi dấu hoặc sai số học khi khử.** Sau mỗi bước hãy thế thử một phương trình gốc để kiểm tra.
+
+## Liên hệ với ML
+
+- **Hồi quy tuyến tính** quy về giải một hệ (phương trình chuẩn, bài 1.15). Hệ có nhiều phương trình hơn ẩn thường **vô nghiệm** chính xác, nên ta tìm nghiệm xấp xỉ tốt nhất thay vì nghiệm đúng.
+- **Quá tham số hóa:** khi số ẩn nhiều hơn số phương trình, hệ có vô số nghiệm; điều này là cơ sở để hiểu vì sao regularization chọn một nghiệm nhỏ nhất trong vô số nghiệm.
+- **Thuật toán khử Gauss** là thứ chạy bên dưới các hàm giải hệ như `np.linalg.solve` (Phần 2).
+
+## Tóm tắt
+
+| Nội dung | Quy tắc |
+| --- | --- |
+| Hệ | $\mathbf{A}\mathbf{x} = \mathbf{b}$, ma trận mở rộng $[\mathbf{A} \mid \mathbf{b}]$ |
+| Phép biến đổi | đổi hàng, nhân hàng, cộng bội của hàng khác |
+| RREF | pivot $=1$, cột pivot chỉ có một số khác $0$; duy nhất |
+| Vô nghiệm | $\rank(\mathbf{A}) < \rank([\mathbf{A} \mid \mathbf{b}])$ |
+| Duy nhất | $\rank(\mathbf{A}) = \rank([\mathbf{A} \mid \mathbf{b}]) = n$ |
+| Vô số | cùng hạng nhưng nhỏ hơn $n$; $n - r$ ẩn tự do |
+
+<MarkRead client:visible lesson="1.7" />
+
+## Bài tập
+
+Bài tập "nhập nghiệm tổng quát" yêu cầu một nghiệm riêng và các vector hướng; mọi lựa chọn đúng đều được chấp nhận.
+
+<ExercisePlayer
+  client:visible
+  lesson="1.7"
+  types={["rowop-apply", "ref", "rref", "solve-unique", "solve-param", "classify-system"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Khử Gauss, ma trận mở rộng, RREF, nghiệm tổng quát: MIT 18.06 (Gilbert Strang), phần về khử và giải $\mathbf{A}\mathbf{x}=\mathbf{b}$, [ocw.mit.edu](https://ocw.mit.edu).
+- Hệ phương trình tuyến tính, dạng bậc thang, nghiệm riêng và nghiệm tổng quát: *Mathematics for Machine Learning*, mục về giải hệ phương trình tuyến tính, [mml-book.github.io](https://mml-book.github.io).

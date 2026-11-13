@@ -1,0 +1,9 @@
+$$
+f(x) = x^2,\quad x_{t+1} = x_t - \eta\cdot 2x_t = (1 - 2\eta)\,x_t,\quad x_0 = 1
+$$
+
+$$
+\begin{array}{ccccccc} \eta & r = 1-2\eta & x_0 & x_1 & x_2 & x_3 & x_4 \\ \hline \frac{1}{10} & \frac{4}{5} & 1 & \frac{4}{5} & \frac{16}{25} & \frac{64}{125} & \frac{256}{625} \\ \frac{1}{2} & 0 & 1 & 0 & 0 & 0 & 0 \\ 1 & -1 & 1 & -1 & 1 & -1 & 1 \\ \frac{3}{2} & -2 & 1 & -2 & 4 & -8 & 16 \end{array}
+$$
+
+$\eta$ nhỏ: hội tụ chậm; $\eta = 1/2$: về đúng $0$ chỉ sau một bước; $\eta = 1$: nhảy qua lại giữa $1$ và $-1$ mãi mãi; $\eta = 3/2$: $|r| > 1$ nên phân kỳ.

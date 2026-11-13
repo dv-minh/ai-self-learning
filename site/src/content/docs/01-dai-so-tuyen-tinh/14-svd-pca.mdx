@@ -1,0 +1,155 @@
+---
+title: SVD, xấp xỉ hạng thấp, PCA
+description: Phân tích giá trị suy biến, xấp xỉ hạng thấp (nền của LoRA), phân tích thành phần chính qua ma trận hiệp phương sai
+lesson: "1.14"
+prerequisites: ["1.10", "1.12", "1.13"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExSvd from '../../../generated/lesson-1-14/svd.mdx';
+import ExSvdRect from '../../../generated/lesson-1-14/svd-rect.mdx';
+import ExLowRank from '../../../generated/lesson-1-14/low-rank.mdx';
+import ExPca from '../../../generated/lesson-1-14/pca.mdx';
+import ExLoraCount from '../../../generated/lesson-1-14/lora-count.mdx';
+import PropFrobenius from '../../../generated/lesson-1-14/prop-frobenius.mdx';
+import PropRank from '../../../generated/lesson-1-14/prop-rank.mdx';
+import PropOrder from '../../../generated/lesson-1-14/prop-order.mdx';
+import ExMistakeEig from '../../../generated/lesson-1-14/mistake-eig.mdx';
+import ExMistakeCenter from '../../../generated/lesson-1-14/mistake-center.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Hiểu và tính giá trị suy biến (singular value) của một ma trận nhỏ.
+- Dùng SVD để tạo xấp xỉ hạng thấp tốt nhất và tính sai số của nó.
+- Thực hiện các bước của PCA trên một tập dữ liệu nhỏ.
+- Hiểu vì sao LoRA tiết kiệm tham số.
+
+## Trực giác
+
+Mọi ma trận, vuông hay không, đều có thể xem như ba bước liên tiếp: **xoay** (hoặc phản xạ) bằng $\mathbf{V}\T$, **co giãn dọc các trục** bằng $\boldsymbol{\Sigma}$, rồi lại **xoay** bằng $\mathbf{U}$. Các hệ số co giãn $\sigma_1 \ge \sigma_2 \ge \cdots$ là các giá trị suy biến, cho biết mỗi hướng "quan trọng" đến mức nào. Nếu một số giá trị rất nhỏ, bỏ những hướng đó đi chỉ làm mất rất ít thông tin: đó là **nén bằng xấp xỉ hạng thấp**.
+
+PCA dùng đúng ý tưởng này cho dữ liệu: tìm các hướng mà dữ liệu biến thiên nhiều nhất, rồi giữ lại vài hướng đầu.
+
+## Định nghĩa
+
+**SVD (singular value decomposition).** Mọi ma trận $\mathbf{A} \in \R^{m \times n}$ có thể viết
+
+$$
+\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}\T = \sum_{i=1}^{r}\sigma_i\,\mathbf{u}_i\mathbf{v}_i\T,
+$$
+
+trong đó $\mathbf{U} \in \R^{m \times m}$ và $\mathbf{V} \in \R^{n \times n}$ trực giao, $\boldsymbol{\Sigma} \in \R^{m \times n}$ có các giá trị suy biến $\sigma_1 \ge \sigma_2 \ge \cdots \ge 0$ trên đường chéo, và $r = \rank(\mathbf{A})$ là số giá trị khác $0$. Đọc bằng lời: $\mathbf{A}$ là tổng của $r$ ma trận hạng $1$ (tích ngoài), mỗi ma trận được "cân" bởi một giá trị suy biến.
+
+Các giá trị suy biến là căn bậc hai của trị riêng của $\mathbf{A}\T\mathbf{A}$ (hoặc $\mathbf{A}\mathbf{A}\T$ cho các trị riêng khác $0$): $\sigma_i = \sqrt{\lambda_i(\mathbf{A}\T\mathbf{A})}$.
+
+**Xấp xỉ hạng thấp (Eckart–Young).** Xấp xỉ hạng $k$ tốt nhất (theo chuẩn Frobenius) là
+
+$$
+\mathbf{A}_k = \sum_{i=1}^{k}\sigma_i\mathbf{u}_i\mathbf{v}_i\T, \qquad \norm{\mathbf{A} - \mathbf{A}_k}_F^2 = \sum_{i=k+1}^{r}\sigma_i^2.
+$$
+
+Đọc bằng lời: giữ $k$ giá trị suy biến lớn nhất; sai số bình phương bằng tổng bình phương các giá trị bị bỏ.
+
+**PCA (principal component analysis).** Với ma trận dữ liệu $\mathbf{X} \in \R^{n \times d}$ ($n$ mẫu, mỗi hàng là một mẫu):
+
+1. Tính vector trung bình $\bar{\mathbf{x}}$ và căn giữa: $\mathbf{X}_c = \mathbf{X} - \mathbf{1}\bar{\mathbf{x}}\T$.
+2. Ma trận hiệp phương sai mẫu: $\mathbf{C} = \dfrac{1}{n-1}\mathbf{X}_c\T\mathbf{X}_c$.
+3. Trị riêng $\lambda_1 \ge \lambda_2 \ge \cdots$ của $\mathbf{C}$ là phương sai dọc theo các thành phần chính; vector riêng là hướng của chúng.
+4. Tỉ lệ phương sai giải thích bởi thành phần thứ $i$: $\lambda_i / \sum_j\lambda_j$.
+
+PCA và SVD liên hệ chặt: các giá trị suy biến của $\mathbf{X}_c$ thỏa $\lambda_i = \sigma_i^2/(n-1)$.
+
+**LoRA (low-rank adaptation).** Thay vì cập nhật cả $\mathbf{W} \in \R^{d \times k}$, ta học một cập nhật hạng thấp $\Delta\mathbf{W} = \mathbf{B}\mathbf{A}$ với $\mathbf{B} \in \R^{d \times r}$, $\mathbf{A} \in \R^{r \times k}$ và $r \ll \min(d, k)$, nên số tham số giảm từ $dk$ xuống $r(d+k)$.
+
+## Ví dụ
+
+### SVD của ma trận $2\times 2$
+
+<ExSvd />
+
+### SVD của ma trận không vuông
+
+<ExSvdRect />
+
+### Xấp xỉ hạng thấp
+
+<ExLowRank />
+
+### PCA từng bước
+
+<ExPca />
+
+### Số tham số của LoRA
+
+<ExLoraCount />
+
+## Tính chất
+
+1. **Chuẩn Frobenius:** $\norm{\mathbf{A}}_F^2 = \sum_{ij}a_{ij}^2 = \sum_i\sigma_i^2$.
+
+<PropFrobenius />
+
+2. **Hạng bằng số giá trị suy biến khác $0$.**
+
+<PropRank />
+
+3. **Giá trị suy biến không âm và xếp giảm dần.**
+
+<PropOrder />
+
+4. **Xấp xỉ hạng thấp tốt nhất** (Eckart–Young): không có ma trận hạng $k$ nào gần $\mathbf{A}$ hơn $\mathbf{A}_k$ theo chuẩn Frobenius (xem ví dụ xấp xỉ hạng thấp ở trên, nơi sai số khớp công thức).
+5. **Các cột của $\mathbf{U}$ và $\mathbf{V}$ trực giao đôi một**, nên mỗi số hạng $\sigma_i\mathbf{u}_i\mathbf{v}_i\T$ độc lập với các số hạng khác.
+
+## Lỗi thường gặp
+
+**Lỗi 1: nhầm trị riêng của $\mathbf{A}$ với giá trị suy biến.**
+
+<ExMistakeEig />
+
+**Lỗi 2: quên căn giữa dữ liệu khi làm PCA.**
+
+<ExMistakeCenter />
+
+**Lỗi 3: quên chia cho $n-1$** (hoặc dùng $n$ mà không nói rõ quy ước). Bài tập ở đây quy ước chia cho $n-1$ (hiệp phương sai mẫu).
+
+**Lỗi 4: quên bỏ phần chuyển vị của $\mathbf{V}$** khi ghép $\mathbf{U}\boldsymbol{\Sigma}\mathbf{V}\T$: $\mathbf{V}$ chứa vector riêng ở cột, nhưng công thức dùng $\mathbf{V}\T$.
+
+## Liên hệ với ML
+
+- **PCA** giảm chiều, khử nhiễu và trực quan hóa dữ liệu; thường kèm theo tỉ lệ phương sai giải thích để chọn số thành phần giữ lại.
+- **LoRA** và nhiều kỹ thuật nén mô hình (nén ma trận trọng số, ma trận nhúng) dựa vào xấp xỉ hạng thấp.
+- **Hệ gợi ý** phân tích ma trận người dùng–sản phẩm thành các thừa số hạng thấp.
+- **Số điều kiện** (tỉ số $\sigma_1/\sigma_r$) đo độ nhạy của bài toán số; giá trị suy biến nhỏ làm bài toán bất ổn.
+
+## Tóm tắt
+
+| Nội dung | Công thức |
+| --- | --- |
+| SVD | $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}\T = \sum_i\sigma_i\mathbf{u}_i\mathbf{v}_i\T$ |
+| Giá trị suy biến | $\sigma_i = \sqrt{\lambda_i(\mathbf{A}\T\mathbf{A})}$ |
+| Xấp xỉ hạng $k$ | $\mathbf{A}_k = \sum_{i \le k}\sigma_i\mathbf{u}_i\mathbf{v}_i\T$ |
+| Sai số | $\norm{\mathbf{A}-\mathbf{A}_k}_F^2 = \sum_{i>k}\sigma_i^2$ |
+| PCA | trị riêng của $\frac{1}{n-1}\mathbf{X}_c\T\mathbf{X}_c$ |
+| LoRA | $dk \to r(d+k)$ tham số |
+
+<MarkRead client:visible lesson="1.14" />
+
+## Bài tập
+
+Một số bài yêu cầu nhập số thập phân vì đáp án vô tỉ; đề nêu rõ độ chính xác cần thiết.
+
+<ExercisePlayer
+  client:visible
+  lesson="1.14"
+  types={["svd-small", "low-rank", "pca-steps"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- SVD, giá trị suy biến, xấp xỉ hạng thấp: MIT 18.06 (Gilbert Strang), bài giảng về SVD, [ocw.mit.edu](https://ocw.mit.edu).
+- SVD, xấp xỉ hạng thấp (định lý Eckart–Young), PCA: *Mathematics for Machine Learning*, chương về phân rã ma trận và chương về giảm chiều bằng PCA, [mml-book.github.io](https://mml-book.github.io).
+- LoRA: bài báo gốc "LoRA: Low-Rank Adaptation of Large Language Models" (Hu và cộng sự).

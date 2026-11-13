@@ -1,0 +1,101 @@
+---
+title: Pooling và trường tiếp nhận
+description: Max, average và global pooling; trường tiếp nhận của chồng lớp tích chập
+lesson: "8.2"
+prerequisites: ["8.1"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExMax from '../../../generated/lesson-8-2/maxpool-example.mdx';
+import ExAvg from '../../../generated/lesson-8-2/avgpool-example.mdx';
+import ExRf from '../../../generated/lesson-8-2/receptive-field-example.mdx';
+import PropRf from '../../../generated/lesson-8-2/prop-two-3x3.mdx';
+import ExMistake from '../../../generated/lesson-8-2/mistake-pool-params.mdx';
+
+## Mục tiêu
+
+- Tính max pooling, average pooling và global average pooling.
+- Tính kích thước đầu ra của pooling.
+- Tính trường tiếp nhận (receptive field) của một chồng lớp tích chập có stride và dilation.
+
+## Trực giác
+
+Sau mỗi bước tích chập, ta không cần biết đặc trưng nằm ở vị trí chính xác đến từng pixel; chỉ cần biết nó **có xuất hiện quanh đó**. **Pooling** gộp mỗi cửa sổ nhỏ thành một số, vừa giảm kích thước (nhanh hơn, ít bộ nhớ hơn) vừa tạo tính bất biến với dịch chuyển nhỏ. **Trường tiếp nhận** của một nơ-ron là vùng ảnh đầu vào ảnh hưởng đến nó; càng đi sâu và càng stride lớn thì trường tiếp nhận càng rộng, nên các lớp sâu "nhìn" được vật thể lớn.
+
+## Định nghĩa
+
+- **Max pooling** cửa sổ $k\times k$, stride $s$: lấy giá trị lớn nhất mỗi cửa sổ. **Average pooling:** lấy trung bình.
+- Cạnh đầu ra: $\lfloor (n - k)/s \rfloor + 1$. Pooling **không có tham số** và giữ nguyên số kênh.
+- **Global average pooling (GAP):** trung bình toàn bộ $H\times W$ của mỗi kênh, cho vector $C$ chiều (thay lớp làm phẳng đắt đỏ trước bộ phân loại).
+
+**Trường tiếp nhận:** bắt đầu $r = 1$, bước nhảy $j = 1$ (khoảng cách giữa hai nơ-ron kề nhau trong đầu vào). Với mỗi lớp (kernel $k$, stride $s$, dilation $d$):
+
+$$
+r \leftarrow r + d(k - 1)\,j,\qquad j \leftarrow j\,s.
+$$
+
+Đọc bằng lời: mỗi lớp mở rộng trường tiếp nhận thêm $d(k-1)$ bước của lớp trước, quy ra đơn vị ảnh đầu vào nhờ $j$.
+
+## Ví dụ
+
+### Max pooling
+
+<ExMax />
+
+### Average pooling
+
+<ExAvg />
+
+### Trường tiếp nhận
+
+<ExRf />
+
+## Tính chất
+
+- **Hai lớp $3\times 3$ có cùng trường tiếp nhận với một lớp $5\times 5$** nhưng ít tham số hơn:
+
+<PropRf />
+
+- **Bất biến tịnh tiến nhỏ:** dịch đặc trưng trong cửa sổ pooling không đổi đầu ra max pooling.
+- **Max pooling** truyền gradient chỉ về vị trí lớn nhất (các vị trí khác nhận gradient $0$); average pooling chia đều.
+- Nhiều kiến trúc hiện đại thay pooling bằng conv stride $2$ (học được cách giảm kích thước).
+
+## Lỗi thường gặp
+
+**Lỗi 1: coi pooling có tham số.**
+
+<ExMistake />
+
+**Lỗi 2: dùng stride mặc định sai.** Trong PyTorch, `MaxPool2d(k)` có stride mặc định bằng $k$.
+
+**Lỗi 3: tính trường tiếp nhận bỏ qua bước nhảy $j$** khi có stride $>1$ ở lớp trước.
+
+**Lỗi 4: quên $\lfloor\cdot\rfloor$** khi kích thước không chia hết.
+
+## Liên hệ với ML
+
+- **Phân loại ảnh:** GAP rồi lớp tuyến tính ở cuối (ResNet).
+- **Phát hiện và phân đoạn** cần trường tiếp nhận đủ lớn để thấy vật thể và ngữ cảnh.
+- **Vision Transformer** có trường tiếp nhận toàn ảnh ngay từ lớp đầu nhờ attention (bài 8.4).
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Pooling | gộp cửa sổ; không tham số; giữ số kênh |
+| Cạnh ra | $\lfloor (n - k)/s \rfloor + 1$ |
+| GAP | trung bình mỗi kênh $\to$ vector $C$ chiều |
+| Trường tiếp nhận | $r \leftarrow r + d(k-1)j$, $j \leftarrow js$ |
+
+<MarkRead client:visible lesson="8.2" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="computer-vision" lesson="8.2" types={["pool2d", "receptive-field"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- CS231n, mục lớp pooling, [cs231n.github.io/convolutional-networks](https://cs231n.github.io/convolutional-networks/).
+- Araujo, Norris và Sim (2019), "Computing Receptive Fields of Convolutional Neural Networks", *Distill*, [distill.pub/2019/computing-receptive-fields](https://distill.pub/2019/computing-receptive-fields/).
+- Lin, Chen và Yan (2014), "Network in Network" (global average pooling), [arxiv.org/abs/1312.4400](https://arxiv.org/abs/1312.4400).

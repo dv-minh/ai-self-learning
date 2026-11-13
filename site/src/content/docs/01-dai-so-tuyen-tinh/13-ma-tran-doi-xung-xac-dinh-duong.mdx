@@ -1,0 +1,149 @@
+---
+title: Ma trận đối xứng và xác định dương
+description: Trị riêng thực, vector riêng trực giao, dạng toàn phương, xác định dương (nền của hiệp phương sai và Hessian)
+lesson: "1.13"
+prerequisites: ["1.6", "1.12"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExSymEig from '../../../generated/lesson-1-13/sym-eig.mdx';
+import ExSpectral from '../../../generated/lesson-1-13/spectral.mdx';
+import ExQuad from '../../../generated/lesson-1-13/quad.mdx';
+import ExPosdefPd from '../../../generated/lesson-1-13/posdef-pd.mdx';
+import ExPosdefIndef from '../../../generated/lesson-1-13/posdef-indef.mdx';
+import PropGram from '../../../generated/lesson-1-13/prop-gram.mdx';
+import PropReal from '../../../generated/lesson-1-13/prop-real.mdx';
+import PropDiagPd from '../../../generated/lesson-1-13/prop-diag-pd.mdx';
+import ExMistakeDiagPositive from '../../../generated/lesson-1-13/mistake-diag-positive.mdx';
+import ExMistakeNonsym from '../../../generated/lesson-1-13/mistake-nonsym.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Tính trị riêng và vector riêng của ma trận đối xứng và biết chúng có tính chất đặc biệt.
+- Tính dạng toàn phương $\mathbf{x}\T\mathbf{A}\mathbf{x}$.
+- Phân loại ma trận đối xứng: xác định dương, bán xác định dương, xác định âm, không xác định.
+- Đọc hiểu ý nghĩa của các khái niệm này trong hiệp phương sai và Hessian.
+
+## Trực giác
+
+Ma trận đối xứng là loại "hiền" nhất: nó luôn có đủ trục riêng thực, các trục đó vuông góc nhau, và phép biến đổi của nó chỉ đơn thuần co giãn dọc theo các trục vuông góc ấy. Dạng toàn phương $\mathbf{x}\T\mathbf{A}\mathbf{x}$ là phiên bản nhiều chiều của hàm bậc hai $ax^2$: nó cong lên như cái bát (xác định dương), cong xuống như cái mũ (xác định âm), hoặc cong lên theo hướng này nhưng xuống theo hướng khác như yên ngựa (không xác định). Điều đó quyết định điểm dừng của một hàm mất mát là cực tiểu hay không.
+
+## Định nghĩa
+
+**Định lý phổ (spectral theorem) cho ma trận đối xứng.** Nếu $\mathbf{A} = \mathbf{A}\T$ (thực) thì:
+
+- mọi trị riêng của $\mathbf{A}$ là số thực;
+- các vector riêng ứng với các trị riêng khác nhau vuông góc với nhau;
+- $\mathbf{A}$ chéo hóa được bằng một ma trận trực giao: $\mathbf{A} = \mathbf{Q}\mathbf{D}\mathbf{Q}\T$ với $\mathbf{Q}\T\mathbf{Q} = \mathbf{I}$.
+
+Đọc bằng lời: có thể chọn các cột của $\mathbf{Q}$ là vector riêng **đơn vị** và đôi một vuông góc, nên nghịch đảo của $\mathbf{Q}$ chỉ là chuyển vị.
+
+**Dạng toàn phương (quadratic form):**
+
+$$
+q(\mathbf{x}) = \mathbf{x}\T\mathbf{A}\mathbf{x} = \sum_{i,j} a_{ij}x_ix_j.
+$$
+
+Đọc bằng lời: một biểu thức bậc hai trong các thành phần của $\mathbf{x}$. Chỉ phần đối xứng $\frac{1}{2}(\mathbf{A}+\mathbf{A}\T)$ của $\mathbf{A}$ đóng góp, nên ta thường chỉ xét $\mathbf{A}$ đối xứng.
+
+**Phân loại.** Với $\mathbf{A}$ đối xứng:
+
+| Loại | Điều kiện trên $\mathbf{x} \neq \mathbf{0}$ | Trị riêng |
+| --- | --- | --- |
+| Xác định dương (positive definite) | $\mathbf{x}\T\mathbf{A}\mathbf{x} > 0$ | tất cả dương |
+| Bán xác định dương | $\mathbf{x}\T\mathbf{A}\mathbf{x} \ge 0$ | tất cả không âm |
+| Xác định âm | $\mathbf{x}\T\mathbf{A}\mathbf{x} < 0$ | tất cả âm |
+| Không xác định (indefinite) | nhận cả dấu dương và âm | có trị riêng dương và âm |
+
+**Tiêu chuẩn Sylvester.** $\mathbf{A}$ xác định dương khi và chỉ khi mọi định thức con chính (định thức của góc trên trái cỡ $1\times 1, 2\times 2, \dots$) đều dương.
+
+## Ví dụ
+
+### Trị riêng và vector riêng của ma trận đối xứng
+
+<ExSymEig />
+
+### Phân rã phổ
+
+<ExSpectral />
+
+### Dạng toàn phương
+
+<ExQuad />
+
+### Ma trận xác định dương
+
+<ExPosdefPd />
+
+### Ma trận không xác định
+
+<ExPosdefIndef />
+
+## Tính chất
+
+1. **Ma trận Gram $\mathbf{X}\T\mathbf{X}$ luôn bán xác định dương** (và đối xứng):
+
+<PropGram />
+
+2. **Trị riêng của ma trận đối xứng là số thực:**
+
+<PropReal />
+
+3. **Ma trận đường chéo xác định dương khi mọi phần tử đường chéo dương:**
+
+<PropDiagPd />
+
+4. **Xác định dương $\Rightarrow$ khả nghịch** (không có trị riêng $0$), và nghịch đảo cũng xác định dương.
+5. **Tổng của hai ma trận xác định dương là xác định dương.**
+
+## Lỗi thường gặp
+
+**Lỗi 1: chỉ nhìn đường chéo.**
+
+<ExMistakeDiagPositive />
+
+**Lỗi 2: áp dụng kết luận "trị riêng thực" cho ma trận không đối xứng.**
+
+<ExMistakeNonsym />
+
+**Lỗi 3: dùng tiêu chuẩn Sylvester cho bán xác định dương.** Với bán xác định, chỉ các định thức con chính **không âm** là chưa đủ nếu chỉ xét góc trên trái; nên dùng trị riêng.
+
+**Lỗi 4: quên đối xứng hóa** $\mathbf{A}$ khi cần phân loại dạng toàn phương của ma trận không đối xứng.
+
+## Liên hệ với ML
+
+- **Ma trận hiệp phương sai** $\boldsymbol{\Sigma}$ luôn đối xứng và bán xác định dương; trị riêng là phương sai dọc theo các hướng chính (nền của PCA).
+- **Hessian** $\mathbf{H}$ của hàm mất mát tại điểm dừng: xác định dương $\Rightarrow$ cực tiểu địa phương, xác định âm $\Rightarrow$ cực đại, không xác định $\Rightarrow$ điểm yên ngựa (Phần 5).
+- **Hàm lồi:** hàm có Hessian luôn bán xác định dương là hàm lồi (Phần 5); hồi quy bình phương tối thiểu có hàm mất mát lồi vì Hessian là $2\mathbf{X}\T\mathbf{X}$.
+- **Phân phối chuẩn nhiều chiều** đòi hỏi ma trận hiệp phương sai xác định dương.
+
+## Tóm tắt
+
+| Nội dung | Quy tắc |
+| --- | --- |
+| Định lý phổ | $\mathbf{A} = \mathbf{Q}\mathbf{D}\mathbf{Q}\T$, $\mathbf{Q}$ trực giao |
+| Dạng toàn phương | $\mathbf{x}\T\mathbf{A}\mathbf{x}$ |
+| Xác định dương | mọi trị riêng $> 0$ (hoặc mọi định thức con chính $> 0$) |
+| Bán xác định dương | mọi trị riêng $\ge 0$ |
+| Không xác định | có trị riêng dương lẫn âm |
+| Ma trận Gram | $\mathbf{X}\T\mathbf{X}$ bán xác định dương |
+
+<MarkRead client:visible lesson="1.13" />
+
+## Bài tập
+
+<ExercisePlayer
+  client:visible
+  lesson="1.13"
+  types={["sym-eig", "quad-form", "posdef-check"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Ma trận đối xứng, định lý phổ, ma trận xác định dương, tiêu chuẩn Sylvester: MIT 18.06 (Gilbert Strang), các bài giảng về ma trận đối xứng và xác định dương, [ocw.mit.edu](https://ocw.mit.edu).
+- Ma trận đối xứng xác định dương, định lý phổ: *Mathematics for Machine Learning*, chương về phân rã ma trận, [mml-book.github.io](https://mml-book.github.io).
+- Gram–Schmidt là mục đọc thêm (xem cùng các nguồn trên); bài này không dùng tính tay.

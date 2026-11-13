@@ -1,0 +1,3314 @@
+{
+ "version": 1,
+ "parts": {
+  "linalg": {
+   "title": "Phần 1. Đại số tuyến tính",
+   "lessons": {
+    "1.1": {
+     "title": "Vector",
+     "types": {
+      "vec-add": {
+       "levels": [
+        1,
+        2,
+        3
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "3": 66
+       }
+      },
+      "vec-lincomb": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "vec-norm": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "vec-scale": {
+       "levels": [
+        1,
+        2,
+        3
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "3": 66
+       }
+      }
+     }
+    },
+    "1.2": {
+     "title": "Tích vô hướng, góc, cosine similarity",
+     "types": {
+      "vec-cosine": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "vec-dot": {
+       "levels": [
+        1,
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+       }
+      },
+      "vec-orthogonal": {
+       "levels": [
+        1,
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+       }
+      },
+      "vec-project": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      }
+     }
+    },
+    "1.3": {
+     "title": "Ma trận và ký hiệu",
+     "types": {
+      "mat-entry": {
+       "levels": [
+        1,
+        2,
+        3
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "2x4",
+        "3x2",
+        "3x3",
+        "3x4",
+        "4x2",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "3": 66
+       }
+      },
+      "mat-shape": {
+       "levels": [
+        1,
+        2,
+        5
+       ],
+       "sizes": [
+        "1x1",
+        "1x2",
+        "1x3",
+        "1x4",
+        "2x1",
+        "2x2",
+        "2x3",
+        "2x4",
+        "3x1",
+        "3x2",
+        "3x3",
+        "3x4",
+        "4x1",
+        "4x2",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "5": 66
+       }
+      },
+      "mat-transpose": {
+       "levels": [
+        1,
+        2,
+        3
+       ],
+       "sizes": [
+        "1x1",
+        "1x2",
+        "1x3",
+        "1x4",
+        "2x1",
+        "2x2",
+        "2x3",
+        "2x4",
+        "3x1",
+        "3x2",
+        "3x3",
+        "3x4",
+        "4x1",
+        "4x2",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "3": 66
+       }
+      }
+     }
+    },
+    "1.4": {
+     "title": "Cộng ma trận, nhân vô hướng",
+     "types": {
+      "mat-add": {
+       "levels": [
+        1,
+        2,
+        3
+       ],
+       "sizes": [
+        "1x1",
+        "1x2",
+        "1x3",
+        "2x1",
+        "2x2",
+        "2x3",
+        "2x4",
+        "3x1",
+        "3x2",
+        "3x3",
+        "3x4",
+        "4x2",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "3": 66
+       }
+      },
+      "mat-lincomb": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "3x2",
+        "3x3",
+        "3x4",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "mat-scale": {
+       "levels": [
+        2,
+        3
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "3x2",
+        "3x3",
+        "3x4",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 100,
+        "3": 100
+       }
+      }
+     }
+    },
+    "1.5": {
+     "title": "Nhân ma trận",
+     "types": {
+      "hadamard-vs-matmul": {
+       "levels": [
+        1,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 100,
+        "4": 100
+       }
+      },
+      "matmul-chain-shape": {
+       "levels": [
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "4": 100,
+        "5": 100
+       }
+      },
+      "matmul-entry": {
+       "levels": [
+        2,
+        3
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "2x4",
+        "3x2",
+        "3x3",
+        "3x4",
+        "4x2",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 100,
+        "3": 100
+       }
+      },
+      "matmul-full": {
+       "levels": [
+        2,
+        3
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "2x4",
+        "3x2",
+        "3x3",
+        "3x4",
+        "4x2",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 100,
+        "3": 100
+       }
+      },
+      "matmul-noncommute": {
+       "levels": [
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "4": 200
+       }
+      },
+      "matmul-shape": {
+       "levels": [
+        1,
+        2
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 100,
+        "2": 100
+       }
+      },
+      "matvec": {
+       "levels": [
+        2,
+        3
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "2x4",
+        "3x2",
+        "3x3",
+        "3x4",
+        "4x2",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 100,
+        "3": 100
+       }
+      }
+     }
+    },
+    "1.6": {
+     "title": "Ma trận đặc biệt",
+     "types": {
+      "mat-identify": {
+       "levels": [
+        1,
+        2,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "3x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "5": 66
+       }
+      },
+      "mat-power-diag": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "3x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "transpose-product": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "2x4",
+        "3x2",
+        "3x3",
+        "3x4",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "1.7": {
+     "title": "Hệ phương trình và khử Gauss",
+     "types": {
+      "classify-system": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "3x3",
+        "3x4",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "ref": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "3x3",
+        "3x4",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "rowop-apply": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "3x2",
+        "3x3",
+        "3x4",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "rref": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "3x3",
+        "3x4",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "solve-param": {
+       "levels": [
+        3,
+        4
+       ],
+       "sizes": [
+        "2x3",
+        "3x3",
+        "3x4",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "3": 100,
+        "4": 100
+       }
+      },
+      "solve-unique": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "3x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "1.8": {
+     "title": "Định thức",
+     "types": {
+      "det-laplace": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "3x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "det-param": {
+       "levels": [
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "3": 100,
+        "4": 100
+       }
+      },
+      "det-properties": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "det-rowops": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "3x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "det": {
+       "levels": [
+        1,
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "3x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+       }
+      }
+     }
+    },
+    "1.9": {
+     "title": "Ma trận nghịch đảo",
+     "types": {
+      "inv-2x2": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "inv-check": {
+       "levels": [
+        1,
+        2,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 50,
+        "2": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "inv-gauss-jordan": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "3x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "inv-solve": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      }
+     }
+    },
+    "1.10": {
+     "title": "Không gian vector và hạng",
+     "types": {
+      "basis-col": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "3x3",
+        "3x4",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "lin-indep": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "null-space": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x3",
+        "3x3",
+        "3x4",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "rank": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "3x3",
+        "3x4",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "1.11": {
+     "title": "Ánh xạ tuyến tính",
+     "types": {
+      "transform-apply": {
+       "levels": [
+        1,
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+       }
+      },
+      "transform-compose": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "transform-find": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      }
+     }
+    },
+    "1.12": {
+     "title": "Trị riêng, vector riêng",
+     "types": {
+      "diagonalize": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "eig-values": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "3x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "eig-vectors": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "power-via-diag": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      }
+     }
+    },
+    "1.13": {
+     "title": "Ma trận đối xứng và xác định dương",
+     "types": {
+      "posdef-check": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "quad-form": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "sym-eig": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      }
+     }
+    },
+    "1.14": {
+     "title": "SVD, xấp xỉ hạng thấp, PCA",
+     "types": {
+      "low-rank": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "pca-steps": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "4x2"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "svd-small": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "3x2"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      }
+     }
+    },
+    "1.15": {
+     "title": "Ma trận trong ML",
+     "types": {
+      "attention-shape": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "3x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "ml-shape": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "normal-eq": {
+       "levels": [
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "3": 67,
+        "4": 67,
+        "5": 66
+       }
+      }
+     }
+    }
+   }
+  },
+  "numpy": {
+   "title": "Phần 2. NumPy cho ML",
+   "lessons": {
+    "2.1": {
+     "title": "ndarray, shape, dtype",
+     "types": {
+      "np-dtype": {
+       "levels": [
+        1,
+        2,
+        3
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "3": 66
+       }
+      },
+      "np-shape": {
+       "levels": [
+        1,
+        2,
+        3,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "2.2": {
+     "title": "Chỉ số và cắt lát",
+     "types": {
+      "np-index": {
+       "levels": [
+        1,
+        2,
+        3,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "2x4",
+        "3x2",
+        "3x3",
+        "3x4",
+        "3x5",
+        "4x3",
+        "4x4",
+        "4x5"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "5": 50
+       }
+      },
+      "np-slice": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [
+        "3x3",
+        "3x4",
+        "4x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      }
+     }
+    },
+    "2.3": {
+     "title": "@, * và .T",
+     "types": {
+      "np-matmul-vs-mul": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "np-transpose": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "2.4": {
+     "title": "Rút gọn theo trục",
+     "types": {
+      "np-axis": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "2.5": {
+     "title": "Broadcasting",
+     "types": {
+      "np-broadcast-shape": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      },
+      "np-broadcast-value": {
+       "levels": [
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "3": 67,
+        "4": 67,
+        "5": 66
+       }
+      }
+     }
+    },
+    "2.6": {
+     "title": "reshape, stack, concatenate",
+     "types": {
+      "np-reshape": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "2.7": {
+     "title": "np.linalg",
+     "types": {
+      "np-linalg-map": {
+       "levels": [
+        1,
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+       }
+      },
+      "np-solve-vs-inv": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      }
+     }
+    },
+    "2.8": {
+     "title": "Số thực dấu phẩy động",
+     "types": {
+      "np-float": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      }
+     }
+    },
+    "2.9": {
+     "title": "Vector hóa công thức ML",
+     "types": {
+      "np-bug-find": {
+       "levels": [
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "3": 67,
+        "4": 67,
+        "5": 66
+       }
+      },
+      "np-vectorize-choose": {
+       "levels": [
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "3": 67,
+        "4": 67,
+        "5": 66
+       }
+      }
+     }
+    }
+   }
+  },
+  "calculus": {
+   "title": "Phần 3. Giải tích",
+   "lessons": {
+    "3.1": {
+     "title": "Đạo hàm",
+     "types": {
+      "deriv-eval": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "deriv-poly": {
+       "levels": [
+        1,
+        2,
+        3
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "3": 66
+       }
+      },
+      "deriv-rules": {
+       "levels": [
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 67,
+        "3": 67,
+        "4": 66
+       }
+      }
+     }
+    },
+    "3.2": {
+     "title": "Quy tắc chuỗi (chain rule)",
+     "types": {
+      "chain-rule": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "3.3": {
+     "title": "Đạo hàm riêng và gradient",
+     "types": {
+      "gradient": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "partial-deriv": {
+       "levels": [
+        1,
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+       }
+      }
+     }
+    },
+    "3.4": {
+     "title": "Jacobian",
+     "types": {
+      "jacobian": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "2x3",
+        "3x2"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "3.5": {
+     "title": "Hessian",
+     "types": {
+      "hessian": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "3x3"
+       ],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "3.6": {
+     "title": "Đạo hàm theo vector và ma trận",
+     "types": {
+      "vec-deriv": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "3.7": {
+     "title": "Đồ thị tính toán và vi phân tự động",
+     "types": {
+      "graph-backward": {
+       "levels": [
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "3": 67,
+        "4": 67,
+        "5": 66
+       }
+      },
+      "graph-forward": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    }
+   }
+  },
+  "probability": {
+   "title": "Phần 4. Xác suất – thống kê",
+   "lessons": {
+    "4.1": {
+     "title": "Xác suất cơ bản và xác suất có điều kiện",
+     "types": {
+      "cond-prob": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "prob-basic": {
+       "levels": [
+        1,
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+       }
+      }
+     }
+    },
+    "4.2": {
+     "title": "Công thức Bayes và Naive Bayes",
+     "types": {
+      "bayes-rule": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "naive-bayes": {
+       "levels": [
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "3": 67,
+        "4": 67,
+        "5": 66
+       }
+      }
+     }
+    },
+    "4.3": {
+     "title": "Kỳ vọng, phương sai, hiệp phương sai",
+     "types": {
+      "covariance": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "expect-var": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "4.4": {
+     "title": "Phân phối: Bernoulli, nhị thức, chuẩn",
+     "types": {
+      "binom-prob": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "mahalanobis": {
+       "levels": [
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "3": 67,
+        "4": 67,
+        "5": 66
+       }
+      },
+      "normal-z": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "4.5": {
+     "title": "MLE và MAP",
+     "types": {
+      "map-beta": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      },
+      "mle": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    },
+    "4.6": {
+     "title": "Entropy, cross-entropy, KL divergence",
+     "types": {
+      "entropy-bits": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "kl-cross": {
+       "levels": [
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "2": 50,
+        "3": 50,
+        "4": 50,
+        "5": 50
+       }
+      }
+     }
+    }
+   }
+  },
+  "optimization": {
+   "title": "Phần 5. Tối ưu",
+   "lessons": {
+    "5.1": {
+     "title": "Hàm lồi",
+     "types": {
+      "convex-1d": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "convex-hessian": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "quad-min": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "5.2": {
+     "title": "Gradient descent",
+     "types": {
+      "gd-converge": {
+       "levels": [
+        1,
+        2
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 100,
+        "2": 100
+       }
+      },
+      "gd-linreg": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "gd-max-lr": {
+       "levels": [
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "3": 67,
+        "4": 67,
+        "5": 66
+       }
+      },
+      "gd-steps": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "5.3": {
+     "title": "SGD và mini-batch",
+     "types": {
+      "sgd-epoch": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "sgd-minibatch": {
+       "levels": [
+        1,
+        2,
+        3
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "3": 66
+       }
+      },
+      "sgd-unbiased": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "5.4": {
+     "title": "Momentum",
+     "types": {
+      "momentum-steps": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "5.5": {
+     "title": "Adam, RMSProp, AdaGrad",
+     "types": {
+      "adagrad-steps": {
+       "levels": [
+        1,
+        2,
+        3
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "3": 66
+       }
+      },
+      "adam-bias": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "adam-steps": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "rmsprop-steps": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "5.6": {
+     "title": "Lịch learning rate",
+     "types": {
+      "lr-cosine": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "lr-decay": {
+       "levels": [
+        1,
+        2,
+        3,
+        4
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+       }
+      }
+     }
+    },
+    "5.7": {
+     "title": "Regularization L1, L2 và weight decay",
+     "types": {
+      "adamw-step": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "l1-prox": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "ridge-solve": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "wd-step": {
+       "levels": [
+        1,
+        2,
+        3
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 67,
+        "2": 67,
+        "3": 66
+       }
+      }
+     }
+    }
+   }
+  },
+  "classical-ml": {
+   "title": "Phần 6. ML cổ điển",
+   "lessons": {
+    "6.1": {
+     "title": "Hồi quy tuyến tính",
+     "types": {
+      "ols-fit": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "ols-metrics": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "6.2": {
+     "title": "Hồi quy logistic và softmax",
+     "types": {
+      "logreg-decision": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "logreg-grad": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "softmax-grad": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "6.3": {
+     "title": "Overfitting, bias–variance, cross-validation",
+     "types": {
+      "bias-variance": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "kfold-cv": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "6.4": {
+     "title": "Độ đo phân loại",
+     "types": {
+      "auc-pairs": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "confusion-metrics": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "6.5": {
+     "title": "K láng giềng gần nhất (KNN)",
+     "types": {
+      "knn-classify": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "knn-regress": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "6.6": {
+     "title": "K-means",
+     "types": {
+      "kmeans-step": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "6.7": {
+     "title": "Cây quyết định và random forest",
+     "types": {
+      "forest-average": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "gini-split": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "6.8": {
+     "title": "Gradient boosting",
+     "types": {
+      "gbm-round": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "6.9": {
+     "title": "SVM",
+     "types": {
+      "svm-hinge": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "svm-margin": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    }
+   }
+  },
+  "deep-learning": {
+   "title": "Phần 7. Deep Learning",
+   "lessons": {
+    "7.1": {
+     "title": "Perceptron và MLP",
+     "types": {
+      "mlp-forward": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "mlp-params": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "7.2": {
+     "title": "Hàm kích hoạt, softmax, cross-entropy",
+     "types": {
+      "activation-eval": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "softmax-ln2": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "7.3": {
+     "title": "Lan truyền ngược (backpropagation)",
+     "types": {
+      "backprop-net": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "7.4": {
+     "title": "Khởi tạo trọng số, BatchNorm, LayerNorm",
+     "types": {
+      "init-var": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "norm-compute": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "7.5": {
+     "title": "Dropout, residual connection, embedding",
+     "types": {
+      "dropout-calc": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "embed-lookup": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "resid-grad": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "7.6": {
+     "title": "Attention và Transformer",
+     "types": {
+      "attn-output": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "attn-scores": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "transformer-params": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "7.7": {
+     "title": "Fine-tuning, LoRA và đọc code PyTorch",
+     "types": {
+      "lora-calc": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "torch-shape": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    }
+   }
+  },
+  "computer-vision": {
+   "title": "Phần 8. Computer Vision",
+   "lessons": {
+    "8.1": {
+     "title": "Ảnh là tensor, tích chập, padding, stride",
+     "types": {
+      "conv-shape": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "conv2d-compute": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "8.2": {
+     "title": "Pooling và trường tiếp nhận",
+     "types": {
+      "pool2d": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "receptive-field": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "8.3": {
+     "title": "CNN và ResNet",
+     "types": {
+      "cnn-params": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "resnet-block": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "8.4": {
+     "title": "Vision Transformer và patch embedding",
+     "types": {
+      "vit-count": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "8.5": {
+     "title": "Augmentation và transfer learning",
+     "types": {
+      "aug-transform": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "transfer-params": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "8.6": {
+     "title": "Phát hiện vật thể (detection)",
+     "types": {
+      "iou-nms": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      },
+      "set-match": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [
+        "2x2",
+        "3x3",
+        "4x4"
+       ],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "8.7": {
+     "title": "Phân đoạn (segmentation)",
+     "types": {
+      "seg-metrics": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "8.8": {
+     "title": "Self-supervised, contrastive và CLIP",
+     "types": {
+      "clip-retrieval": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    },
+    "8.9": {
+     "title": "Mô hình khuếch tán (diffusion)",
+     "types": {
+      "diffusion-forward": {
+       "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ],
+       "sizes": [],
+       "count": 200,
+       "perLevel": {
+        "1": 40,
+        "2": 40,
+        "3": 40,
+        "4": 40,
+        "5": 40
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

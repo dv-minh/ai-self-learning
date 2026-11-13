@@ -1,0 +1,93 @@
+---
+title: Phân đoạn (segmentation)
+description: Gán nhãn theo từng pixel; pixel accuracy, IoU, Dice, mIoU; U-Net và SAM
+lesson: "8.7"
+prerequisites: ["8.3", "8.6"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExMetrics from '../../../generated/lesson-8-7/seg-metrics-example.mdx';
+import ExUnet from '../../../generated/lesson-8-7/unet-shapes.mdx';
+import ExMistake from '../../../generated/lesson-8-7/mistake-pixel-accuracy.mdx';
+
+## Mục tiêu
+
+- Tính pixel accuracy, IoU, Dice và mIoU từ hai bản đồ nhãn nhỏ.
+- Mô tả cấu trúc bộ mã hóa–giải mã của U-Net và theo dõi shape qua đường nối tắt.
+- Phân biệt phân đoạn ngữ nghĩa, thực thể và "phân đoạn mọi thứ" kiểu SAM.
+
+## Trực giác
+
+Detection cho một hộp mỗi vật thể; **phân đoạn** gán một nhãn cho **từng pixel**, cho ranh giới chính xác của vật thể. Mạng phải vừa hiểu ngữ nghĩa (đây là gì, cần các lớp sâu có trường tiếp nhận rộng) vừa giữ chi tiết không gian (ranh giới chính xác, cần độ phân giải cao). **U-Net** giải quyết bằng bộ mã hóa thu nhỏ rồi bộ giải mã phóng to, **nối** đặc trưng độ phân giải cao của bộ mã hóa vào bộ giải mã tương ứng.
+
+## Định nghĩa
+
+Với bản đồ nhãn thật (GT) và dự đoán (Pred) cùng cỡ, và tập pixel $A$, $B$ của một lớp trong GT và Pred:
+
+$$
+\mathrm{pixel\ acc} = \frac{\#\{\text{pixel đúng}\}}{HW},\quad \mathrm{IoU} = \frac{|A\cap B|}{|A\cup B|},\quad \mathrm{Dice} = \frac{2|A\cap B|}{|A| + |B|},\quad \mathrm{mIoU} = \frac{1}{C}\sum_c \mathrm{IoU}_c.
+$$
+
+Đọc bằng lời: Dice là F1 trên pixel của một lớp; mIoU lấy trung bình IoU các lớp nên không để lớp lớn che lớp nhỏ. Quan hệ: $\mathrm{Dice} = \dfrac{2\,\mathrm{IoU}}{1 + \mathrm{IoU}}$.
+
+**Các dạng phân đoạn:** ngữ nghĩa (mỗi pixel một lớp), thực thể (tách từng vật thể riêng), toàn cảnh (panoptic, kết hợp cả hai). **U-Net:** bộ mã hóa giảm kích thước và tăng kênh; bộ giải mã tăng kích thước (upsample hoặc conv chuyển vị), **nối** (concat) với đặc trưng cùng độ phân giải của bộ mã hóa; số kênh sau nối là tổng hai nhánh.
+
+**SAM (Segment Anything):** mô hình nền tảng phân đoạn theo **gợi ý** (điểm, hộp, mặt nạ): bộ mã hóa ảnh ViT cỡ lớn tính embedding một lần, bộ giải mã mặt nạ nhẹ sinh mặt nạ cho từng gợi ý.
+
+## Ví dụ
+
+### Các độ đo trên mặt nạ $4\times 4$
+
+<ExMetrics />
+
+### Shape qua U-Net
+
+<ExUnet />
+
+## Tính chất
+
+- $\mathrm{Dice} \ge \mathrm{IoU}$, bằng nhau ở $0$ và $1$.
+- **Pixel accuracy bị chi phối bởi lớp nền** khi vật thể nhỏ; IoU/Dice nhạy hơn với ranh giới.
+- **Đường nối tắt** của U-Net trả lại chi tiết không gian mà phép giảm mẫu đã mất.
+- Mất mát thường dùng: cross-entropy theo pixel, Dice loss, hoặc kết hợp cả hai.
+- Đầu ra của phân đoạn ngữ nghĩa có shape $C\times H\times W$ (logit theo lớp), lấy $\arg\max$ theo kênh để ra nhãn.
+
+## Lỗi thường gặp
+
+**Lỗi 1: chỉ dùng pixel accuracy.**
+
+<ExMistake />
+
+**Lỗi 2: tính IoU toàn cục thay vì theo từng lớp rồi trung bình** (mIoU).
+
+**Lỗi 3: nhầm Dice với IoU** (Dice luôn lớn hơn hoặc bằng).
+
+**Lỗi 4: nối đặc trưng khác độ phân giải** trong U-Net: phải upsample cho khớp $H\times W$ trước khi concat.
+
+## Liên hệ với ML
+
+- **Ảnh y tế, xe tự hành, ảnh vệ tinh:** phân đoạn cho ranh giới chính xác (khối u, làn đường, ranh giới đất đai).
+- **SAM và các mô hình prompt được** cho phép tạo mặt nạ không cần huấn luyện lại; mặt nạ cũng dùng làm nhãn giả để huấn luyện mô hình khác.
+- Mất mát Dice đặc biệt hữu ích khi mất cân bằng lớp mạnh.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Pixel accuracy | tỉ lệ pixel đúng |
+| IoU, Dice | $\lvert A\cap B\rvert/\lvert A\cup B\rvert$, $2\lvert A\cap B\rvert/(\lvert A\rvert + \lvert B\rvert)$ |
+| mIoU | trung bình IoU các lớp |
+| U-Net | mã hóa–giải mã + nối tắt (concat) |
+
+<MarkRead client:visible lesson="8.7" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="computer-vision" lesson="8.7" types={["seg-metrics"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Ronneberger, Fischer và Brox (2015), "U-Net", [arxiv.org/abs/1505.04597](https://arxiv.org/abs/1505.04597).
+- Kirillov và cộng sự (2023), "Segment Anything", [arxiv.org/abs/2304.02643](https://arxiv.org/abs/2304.02643).
+- Long, Shelhamer và Darrell (2015), "Fully Convolutional Networks for Semantic Segmentation", [arxiv.org/abs/1411.4038](https://arxiv.org/abs/1411.4038).

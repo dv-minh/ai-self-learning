@@ -1,0 +1,17 @@
+```python
+import numpy as np
+
+print(np.array([1, 2, 3]).dtype)        # toàn số nguyên
+print(np.array([1, 2, 3.5]).dtype)      # có một số thực -> cả mảng là thực
+print((np.array([1, 2, 3]) / 2).dtype)  # chia '/' luôn cho số thực
+print(np.array([True, False]).dtype)
+```
+
+Kết quả in ra:
+
+```text
+int64
+float64
+float64
+bool
+```

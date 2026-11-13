@@ -1,0 +1,100 @@
+---
+title: Hàm kích hoạt, softmax, cross-entropy
+description: ReLU và họ hàng, softmax, cross-entropy và gradient p − y ở đầu ra
+lesson: "7.2"
+prerequisites: ["7.1", "6.2", "4.6"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExRelu from '../../../generated/lesson-7-2/relu-family.mdx';
+import ExSoftmax from '../../../generated/lesson-7-2/softmax-ln2-example.mdx';
+import PropShift from '../../../generated/lesson-7-2/softmax-shift-invariance.mdx';
+import ExMistake from '../../../generated/lesson-7-2/mistake-dead-relu.mdx';
+
+## Mục tiêu
+
+- Tính ReLU, LeakyReLU, ReLU6, HardTanh và đạo hàm của chúng.
+- Tính softmax, cross-entropy và gradient của cross-entropy theo logit.
+- Hiểu vì sao softmax bất biến khi cộng một hằng số vào mọi logit.
+
+## Trực giác
+
+Hàm kích hoạt cho mạng khả năng biểu diễn phi tuyến. ReLU cực kỳ rẻ và gradient không biến mất khi $z > 0$, nhưng bằng $0$ khi $z < 0$ nên có thể "chết". Họ hàng của nó giữ một ít gradient phía âm hoặc làm trơn quanh $0$ (GELU, SiLU dùng trong Transformer). Ở đầu ra, **softmax** đổi các logit thành xác suất; **cross-entropy** phạt mạnh khi xác suất gán cho lớp thật thấp.
+
+## Định nghĩa
+
+$$
+\mathrm{ReLU}(z) = \max(0, z),\quad \mathrm{LeakyReLU}(z) = \begin{cases} z & z > 0 \\ \alpha z & z \le 0 \end{cases},\quad \mathrm{ReLU6}(z) = \min(\max(0, z), 6).
+$$
+
+Đọc bằng lời: ReLU giữ phần dương và cắt phần âm; LeakyReLU thay phần cắt bằng độ dốc nhỏ $\alpha$. Đạo hàm của ReLU là $1$ khi $z > 0$ và $0$ khi $z < 0$ (tại $0$ dùng quy ước, ở đây $0$).
+
+**Softmax** và **cross-entropy** với lớp thật $t$:
+
+$$
+p_i = \frac{e^{z_i}}{\sum_j e^{z_j}},\qquad \ell = -\ln p_t,\qquad \frac{\partial \ell}{\partial \mathbf{z}} = \mathbf{p} - \mathbf{y}.
+$$
+
+Đọc bằng lời: xác suất là phần của $e^{z_i}$ trong tổng; gradient theo logit đúng bằng dự đoán trừ nhãn one-hot. Trong các bài tập, logit có dạng $z_i = k_i\ln 2$ nên $e^{z_i} = 2^{k_i}$ và mọi xác suất là số hữu tỉ.
+
+## Ví dụ
+
+### Họ ReLU
+
+<ExRelu />
+
+### Softmax và cross-entropy
+
+<ExSoftmax />
+
+## Tính chất
+
+- **Softmax bất biến khi tịnh tiến logit:**
+
+<PropShift />
+
+  Vì vậy cài đặt thật luôn trừ logit lớn nhất trước khi lấy mũ (tránh tràn số).
+- **Các xác suất cộng bằng $1$**, nên tổng các thành phần của $\mathbf{p} - \mathbf{y}$ bằng $0$.
+- **Cross-entropy $\ge 0$** và $= 0$ chỉ khi $p_t = 1$.
+- **Sigmoid** là softmax của hai lớp với logit $(z, 0)$.
+- **Gradient của ReLU** bằng $0$ ở nửa âm: nơ-ron không hoạt động không được cập nhật qua mẫu đó.
+
+## Lỗi thường gặp
+
+**Lỗi 1: "ReLU chết".**
+
+<ExMistake />
+
+**Lỗi 2: lấy softmax rồi lại đưa vào hàm mất mát đã tích hợp softmax** (như `CrossEntropyLoss` của PyTorch nhận **logit**, không phải xác suất).
+
+**Lỗi 3: nhầm đạo hàm của $-\ln p_t$** với đạo hàm theo $p$; gradient gọn $\mathbf{p} - \mathbf{y}$ là theo **logit**.
+
+**Lỗi 4: đơn vị của cross-entropy.** $-\ln$ cho nat, $-\log_2$ cho bit; hai đơn vị khác nhau hệ số $\ln 2$.
+
+## Liên hệ với ML
+
+- **GELU/SiLU** thay ReLU trong Transformer và LLM; ReLU và LeakyReLU phổ biến trong CNN (Phần 8).
+- **Phân loại nhiều lớp:** logit $\to$ softmax $\to$ cross-entropy; gradient $\mathbf{p} - \mathbf{y}$ là điểm bắt đầu của lan truyền ngược (bài 7.3).
+- **Mô hình ngôn ngữ:** softmax trên toàn từ vựng ở mỗi vị trí.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| ReLU | $\max(0, z)$; đạo hàm $\mathbb{1}[z > 0]$ |
+| LeakyReLU | độ dốc $\alpha$ phía âm |
+| Softmax | $e^{z_i}/\sum_j e^{z_j}$ |
+| Cross-entropy | $-\ln p_t$; gradient theo logit $\mathbf{p} - \mathbf{y}$ |
+
+<MarkRead client:visible lesson="7.2" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="deep-learning" lesson="7.2" types={["activation-eval", "softmax-ln2"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- *Dive into Deep Learning*, mục Softmax Regression và Activation Functions, [d2l.ai](https://d2l.ai).
+- Hendrycks và Gimpel (2016), "Gaussian Error Linear Units (GELUs)", [arxiv.org/abs/1606.08415](https://arxiv.org/abs/1606.08415).
+- Cross-entropy và entropy: bài 4.6 của khóa này.

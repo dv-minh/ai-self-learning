@@ -1,0 +1,34 @@
+$$
+\mathbf{A} = \begin{bmatrix} -1 & 0 \\ 4 & 3 \end{bmatrix}
+$$
+
+1. Phương trình đặc trưng $\det(\lambda\mathbf{I} - \mathbf{A}) = 0$:
+
+   $$
+   \det\left(\lambda\mathbf{I} - \begin{bmatrix} -1 & 0 \\ 4 & 3 \end{bmatrix}\right) = \lambda^{2} - 2 \lambda - 3 = 0
+   $$
+
+2. Phân tích thành nhân tử:
+
+   $$
+   \left(\lambda - 3\right) \left(\lambda + 1\right) = 0
+   $$
+
+3. Các trị riêng (theo thứ tự tăng dần, lặp theo bội):
+
+   $$
+   -1, 3
+   $$
+
+
+Với $\lambda = -1$: giải $(\mathbf{A} - \lambda\mathbf{I})\mathbf{v} = \mathbf{0}$ với $\mathbf{A} - \lambda\mathbf{I} = \begin{bmatrix} 0 & 0 \\ 4 & 4 \end{bmatrix}$. Một nghiệm khác $\mathbf{0}$ là $\mathbf{v} = (1, -1)\T$, và kiểm tra:
+
+$$
+\mathbf{A}\mathbf{v} = \begin{bmatrix} -1 \\ 1 \end{bmatrix} = (-1)\begin{bmatrix} 1 \\ -1 \end{bmatrix}
+$$
+
+Với $\lambda = 3$: giải $(\mathbf{A} - \lambda\mathbf{I})\mathbf{v} = \mathbf{0}$ với $\mathbf{A} - \lambda\mathbf{I} = \begin{bmatrix} -4 & 0 \\ 4 & 0 \end{bmatrix}$. Một nghiệm khác $\mathbf{0}$ là $\mathbf{v} = (0, 1)\T$, và kiểm tra:
+
+$$
+\mathbf{A}\mathbf{v} = \begin{bmatrix} 0 \\ 3 \end{bmatrix} = 3\begin{bmatrix} 0 \\ 1 \end{bmatrix}
+$$

@@ -1,0 +1,129 @@
+---
+title: Regularization L1, L2 và weight decay
+description: Ridge, weight decay, AdamW, soft-thresholding và proximal gradient cho L1
+lesson: "5.7"
+prerequisites: ["5.2", "5.5", "1.9"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExRidge from '../../../generated/lesson-5-7/ridge-small.mdx';
+import ExWd from '../../../generated/lesson-5-7/weight-decay-form.mdx';
+import ExL1 from '../../../generated/lesson-5-7/l1-soft-threshold.mdx';
+import ExAdamw from '../../../generated/lesson-5-7/adam-l2-vs-adamw.mdx';
+import ExMistake from '../../../generated/lesson-5-7/mistake-l1-l2.mdx';
+
+## Mục tiêu
+
+- Viết hàm mục tiêu có regularization L2 và L1 và tính gradient của chúng.
+- Giải bài toán ridge bằng phương trình chuẩn $(\mathbf{X}\T\mathbf{X} + \lambda\mathbf{I})\mathbf{w} = \mathbf{X}\T\mathbf{y}$.
+- Hiểu weight decay và vì sao AdamW khác Adam + L2.
+- Tính soft-thresholding và một bước proximal gradient cho L1.
+
+## Trực giác
+
+Mô hình quá linh hoạt dễ **overfit**: học thuộc cả nhiễu, thể hiện bằng các trọng số rất lớn. Regularization thêm một "khoản phạt" cho độ lớn trọng số, buộc mô hình ưu tiên lời giải đơn giản. L2 phạt bình phương nên **co** mọi trọng số về gần $0$; L1 phạt trị tuyệt đối nên còn **ép nhiều trọng số về đúng $0$** (nghiệm thưa).
+
+## Định nghĩa
+
+Hàm mục tiêu có regularization: $J(\mathbf{w}) = L(\mathbf{w}) + \lambda\,R(\mathbf{w})$ với $\lambda > 0$.
+
+- **L2 (ridge):** $R = \dfrac{1}{2}\|\mathbf{w}\|_2^2$, $\nabla R = \mathbf{w}$.
+- **L1 (lasso):** $R = \|\mathbf{w}\|_1 = \sum_i |w_i|$.
+
+**Ridge cho hồi quy tuyến tính:** $J(\mathbf{w}) = \dfrac{1}{2}\|\mathbf{X}\mathbf{w} - \mathbf{y}\|^2 + \dfrac{\lambda}{2}\|\mathbf{w}\|^2$. Đặt $\nabla J = \mathbf{X}\T(\mathbf{X}\mathbf{w} - \mathbf{y}) + \lambda\mathbf{w} = \mathbf{0}$:
+
+$$
+\mathbf{w}^\star = \big(\mathbf{X}\T\mathbf{X} + \lambda\mathbf{I}\big)^{-1}\mathbf{X}\T\mathbf{y}.
+$$
+
+Ma trận trong ngoặc luôn khả nghịch khi $\lambda > 0$.
+
+**Weight decay.** Gradient descent trên $J$ với L2:
+
+$$
+\mathbf{w} \leftarrow \mathbf{w} - \eta\big(\nabla L(\mathbf{w}) + \lambda\mathbf{w}\big) = (1 - \eta\lambda)\,\mathbf{w} - \eta\,\nabla L(\mathbf{w}).
+$$
+
+Thừa số $(1 - \eta\lambda)$ co trọng số ở mỗi bước (decay). Với SGD thuần, L2 và weight decay **giống nhau**. Với Adam thì khác:
+
+- **Adam + L2:** đưa $\lambda\theta$ vào gradient trước khi tính $m, v$; do đó số hạng decay bị chia cho $\sqrt{\hat{v}}$.
+- **AdamW:** tách rời, $\theta_t = \theta_{t-1} - \eta\left(\dfrac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon} + \lambda\,\theta_{t-1}\right)$ với $m, v$ chỉ tính từ gradient của mất mát.
+
+**L1 và soft-thresholding.** Nghiệm của $\min_w \dfrac{1}{2}(w - z)^2 + \lambda|w|$ là
+
+$$
+S_\lambda(z) = \mathrm{sign}(z)\,\max\big(|z| - \lambda,\ 0\big).
+$$
+
+**Proximal gradient (ISTA):** để tối thiểu $f(\mathbf{w}) + \lambda\|\mathbf{w}\|_1$, mỗi bước làm một bước gradient cho $f$ rồi soft-thresholding với ngưỡng $\eta\lambda$:
+
+$$
+\mathbf{w}^{+} = S_{\eta\lambda}\big(\mathbf{w} - \eta\nabla f(\mathbf{w})\big).
+$$
+
+## Ví dụ
+
+### Ridge: $\lambda$ càng lớn, trọng số càng nhỏ
+
+<ExRidge />
+
+### Weight decay: hai cách viết giống nhau
+
+<ExWd />
+
+### Soft-thresholding
+
+<ExL1 />
+
+### Adam + L2 so với AdamW
+
+<ExAdamw />
+
+## Tính chất
+
+- **Ridge co nghiệm:** $\|\mathbf{w}_{\text{ridge}}\| \le \|\mathbf{w}_{\text{OLS}}\|$, và $\mathbf{w}_{\text{ridge}} \to \mathbf{0}$ khi $\lambda \to \infty$.
+- **Ridge làm hàm lồi chặt:** Hessian $\mathbf{X}\T\mathbf{X} + \lambda\mathbf{I}$ xác định dương, nên nghiệm duy nhất (bài 5.1) kể cả khi $\mathbf{X}\T\mathbf{X}$ suy biến.
+- **L1 tạo thưa:** mọi $|z| \le \lambda$ bị đưa về đúng $0$ (xem ví dụ soft-thresholding).
+- **AdamW** tách weight decay khỏi phần thích ứng, cho decay đều giữa các tham số; thực nghiệm tổng quát hóa tốt hơn Adam + L2.
+
+## Lỗi thường gặp
+
+**Lỗi 1: nghĩ rằng L2 làm trọng số đúng bằng $0$.**
+
+<ExMistake />
+
+**Lỗi 2: regularize cả bias** $b$. Thường chỉ phạt trọng số $\mathbf{w}$, không phạt $b$ (trong các bài tập ở đây, hàm $J$ nêu rõ phần nào bị phạt).
+
+**Lỗi 3: nhầm Adam + L2 với AdamW** (đặc biệt ở bước đầu, khi $\hat{m}/\sqrt{\hat{v}} = \mathrm{sign}$ của gradient *đã cộng $\lambda\theta$*).
+
+**Lỗi 4: dùng ngưỡng $\lambda$ thay vì $\eta\lambda$** trong bước proximal gradient, hoặc quên chia $\lambda$ cho hệ số $a$ khi $f = \frac{a}{2}(w - z)^2$.
+
+## Liên hệ với ML
+
+- **Chống overfit:** ridge/lasso cho hồi quy tuyến tính; weight decay cho mạng neural ($\lambda$ thường $10^{-4}$ đến $10^{-1}$).
+- **Chọn đặc trưng:** lasso (L1) cho nghiệm thưa nên tự loại các đặc trưng không cần thiết.
+- **AdamW** là bộ tối ưu tiêu chuẩn khi huấn luyện Transformer và LLM.
+- Về mặt xác suất: L2 tương ứng ước lượng MAP với prior Gauss; L1 tương ứng prior Laplace.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Ridge | $\mathbf{w}^\star = (\mathbf{X}\T\mathbf{X} + \lambda\mathbf{I})^{-1}\mathbf{X}\T\mathbf{y}$ |
+| Weight decay | $\mathbf{w} \leftarrow (1 - \eta\lambda)\mathbf{w} - \eta\nabla L$ |
+| AdamW | decay tách rời khỏi $\hat{m}/\sqrt{\hat{v}}$ |
+| Soft-thresholding | $\mathrm{sign}(z)\max(\lvert z\rvert - \lambda, 0)$ |
+| ISTA | $S_{\eta\lambda}(\mathbf{w} - \eta\nabla f)$ |
+
+<MarkRead client:visible lesson="5.7" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="optimization" lesson="5.7" types={["wd-step", "adamw-step", "ridge-solve", "l1-prox"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Loshchilov và Hutter (2019), "Decoupled Weight Decay Regularization" (AdamW), [arxiv.org/abs/1711.05101](https://arxiv.org/abs/1711.05101).
+- Hồi quy ridge và lasso: Hastie, Tibshirani và Friedman, *The Elements of Statistical Learning*, chương 3, [hastie.su.domains/ElemStatLearn](https://hastie.su.domains/ElemStatLearn/).
+- Soft-thresholding và proximal gradient: Beck và Teboulle (2009), "A Fast Iterative Shrinkage-Thresholding Algorithm".

@@ -1,0 +1,3 @@
+**Sai:** bỏ chia $\sqrt{d_k}$. Nếu các thành phần của $\mathbf{q}, \mathbf{k}$ có phương sai $1$ thì $\mathbf{q}\T\mathbf{k}$ có phương sai $d_k = 64$ (độ lệch chuẩn $8$): điểm quá lớn làm softmax gần one-hot và gradient rất nhỏ.
+
+**Đúng:** chia $\sqrt{d_k}$ để phương sai điểm về $1$.

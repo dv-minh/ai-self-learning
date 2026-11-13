@@ -1,0 +1,105 @@
+---
+title: Attention và Transformer
+description: Scaled dot-product attention, mặt nạ nhân quả, multi-head và đếm tham số Transformer
+lesson: "7.6"
+prerequisites: ["1.5", "7.2", "7.4", "7.5"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExScores from '../../../generated/lesson-7-6/attention-scores-example.mdx';
+import ExOutput from '../../../generated/lesson-7-6/attention-output-example.mdx';
+import ExCausal from '../../../generated/lesson-7-6/causal-mask-example.mdx';
+import ExParams from '../../../generated/lesson-7-6/params-example.mdx';
+import ExMistake from '../../../generated/lesson-7-6/mistake-no-scaling.mdx';
+
+## Mục tiêu
+
+- Tính điểm attention $\mathbf{S} = \mathbf{Q}\mathbf{K}\T/\sqrt{d_k}$ và đầu ra $\mathbf{O} = \mathrm{softmax}(\mathbf{S})\mathbf{V}$ trên ma trận nhỏ.
+- Áp dụng mặt nạ nhân quả (causal mask).
+- Mô tả multi-head attention và đếm số tham số của một khối Transformer.
+
+## Trực giác
+
+Mỗi token đặt một **câu hỏi** (query), mọi token đưa ra một **khóa** (key) mô tả nó chứa gì và một **giá trị** (value) là thông tin sẽ trao đi. Mức khớp giữa query và key (tích vô hướng) cho trọng số; đầu ra là trung bình có trọng số các value. Vì vậy mỗi token **thu thập thông tin có chọn lọc** từ mọi token khác, bất kể khoảng cách. Nhiều đầu (heads) cho phép chú ý đồng thời đến các kiểu quan hệ khác nhau.
+
+## Định nghĩa
+
+Với $\mathbf{Q}, \mathbf{K} \in \R^{n\times d_k}$, $\mathbf{V} \in \R^{n\times d_v}$ (mỗi hàng là một token):
+
+$$
+\mathrm{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \mathrm{softmax}\!\left(\frac{\mathbf{Q}\mathbf{K}\T}{\sqrt{d_k}}\right)\mathbf{V}.
+$$
+
+Đọc bằng lời: tính điểm giữa mọi cặp (query, key), chia $\sqrt{d_k}$ để điểm không quá lớn, softmax theo **hàng** để được trọng số cộng bằng $1$, rồi lấy trung bình có trọng số của các hàng $\mathbf{V}$. Trong các bài tập, điểm có dạng $k\ln 2$ để softmax hữu tỉ.
+
+**Mặt nạ nhân quả:** để token $i$ không nhìn tương lai, đặt $s_{ij} = -\infty$ với $j > i$ trước softmax (trọng số $0$).
+
+**Multi-head:** $\mathbf{Q}, \mathbf{K}, \mathbf{V}$ được chiếu bằng $\mathbf{W}_Q, \mathbf{W}_K, \mathbf{W}_V$ rồi chia thành $h$ đầu, mỗi đầu chiều $d_k = d_{\mathrm{model}}/h$; các đầu chạy attention song song, được nối lại và qua $\mathbf{W}_O$.
+
+**Tham số một lớp Transformer** (có chặn): attention $4(d^2 + d)$; feed-forward $d\,d_{\mathrm{ff}} + d_{\mathrm{ff}} + d_{\mathrm{ff}}d + d$; hai LayerNorm $2\cdot 2d$. Cộng embedding token $Vd$ (và vị trí $Td$ nếu học được).
+
+## Ví dụ
+
+### Điểm attention
+
+<ExScores />
+
+### Đầu ra attention
+
+<ExOutput />
+
+### Mặt nạ nhân quả
+
+<ExCausal />
+
+### Đếm tham số
+
+<ExParams />
+
+## Tính chất
+
+- **Mỗi hàng của $\mathbf{A} = \mathrm{softmax}(\mathbf{S})$ cộng bằng $1$**, nên mỗi vector đầu ra nằm trong bao lồi của các hàng $\mathbf{V}$.
+- **Attention không có thứ tự:** hoán vị token thì hoán vị đầu ra tương ứng; vì vậy cần embedding vị trí (bài 7.5).
+- **Chi phí $O(n^2 d)$** theo độ dài chuỗi $n$ vì ma trận điểm $n\times n$.
+- **Khối Transformer:** $x \leftarrow x + \mathrm{Attn}(\mathrm{LN}(x))$, rồi $x \leftarrow x + \mathrm{FFN}(\mathrm{LN}(x))$ (cách đặt LayerNorm trước, "pre-LN", phổ biến hiện nay).
+- Attention và softmax **không có tham số học thêm**; mọi tham số nằm ở các phép chiếu, FFN, LayerNorm và embedding.
+
+## Lỗi thường gặp
+
+**Lỗi 1: bỏ chia $\sqrt{d_k}$.**
+
+<ExMistake />
+
+**Lỗi 2: softmax theo cột** thay vì theo hàng: trọng số của mỗi query mới phải cộng bằng $1$.
+
+**Lỗi 3: quên mặt nạ** khi huấn luyện mô hình sinh văn bản, khiến mô hình "nhìn trộm" token tương lai.
+
+**Lỗi 4: nhầm $d_k$ của mỗi đầu với $d_{\mathrm{model}}$.** Hệ số chia là $\sqrt{d_k}$ với $d_k = d_{\mathrm{model}}/h$.
+
+## Liên hệ với ML
+
+- **Mọi LLM** (GPT, Llama...) là Transformer chỉ có decoder với attention nhân quả; **BERT** dùng attention hai chiều; **ViT** áp dụng Transformer cho ảnh (bài 8.4).
+- **Đếm tham số** giúp ước tính bộ nhớ và chi phí huấn luyện của mô hình.
+- **KV cache** lưu $\mathbf{K}, \mathbf{V}$ của các token đã sinh để mỗi bước chỉ tính query mới.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Attention | $\mathrm{softmax}(\mathbf{Q}\mathbf{K}\T/\sqrt{d_k})\mathbf{V}$ |
+| Mặt nạ nhân quả | $s_{ij} = -\infty$ với $j > i$ |
+| Multi-head | $h$ đầu, $d_k = d_{\mathrm{model}}/h$, nối rồi $\mathbf{W}_O$ |
+| Tham số attention | $4(d^2 + d)$ |
+
+<MarkRead client:visible lesson="7.6" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="deep-learning" lesson="7.6" types={["attn-scores", "attn-output", "transformer-params"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Vaswani và cộng sự (2017), "Attention Is All You Need", [arxiv.org/abs/1706.03762](https://arxiv.org/abs/1706.03762).
+- Alammar, "The Illustrated Transformer", [jalammar.github.io/illustrated-transformer](https://jalammar.github.io/illustrated-transformer/).
+- *Dive into Deep Learning*, chương Attention Mechanisms and Transformers, [d2l.ai](https://d2l.ai).

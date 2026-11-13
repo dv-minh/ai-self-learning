@@ -1,0 +1,32 @@
+$$
+\mathbf{A} = \begin{bmatrix} -5 & 2 & -4 \\ 1 & -3 & 5 \\ 4 & 1 & -1 \end{bmatrix}
+$$
+
+Khử Gauss:
+
+1. Ma trận ban đầu:
+
+   $$
+   \begin{bmatrix} -5 & 2 & -4 \\ 1 & -3 & 5 \\ 4 & 1 & -1 \end{bmatrix}
+   $$
+
+2. $R_{2} \leftarrow R_{2} + \frac{1}{5}R_{1}$:
+
+   $$
+   \begin{bmatrix} -5 & 2 & -4 \\ 0 & -\frac{13}{5} & \frac{21}{5} \\ 4 & 1 & -1 \end{bmatrix}
+   $$
+
+3. $R_{3} \leftarrow R_{3} + \frac{4}{5}R_{1}$:
+
+   $$
+   \begin{bmatrix} -5 & 2 & -4 \\ 0 & -\frac{13}{5} & \frac{21}{5} \\ 0 & \frac{13}{5} & -\frac{21}{5} \end{bmatrix}
+   $$
+
+4. $R_{3} \leftarrow R_{3} + R_{2}$:
+
+   $$
+   \begin{bmatrix} -5 & 2 & -4 \\ 0 & -\frac{13}{5} & \frac{21}{5} \\ 0 & 0 & 0 \end{bmatrix}
+   $$
+
+
+Xuất hiện một hàng toàn $0$ (hạng của $\mathbf{A}$ là 2, nhỏ hơn 3), và $\det(\mathbf{A}) = 0$. Ma trận này **không khả nghịch**.

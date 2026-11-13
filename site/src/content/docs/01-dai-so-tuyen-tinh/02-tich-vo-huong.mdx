@@ -1,0 +1,144 @@
+---
+title: Tích vô hướng, góc, cosine similarity
+description: Dot product, cosine similarity (nền của embedding và attention), trực giao, hình chiếu
+lesson: "1.2"
+prerequisites: ["1.1"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExDot from '../../../generated/lesson-1-2/dot.mdx';
+import ExCosine from '../../../generated/lesson-1-2/cosine.mdx';
+import ExOrthogonal from '../../../generated/lesson-1-2/orthogonal.mdx';
+import ExProject from '../../../generated/lesson-1-2/project.mdx';
+import ExMistakeCosine from '../../../generated/lesson-1-2/mistake-cosine.mdx';
+import PropSymmetric from '../../../generated/lesson-1-2/prop-symmetric.mdx';
+import PropLinear from '../../../generated/lesson-1-2/prop-linear.mdx';
+import PropSelf from '../../../generated/lesson-1-2/prop-self.mdx';
+import PropCauchy from '../../../generated/lesson-1-2/prop-cauchy.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Tính tích vô hướng của hai vector.
+- Tính cosine của góc giữa hai vector (cosine similarity) và đọc ý nghĩa của nó.
+- Nhận biết hai vector có trực giao hay không, và tìm tham số để chúng trực giao.
+- Tính hình chiếu của một vector lên một vector khác.
+
+## Trực giác
+
+Tích vô hướng đo hai vector "cùng hướng" đến mức nào. Nếu chúng chỉ cùng một hướng, tích vô hướng lớn và dương; nếu vuông góc, bằng không; nếu ngược hướng, âm. Chia cho độ dài của cả hai để bỏ ảnh hưởng của độ lớn, ta được **cosine similarity**: chỉ còn lại thông tin về hướng. Đây là cách các hệ thống tìm kiếm và mô hình embedding so sánh hai vector.
+
+Hình chiếu của $\mathbf{u}$ lên $\mathbf{v}$ là "cái bóng" của $\mathbf{u}$ rọi lên đường thẳng chứa $\mathbf{v}$.
+
+## Định nghĩa
+
+**Tích vô hướng (dot product)** của $\mathbf{u}, \mathbf{v} \in \R^{n}$:
+
+$$
+\mathbf{u}\T\mathbf{v} = \sum_{i=1}^{n} u_i v_i = \norm{\mathbf{u}}_2\,\norm{\mathbf{v}}_2 \cos\theta.
+$$
+
+Đọc bằng lời: nhân từng cặp thành phần cùng vị trí rồi cộng lại; kết quả bằng tích hai độ dài nhân cosine của góc $\theta$ giữa hai vector. Kết quả là một số, không phải vector.
+
+**Cosine similarity** (với $\mathbf{u}, \mathbf{v} \neq \mathbf{0}$):
+
+$$
+\cos\theta = \frac{\mathbf{u}\T\mathbf{v}}{\norm{\mathbf{u}}_2\,\norm{\mathbf{v}}_2}.
+$$
+
+Đọc bằng lời: tích vô hướng chia cho tích hai chuẩn L2. Giá trị luôn nằm trong đoạn từ $-1$ đến $1$.
+
+**Trực giao (orthogonal):** $\mathbf{u}$ và $\mathbf{v}$ trực giao khi $\mathbf{u}\T\mathbf{v} = 0$.
+
+**Hình chiếu (projection)** của $\mathbf{u}$ lên $\mathbf{v} \neq \mathbf{0}$:
+
+$$
+\mathrm{proj}_{\mathbf{v}}\mathbf{u} = \frac{\mathbf{u}\T\mathbf{v}}{\mathbf{v}\T\mathbf{v}}\,\mathbf{v}.
+$$
+
+Đọc bằng lời: hệ số là tích vô hướng chia cho bình phương độ dài của $\mathbf{v}$; nhân hệ số đó với $\mathbf{v}$. Phần còn lại $\mathbf{u} - \mathrm{proj}_{\mathbf{v}}\mathbf{u}$ vuông góc với $\mathbf{v}$.
+
+## Ví dụ
+
+### Ví dụ nhỏ: tích vô hướng
+
+<ExDot />
+
+### Cosine similarity
+
+Để dễ tính tay, các vector dưới đây được chọn sao cho chuẩn L2 là số nguyên.
+
+<ExCosine />
+
+### Hai vector trực giao
+
+<ExOrthogonal />
+
+### Hình chiếu
+
+<ExProject />
+
+## Tính chất
+
+1. **Đối xứng:** $\mathbf{u}\T\mathbf{v} = \mathbf{v}\T\mathbf{u}$.
+
+<PropSymmetric />
+
+2. **Tuyến tính:** $(k\mathbf{u})\T\mathbf{v} = k\,(\mathbf{u}\T\mathbf{v})$ và $(\mathbf{u}+\mathbf{w})\T\mathbf{v} = \mathbf{u}\T\mathbf{v} + \mathbf{w}\T\mathbf{v}$.
+
+<PropLinear />
+
+3. **Liên hệ với chuẩn:** $\mathbf{u}\T\mathbf{u} = \norm{\mathbf{u}}_2^2$.
+
+<PropSelf />
+
+4. **Bất đẳng thức Cauchy–Schwarz:** $|\mathbf{u}\T\mathbf{v}| \le \norm{\mathbf{u}}_2\norm{\mathbf{v}}_2$. Chính nhờ nó mà cosine không vượt khỏi đoạn từ $-1$ đến $1$.
+
+<PropCauchy />
+
+## Lỗi thường gặp
+
+**Lỗi 1: quên chia cho cả hai chuẩn.**
+
+<ExMistakeCosine />
+
+**Lỗi 2: nhầm tích vô hướng với tích từng thành phần.** $\mathbf{u}\T\mathbf{v}$ là **một số** (tổng các tích), còn nhân từng thành phần cho ra một vector. Bạn phải cộng các tích lại.
+
+**Lỗi 3: tính hình chiếu mà chia sai mẫu số.** Mẫu số là $\mathbf{v}\T\mathbf{v}$ (của vector được chiếu **lên**), không phải $\mathbf{u}\T\mathbf{u}$.
+
+**Lỗi 4: cho rằng tích vô hướng bằng $0$ nghĩa là một vector bằng $\mathbf{0}$.** Hai vector khác $\mathbf{0}$ vẫn có thể trực giao.
+
+## Liên hệ với ML
+
+- **Cosine similarity** so sánh hai embedding (văn bản, ảnh, người dùng) mà không phụ thuộc độ lớn; nền của tìm kiếm ngữ nghĩa và retrieval.
+- **Attention:** điểm attention giữa truy vấn $\mathbf{q}$ và khóa $\mathbf{k}$ là tích vô hướng $\mathbf{q}\T\mathbf{k}$ (sẽ gặp ở Phần 7).
+- **Lớp tuyến tính:** mỗi đầu ra của một nơ-ron là tích vô hướng giữa trọng số và đầu vào, cộng thêm hệ số bù.
+- **Trực giao hóa** là ý tưởng đằng sau nhiều kỹ thuật khởi tạo trọng số và phân tích thành phần chính (PCA).
+
+## Tóm tắt
+
+| Khái niệm | Công thức |
+| --- | --- |
+| Tích vô hướng | $\mathbf{u}\T\mathbf{v} = \sum_i u_iv_i$ |
+| Cosine similarity | $\dfrac{\mathbf{u}\T\mathbf{v}}{\norm{\mathbf{u}}_2\norm{\mathbf{v}}_2}$ |
+| Trực giao | $\mathbf{u}\T\mathbf{v} = 0$ |
+| Hình chiếu | $\dfrac{\mathbf{u}\T\mathbf{v}}{\mathbf{v}\T\mathbf{v}}\mathbf{v}$ |
+
+<MarkRead client:visible lesson="1.2" />
+
+## Bài tập
+
+<ExercisePlayer
+  client:visible
+  lesson="1.2"
+  types={["vec-dot", "vec-cosine", "vec-orthogonal", "vec-project"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Tích vô hướng, trực giao, hình chiếu: MIT 18.06 (Gilbert Strang), phần về trực giao và hình chiếu, [ocw.mit.edu](https://ocw.mit.edu).
+- Tích vô hướng, góc, bất đẳng thức Cauchy–Schwarz, hình chiếu lên một đường thẳng: *Mathematics for Machine Learning*, chương về hình học giải tích, [mml-book.github.io](https://mml-book.github.io).
+- Trực quan về tích vô hướng: *Essence of Linear Algebra*, [3blue1brown.com](https://www.3blue1brown.com).

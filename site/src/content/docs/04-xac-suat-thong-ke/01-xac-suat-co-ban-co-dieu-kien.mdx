@@ -1,0 +1,115 @@
+---
+title: Xác suất cơ bản và xác suất có điều kiện
+description: Không gian mẫu, biến cố, quy tắc cộng, xác suất có điều kiện, độc lập
+lesson: "4.1"
+prerequisites: []
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExDice from '../../../generated/lesson-4-1/dice-sum.mdx';
+import ExTable from '../../../generated/lesson-4-1/conditional-table.mdx';
+import ExIndep from '../../../generated/lesson-4-1/independence.mdx';
+import PropComplement from '../../../generated/lesson-4-1/prop-complement.mdx';
+import PropUnion from '../../../generated/lesson-4-1/prop-union.mdx';
+import ExMistake from '../../../generated/lesson-4-1/mistake-conditional.mdx';
+
+## Mục tiêu
+
+- Tính xác suất của biến cố bằng cách đếm các kết quả đồng khả năng.
+- Dùng quy tắc bù, quy tắc cộng và quy tắc nhân.
+- Tính xác suất có điều kiện và nhận biết hai biến cố độc lập.
+
+## Trực giác
+
+Xác suất đo mức độ chắc chắn của một biến cố bằng một số từ $0$ đến $1$. Khi mọi kết quả đồng khả năng, xác suất đơn giản là **tỉ lệ**: bao nhiêu kết quả thuận lợi trên tổng số kết quả. Xác suất **có điều kiện** là tỉ lệ đó khi ta đã biết thêm một thông tin: ta thu hẹp không gian mẫu vào những kết quả phù hợp với thông tin ấy và đếm lại.
+
+## Định nghĩa
+
+Với không gian mẫu $\Omega$ hữu hạn gồm các kết quả đồng khả năng và biến cố $A \subseteq \Omega$:
+
+$$
+P(A) = \frac{|A|}{|\Omega|}.
+$$
+
+Đọc bằng lời: số kết quả thuận lợi chia cho tổng số kết quả. Các quy tắc cơ bản:
+
+$$
+P(\overline{A}) = 1 - P(A), \qquad P(A \cup B) = P(A) + P(B) - P(A \cap B).
+$$
+
+**Xác suất có điều kiện (conditional probability)** của $A$ biết $B$ (với $P(B) > 0$):
+
+$$
+P(A \mid B) = \frac{P(A \cap B)}{P(B)}.
+$$
+
+Đọc bằng lời: trong số những kết quả thuộc $B$, tỉ lệ thuộc cả $A$. Suy ra **quy tắc nhân** $P(A \cap B) = P(A \mid B)\,P(B)$.
+
+**Độc lập (independence):** $A$ và $B$ độc lập khi $P(A \cap B) = P(A)\,P(B)$, tương đương $P(A \mid B) = P(A)$: biết $B$ không đổi niềm tin về $A$.
+
+## Ví dụ
+
+### Phân phối tổng hai xúc xắc
+
+<ExDice />
+
+### Xác suất có điều kiện từ bảng
+
+<ExTable />
+
+### Độc lập và không độc lập
+
+<ExIndep />
+
+## Tính chất
+
+- **Biến cố bù:** $P(\overline{A}) = 1 - P(A)$, thường tính nhanh hơn "ít nhất một". Ví dụ:
+
+<PropComplement />
+
+- **Quy tắc cộng:** trừ phần giao để không đếm hai lần. Ví dụ:
+
+<PropUnion />
+
+- **$P(A \mid B)$ và $P(B \mid A)$ nói chung khác nhau.**
+- Mọi xác suất nằm trong $[0, 1]$ và xác suất của toàn bộ không gian mẫu bằng $1$.
+
+## Lỗi thường gặp
+
+**Lỗi 1: nhầm chiều của điều kiện.**
+
+<ExMistake />
+
+**Lỗi 2: cộng xác suất khi hai biến cố giao nhau.** Quy tắc cộng cần trừ $P(A\cap B)$.
+
+**Lỗi 3: coi biến cố loại trừ nhau là độc lập.** Nếu $A$ và $B$ không thể cùng xảy ra và cả hai có xác suất dương thì chúng **phụ thuộc**.
+
+**Lỗi 4: dùng tổ hợp khi có hoàn lại, hoặc ngược lại.** Rút không hoàn lại thay đổi thành phần hộp sau mỗi lần rút.
+
+## Liên hệ với ML
+
+- **Phân loại** là tính $P(\text{lớp}\mid\text{đặc trưng})$.
+- **Precision** của một bộ phân loại chính là $P(\text{thật dương}\mid\text{dự đoán dương})$, đọc từ ma trận nhầm lẫn; **recall** là $P(\text{dự đoán dương}\mid\text{thật dương})$ (chiều điều kiện ngược lại).
+- **Độc lập** là giả định đơn giản hóa phổ biến (Naive Bayes, mini-batch lấy mẫu độc lập).
+
+## Tóm tắt
+
+| Khái niệm | Công thức |
+| --- | --- |
+| Xác suất | $P(A) = \lvert A\rvert/\lvert\Omega\rvert$ |
+| Bù | $P(\overline{A}) = 1 - P(A)$ |
+| Hợp | $P(A) + P(B) - P(A\cap B)$ |
+| Có điều kiện | $P(A\cap B)/P(B)$ |
+| Độc lập | $P(A\cap B) = P(A)P(B)$ |
+
+<MarkRead client:visible lesson="4.1" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="probability" lesson="4.1" types={["prob-basic", "cond-prob"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Xác suất cơ bản, xác suất có điều kiện, độc lập: *Mathematics for Machine Learning*, chương về xác suất và phân phối, [mml-book.github.io](https://mml-book.github.io).
+- Precision, recall và ma trận nhầm lẫn: *Dive into Deep Learning*, phụ lục về xác suất, [d2l.ai](https://d2l.ai).

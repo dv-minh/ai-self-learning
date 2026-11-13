@@ -1,0 +1,108 @@
+---
+title: CNN và ResNet
+description: Đếm tham số và phép tính của CNN, tích chập tách theo chiều sâu, khối residual và bottleneck
+lesson: "8.3"
+prerequisites: ["7.4", "7.5", "8.1", "8.2"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExCompare from '../../../generated/lesson-8-3/params-compare.mdx';
+import ExBlock from '../../../generated/lesson-8-3/resnet-block-params.mdx';
+import ExShapes from '../../../generated/lesson-8-3/cnn-shapes.mdx';
+import PropSkip from '../../../generated/lesson-8-3/prop-skip-gradient.mdx';
+import ExMistake from '../../../generated/lesson-8-3/mistake-param-depends-on-size.mdx';
+
+## Mục tiêu
+
+- Tính số tham số và số phép nhân–cộng (MAC) của lớp tích chập.
+- So sánh tích chập chuẩn với tích chập tách theo chiều sâu.
+- Mô tả và đếm tham số của khối cơ bản và khối bottleneck của ResNet.
+- Theo dõi shape qua một CNN.
+
+## Trực giác
+
+CNN xếp các khối (tích chập $\to$ chuẩn hóa $\to$ kích hoạt), giảm dần kích thước không gian và tăng dần số kênh: nhiều kênh hơn nghĩa là biểu diễn giàu hơn trên bản đồ nhỏ hơn. Mạng rất sâu gặp khó huấn luyện vì gradient suy giảm; **ResNet** thêm đường tắt $y = x + F(x)$ (bài 7.5) để mỗi khối chỉ học phần **dư** so với đồng nhất, nên mạng hàng chục đến hàng trăm lớp vẫn huấn luyện được. ResNet là kiến trúc thị giác làm nền cho rất nhiều mô hình sau này.
+
+## Định nghĩa
+
+Lớp tích chập $C_{\mathrm{in}}\to C_{\mathrm{out}}$, kernel $k\times k$:
+
+$$
+\text{params} = C_{\mathrm{out}}\,(C_{\mathrm{in}}k^2 + 1),\qquad \text{MAC} = C_{\mathrm{out}}\,C_{\mathrm{in}}\,k^2\,H_{\mathrm{out}}W_{\mathrm{out}}.
+$$
+
+(Bỏ "$+1$" nếu không có hệ số chặn, thường khi đi kèm BatchNorm.) Đọc bằng lời: mỗi bộ lọc có $C_{\mathrm{in}}k^2$ trọng số và có $C_{\mathrm{out}}$ bộ lọc; số phép tính còn nhân với số vị trí đầu ra.
+
+**Tích chập tách theo chiều sâu** (depthwise separable): depthwise $k\times k$ trên từng kênh ($C_{\mathrm{in}}k^2$ tham số) rồi pointwise $1\times 1$ ($C_{\mathrm{in}}C_{\mathrm{out}}$ tham số); tỉ lệ so với chuẩn xấp xỉ $\frac{1}{C_{\mathrm{out}}} + \frac{1}{k^2}$.
+
+**Khối ResNet:**
+
+- **Cơ bản (basic):** hai conv $3\times 3$, $C\to C$: $2\cdot 9C^2$ tham số (bỏ chặn và BatchNorm).
+- **Bottleneck:** conv $1\times 1$ ($4C\to C$), conv $3\times 3$ ($C\to C$), conv $1\times 1$ ($C\to 4C$): $17C^2$ tham số.
+- **Khối giảm mẫu:** conv đầu stride $2$ đổi số kênh; nhánh tắt dùng conv $1\times 1$ stride $2$ để khớp shape.
+- BatchNorm thêm $2C$ tham số mỗi lớp.
+
+## Ví dụ
+
+### Chuẩn so với tách theo chiều sâu
+
+<ExCompare />
+
+### Khối cơ bản và bottleneck
+
+<ExBlock />
+
+### Shape qua một CNN
+
+<ExShapes />
+
+## Tính chất
+
+- **Đường tắt cho gradient đi thẳng:**
+
+<PropSkip />
+
+- **Tham số không phụ thuộc kích thước ảnh;** MAC và bộ nhớ kích hoạt thì có.
+- **Khối $1\times 1$** trộn thông tin giữa các kênh và đổi số kênh rẻ.
+- **Bottleneck** cho phép biểu diễn rộng ($4C$ kênh) với chi phí gần bằng khối cơ bản hẹp.
+- ResNet-50 có khoảng $25$ triệu tham số, ResNet-18 khoảng $11$ triệu.
+
+## Lỗi thường gặp
+
+**Lỗi 1: cho rằng tham số phụ thuộc kích thước ảnh.**
+
+<ExMistake />
+
+**Lỗi 2: cộng khối residual khi shape hai nhánh khác nhau;** cần nhánh chiếu $1\times 1$ (và stride tương ứng).
+
+**Lỗi 3: quên hệ số chặn của conv (hoặc quên rằng conv trước BatchNorm thường bỏ chặn).**
+
+**Lỗi 4: đếm BatchNorm là $C$ thay vì $2C$** (có $\gamma$ và $\beta$; running mean/var không phải tham số học được).
+
+## Liên hệ với ML
+
+- **Backbone ResNet** được dùng khắp nơi làm bộ trích xuất đặc trưng cho phân loại, detection, segmentation và học đặc trưng.
+- **MobileNet, EfficientNet** dùng tích chập tách theo chiều sâu để chạy trên thiết bị di động.
+- Ước lượng tham số và MAC giúp chọn mô hình khớp ngân sách bộ nhớ và độ trễ.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Tham số conv | $C_{\mathrm{out}}(C_{\mathrm{in}}k^2 + 1)$ |
+| MAC | $C_{\mathrm{out}}C_{\mathrm{in}}k^2H_{\mathrm{out}}W_{\mathrm{out}}$ |
+| Tách chiều sâu | $C_{\mathrm{in}}k^2 + C_{\mathrm{in}}C_{\mathrm{out}}$ |
+| Khối residual | $y = x + F(x)$ |
+
+<MarkRead client:visible lesson="8.3" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="computer-vision" lesson="8.3" types={["cnn-params", "resnet-block"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- He và cộng sự (2016), "Deep Residual Learning for Image Recognition", [arxiv.org/abs/1512.03385](https://arxiv.org/abs/1512.03385).
+- Howard và cộng sự (2017), "MobileNets", [arxiv.org/abs/1704.04861](https://arxiv.org/abs/1704.04861).
+- CS231n, bài về kiến trúc CNN, [cs231n.github.io/convolutional-networks](https://cs231n.github.io/convolutional-networks/).

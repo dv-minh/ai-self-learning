@@ -1,0 +1,12 @@
+```python
+import numpy as np
+
+a = np.arange(6)
+print(a.reshape(4, 2))   # 6 phần tử không chia được thành 4x2
+```
+
+Kết quả in ra:
+
+```text
+ValueError: cannot reshape array of size 6 into shape (4,2)
+```

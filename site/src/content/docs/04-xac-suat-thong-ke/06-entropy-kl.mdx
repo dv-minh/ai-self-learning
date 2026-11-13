@@ -1,0 +1,105 @@
+---
+title: Entropy, cross-entropy, KL divergence
+description: Độ bất định, mã hóa tối ưu, cross-entropy làm hàm mất mát, KL divergence
+lesson: "4.6"
+prerequisites: ["4.4", "4.5"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExEntropy from '../../../generated/lesson-4-6/entropy-values.mdx';
+import ExCross from '../../../generated/lesson-4-6/cross-entropy-kl.mdx';
+import ExAsym from '../../../generated/lesson-4-6/kl-asymmetry.mdx';
+import PropBounds from '../../../generated/lesson-4-6/prop-entropy-bounds.mdx';
+import ExMistake from '../../../generated/lesson-4-6/mistake-kl-symmetric.mdx';
+
+## Mục tiêu
+
+- Tính entropy của một phân phối và hiểu nó là số bit trung bình cần để mã hóa.
+- Tính cross-entropy và KL divergence giữa hai phân phối.
+- Hiểu vì sao cross-entropy là hàm mất mát chuẩn cho phân loại.
+
+## Trực giác
+
+**Entropy** đo mức "bất ngờ" trung bình của một phân phối: đồng xu công bằng bất ngờ nhiều hơn đồng xu gần như luôn ngửa. Theo lý thuyết thông tin, entropy cũng là số **bit** tối thiểu trung bình để mã hóa một kết quả. **Cross-entropy** $H(p, q)$ là số bit trung bình khi dữ liệu thật theo $p$ nhưng ta dùng mã tối ưu cho $q$; phần **thừa** so với mã tối ưu là **KL divergence**, đo $q$ khác $p$ bao nhiêu.
+
+## Định nghĩa
+
+Với các phân phối rời rạc $p, q$ trên cùng tập kết quả (dùng logarit cơ số $2$ để tính bằng bit):
+
+$$
+H(p) = -\sum_x p(x)\log_2 p(x), \qquad
+H(p, q) = -\sum_x p(x)\log_2 q(x), \qquad
+D_{\mathrm{KL}}(p \,\Vert\, q) = \sum_x p(x)\log_2\frac{p(x)}{q(x)}.
+$$
+
+Đọc bằng lời: entropy là kỳ vọng của $-\log_2 p$ ("số bit để mã hóa kết quả"); cross-entropy lấy kỳ vọng theo $p$ nhưng dùng $-\log_2 q$; KL là hiệu của chúng:
+
+$$
+H(p, q) = H(p) + D_{\mathrm{KL}}(p \,\Vert\, q).
+$$
+
+Để tính tay dễ, các bài tập dùng xác suất là lũy thừa của $\frac{1}{2}$: khi đó $-\log_2 p(x) = d$ nếu $p(x) = 2^{-d}$ là một **số nguyên**. Dùng logarit tự nhiên thì đơn vị là **nat** ($1$ nat $= \log_2 e$ bit); công thức không đổi.
+
+## Ví dụ
+
+### Entropy của vài phân phối
+
+<ExEntropy />
+
+### Cross-entropy và KL
+
+<ExCross />
+
+### KL không đối xứng
+
+<ExAsym />
+
+## Tính chất
+
+- **Entropy bị chặn:** $0 \le H(p) \le \log_2 n$, nhỏ nhất khi kết quả chắc chắn, lớn nhất khi phân phối đều:
+
+<PropBounds />
+
+- **$D_{\mathrm{KL}}(p\Vert q) \ge 0$**, bằng $0$ khi và chỉ khi $p = q$ (bất đẳng thức Gibbs).
+- **KL không đối xứng:** $D_{\mathrm{KL}}(p\Vert q) \ne D_{\mathrm{KL}}(q\Vert p)$ nói chung; nó cũng không thỏa bất đẳng thức tam giác nên không phải khoảng cách.
+- **Cross-entropy $\ge$ entropy:** $H(p, q) \ge H(p)$.
+
+## Lỗi thường gặp
+
+**Lỗi 1: coi KL là đối xứng.**
+
+<ExMistake />
+
+**Lỗi 2: đảo vai $p$ và $q$** trong cross-entropy: $p$ (phân phối thật) là trọng số, $q$ (mô hình) nằm trong logarit.
+
+**Lỗi 3: quên $q(x) = 0$ ở nơi $p(x) > 0$** làm $H(p, q) = \infty$.
+
+**Lỗi 4: lẫn đơn vị bit và nat.** Hãy xác định cơ số logarit.
+
+## Liên hệ với ML
+
+- **Cross-entropy loss** của một bộ phân loại với nhãn one-hot là $-\log q_{\text{lớp đúng}}$; cực tiểu hóa nó tương đương MLE của mô hình categorical (bài 4.5).
+- **Độ phức tạp (perplexity)** của mô hình ngôn ngữ là $2^{H(p,q)}$ trên dữ liệu.
+- **KL** xuất hiện trong VAE, chưng cất tri thức (distillation), RLHF, và đo khác biệt giữa hai phân phối dự đoán.
+- **Entropy cao** của đầu ra softmax cho thấy mô hình "không chắc chắn".
+
+## Tóm tắt
+
+| Đại lượng | Công thức |
+| --- | --- |
+| Entropy | $-\sum p\log_2 p$ |
+| Cross-entropy | $-\sum p\log_2 q$ |
+| KL | $\sum p\log_2(p/q) = H(p,q) - H(p)$ |
+| Loss one-hot | $-\log_2 q_{\text{đúng}}$ |
+
+<MarkRead client:visible lesson="4.6" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="probability" lesson="4.6" types={["entropy-bits", "kl-cross"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Entropy, cross-entropy, KL divergence: *Dive into Deep Learning*, phụ lục về lý thuyết thông tin, [d2l.ai](https://d2l.ai).
+- Entropy và KL trong xác suất cho ML: *Mathematics for Machine Learning*, chương về xác suất và phân phối, [mml-book.github.io](https://mml-book.github.io).

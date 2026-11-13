@@ -1,0 +1,16 @@
+```python
+import numpy as np
+
+A = np.zeros((3, 4))
+v = np.zeros(3)
+
+print((A + v).shape)   # (3, 4) và (3,) -> so 4 với 3: lỗi
+```
+
+Kết quả in ra:
+
+```text
+ValueError: operands could not be broadcast together with shapes (3,4) (3,) 
+```
+
+Căn phải các shape: `(3, 4)` và `(3,)` ghép `4` với `3`, không khớp. Muốn cộng theo cột cần `v[:, None]` có shape `(3, 1)`.

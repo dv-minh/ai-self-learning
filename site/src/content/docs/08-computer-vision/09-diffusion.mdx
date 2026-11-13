@@ -1,0 +1,99 @@
+---
+title: Mô hình khuếch tán (diffusion)
+description: Quá trình thêm nhiễu thuận, lịch nhiễu ᾱ, dự đoán nhiễu và khôi phục ảnh
+lesson: "8.9"
+prerequisites: ["4.4", "7.3", "8.7"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExDiff from '../../../generated/lesson-8-9/diffusion-example.mdx';
+import ExAlpha from '../../../generated/lesson-8-9/alpha-bar-table.mdx';
+import PropVar from '../../../generated/lesson-8-9/prop-variance-preserving.mdx';
+import ExMistake from '../../../generated/lesson-8-9/mistake-what-is-predicted.mdx';
+
+## Mục tiêu
+
+- Tính $\mathbf{x}_t$ từ $\mathbf{x}_0$ và nhiễu $\boldsymbol{\varepsilon}$ bằng công thức đóng của khuếch tán thuận.
+- Tính $\bar{\alpha}_t$ từ lịch $\beta_t$.
+- Suy ra nhiễu hoặc ảnh sạch ước lượng từ $\mathbf{x}_t$ (khái niệm).
+
+## Trực giác
+
+Hãy làm hỏng một ảnh bằng cách thêm nhiễu Gauss nhỏ nhiều lần cho tới khi chỉ còn nhiễu thuần túy. Quá trình này dễ và ta biết chính xác nó. **Mô hình khuếch tán** học **đảo ngược** quá trình đó: một mạng được huấn luyện để, nhìn một ảnh nhiễu ở mức $t$, đoán phần nhiễu đã bị thêm vào. Để sinh ảnh, bắt đầu từ nhiễu thuần và khử nhiễu dần qua nhiều bước nhỏ. Điều đẹp là nhiều bước nhiễu nhỏ gộp thành **một** công thức đóng, nên huấn luyện chỉ cần chọn $t$ ngẫu nhiên và nhiễu ngẫu nhiên.
+
+## Định nghĩa
+
+Lịch nhiễu $\beta_1, \dots, \beta_T$ nhỏ; đặt $\alpha_s = 1 - \beta_s$ và $\bar{\alpha}_t = \prod_{s=1}^{t}\alpha_s$. Khuếch tán thuận có dạng đóng:
+
+$$
+\mathbf{x}_t = \sqrt{\bar{\alpha}_t}\,\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\,\boldsymbol{\varepsilon},\qquad \boldsymbol{\varepsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}).
+$$
+
+Đọc bằng lời: $\mathbf{x}_t$ là tổ hợp của ảnh gốc (nhân $\sqrt{\bar{\alpha}_t}$) và nhiễu (nhân $\sqrt{1-\bar{\alpha}_t}$); $\bar{\alpha}_t$ giảm dần nên tín hiệu gốc nhạt dần. **Mục tiêu huấn luyện** (DDPM): mạng $\boldsymbol{\varepsilon}_\theta(\mathbf{x}_t, t)$ tối thiểu $\|\boldsymbol{\varepsilon} - \boldsymbol{\varepsilon}_\theta(\mathbf{x}_t, t)\|^2$. Từ nhiễu dự đoán, ước lượng ảnh sạch:
+
+$$
+\hat{\mathbf{x}}_0 = \frac{\mathbf{x}_t - \sqrt{1 - \bar{\alpha}_t}\,\hat{\boldsymbol{\varepsilon}}}{\sqrt{\bar{\alpha}_t}}.
+$$
+
+Trong các bài tập, $\bar{\alpha}_t$ được chọn (bộ ba Pythagoras, ví dụ $9/25$) để cả hai căn là số hữu tỉ. Phần sinh ảnh (khử nhiễu lặp, lấy mẫu) chỉ nêu ở mức khái niệm.
+
+## Ví dụ
+
+### Khuếch tán thuận và khôi phục
+
+<ExDiff />
+
+### Lịch $\bar{\alpha}_t$
+
+<ExAlpha />
+
+## Tính chất
+
+- **Bảo toàn phương sai:** với $\mathbf{x}_0$ và $\boldsymbol{\varepsilon}$ độc lập đơn vị, $\mathbf{x}_t$ vẫn có phương sai $1$.
+
+<PropVar />
+
+- **$t = 0$:** $\bar{\alpha}_0 = 1$, $\mathbf{x}_0$ nguyên vẹn; **$t = T$:** $\bar{\alpha}_T \approx 0$, $\mathbf{x}_T \approx$ nhiễu thuần.
+- **Công thức đóng** cho phép huấn luyện không cần mô phỏng $t$ bước tuần tự.
+- **Hai cách tham số hóa tương đương:** dự đoán nhiễu $\boldsymbol{\varepsilon}$, dự đoán $\mathbf{x}_0$, hoặc dự đoán "vận tốc" $\mathbf{v}$; các đại lượng này chuyển đổi qua lại bằng đại số như trên.
+- **Điều kiện hóa** (văn bản, lớp) bằng cách đưa thêm thông tin vào mạng (thường qua cross-attention).
+
+## Lỗi thường gặp
+
+**Lỗi 1: nghĩ mạng sinh ảnh trong một bước.**
+
+<ExMistake />
+
+**Lỗi 2: nhầm $\alpha_t$ và $\bar{\alpha}_t$.** $\bar{\alpha}_t$ là **tích** các $\alpha_s$ từ $1$ đến $t$.
+
+**Lỗi 3: nhầm vai trò hai hệ số:** $\sqrt{\bar{\alpha}_t}$ nhân với ảnh gốc, $\sqrt{1 - \bar{\alpha}_t}$ nhân với nhiễu.
+
+**Lỗi 4: chia cho $\sqrt{\bar{\alpha}_t}$ khi $t$ rất lớn** (gần $0$) làm ước lượng $\hat{\mathbf{x}}_0$ không ổn định.
+
+## Liên hệ với ML
+
+- **Sinh ảnh và video** (Stable Diffusion, DALL·E 3, các mô hình video) dùng khuếch tán, thường trong không gian tiềm ẩn của một bộ mã hóa tự động.
+- **Điều khiển bằng văn bản** dùng embedding của CLIP hoặc bộ mã hóa văn bản khác (bài 8.8).
+- **Khuếch tán Transformer (DiT)** thay U-Net (bài 8.7) bằng Transformer trên các patch (bài 8.4).
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| $\bar{\alpha}_t$ | $\prod_{s\le t}(1 - \beta_s)$, giảm dần |
+| Thuận | $\mathbf{x}_t = \sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_t}\boldsymbol{\varepsilon}$ |
+| Huấn luyện | dự đoán $\boldsymbol{\varepsilon}$ từ $(\mathbf{x}_t, t)$ |
+| Khôi phục | $\hat{\mathbf{x}}_0 = (\mathbf{x}_t - \sqrt{1-\bar{\alpha}_t}\hat{\boldsymbol{\varepsilon}})/\sqrt{\bar{\alpha}_t}$ |
+
+<MarkRead client:visible lesson="8.9" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="computer-vision" lesson="8.9" types={["diffusion-forward"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Ho, Jain và Abbeel (2020), "Denoising Diffusion Probabilistic Models", [arxiv.org/abs/2006.11239](https://arxiv.org/abs/2006.11239).
+- Rombach và cộng sự (2022), "High-Resolution Image Synthesis with Latent Diffusion Models", [arxiv.org/abs/2112.10752](https://arxiv.org/abs/2112.10752).
+- Weng, "What are Diffusion Models?", [lilianweng.github.io](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/).

@@ -1,0 +1,13 @@
+$$
+\mathbf{x} = (2, 1)\T,\ \mathbf{W}_1 = \begin{bmatrix} 1 & -1 \\ 2 & 1 \end{bmatrix},\ \mathbf{b}_1 = (0, -5)\T
+$$
+
+$$
+\mathbf{z}_1 = \mathbf{W}_1\mathbf{x} + \mathbf{b}_1 = (1, 0)\T,\quad \mathbf{a}_1 = \mathrm{ReLU}(\mathbf{z}_1) = (1, 0)\T
+$$
+
+$$
+\mathbf{W}_2 = \begin{bmatrix} 1 & 2 \end{bmatrix},\ \mathbf{b}_2 = (1)\T:\quad \hat{y} = \mathbf{W}_2\mathbf{a}_1 + \mathbf{b}_2 = 2
+$$
+
+Nơ-ron thứ hai có $z = 0 \le 0$ nên bị ReLU cắt về $0$ và không đóng góp cho đầu ra.

@@ -1,0 +1,16 @@
+```python
+import numpy as np
+
+X = np.zeros((4, 3))    # 4 mẫu, 3 đặc trưng
+w = np.zeros(3)
+
+print((X @ w).shape)    # đúng: (4,)
+print((w @ X).shape)    # sai thứ tự: 3 không khớp 4
+```
+
+Kết quả in ra:
+
+```text
+(4,)
+ValueError: matmul: Input operand 1 has a mismatch in its core dimension 0, with gufunc signature (n?,k),(k,m?)->(n?,m?) (size 4 is different from 3)
+```

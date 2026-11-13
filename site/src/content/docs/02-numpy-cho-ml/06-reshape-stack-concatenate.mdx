@@ -1,0 +1,89 @@
+---
+title: reshape, stack, concatenate
+description: Đổi cách chia dữ liệu thành hàng và cột, ghép các mảng
+lesson: "2.6"
+prerequisites: ["2.1", "2.2"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExReshape from '../../../generated/lesson-2-6/reshape-example.mdx';
+import ExStack from '../../../generated/lesson-2-6/stack-concat.mdx';
+import ExMistake from '../../../generated/lesson-2-6/mistake-reshape.mdx';
+
+## Mục tiêu
+
+- Dự đoán kết quả và shape của `reshape` (kể cả với `-1`).
+- Phân biệt `concatenate` (nối theo trục có sẵn) với `stack` (tạo trục mới).
+
+## Toán ↔ NumPy
+
+| Toán | NumPy |
+| --- | --- |
+| trải ma trận thành vector (vectorize) | `A.reshape(-1)` hoặc `A.flatten()` |
+| xếp các vector thành các cột/hàng của ma trận | `np.stack([...], axis=1 / 0)` |
+| ghép hai ma trận cạnh nhau $[\mathbf{A}\;\mathbf{B}]$ | `np.concatenate([A, B], axis=1)` |
+| ghép hai ma trận chồng nhau | `np.concatenate([A, B], axis=0)` |
+
+## Trực giác
+
+Dữ liệu trong bộ nhớ là một chuỗi phẳng các số; `shape` chỉ là cách ta **đọc** chuỗi đó thành hàng và cột. `reshape` đổi cách đọc mà không đổi dữ liệu. `concatenate` và `stack` ghép nhiều mảng thành một mảng lớn hơn.
+
+## Định nghĩa
+
+- `a.reshape(new_shape)`: tổng số phần tử phải giữ nguyên; phần tử được đọc theo thứ tự **hàng trước** (row-major). Có thể dùng đúng một `-1`, được suy ra từ phần còn lại.
+- `np.concatenate([a, b], axis=k)`: nối dọc theo trục `k` **đã có**; các trục còn lại phải bằng nhau.
+- `np.stack([a, b], axis=k)`: tạo một trục **mới** ở vị trí `k`; `a` và `b` phải cùng shape.
+- `np.vstack` và `np.hstack` là dạng viết tắt của nối theo hàng và theo cột.
+
+## Ví dụ
+
+### `reshape`
+
+<ExReshape />
+
+### `concatenate` và `stack`
+
+<ExStack />
+
+## Tính chất
+
+- `reshape` thường trả về **view** (không sao chép) khi có thể.
+- `a.reshape(-1)` luôn cho mảng một chiều với `a.size` phần tử.
+- `stack` luôn tăng `ndim` thêm $1$; `concatenate` giữ nguyên `ndim`.
+
+## Lỗi thường gặp
+
+**Lỗi 1: số phần tử không khớp.**
+
+<ExMistake />
+
+**Lỗi 2: nhầm `reshape` với chuyển vị.** `reshape(n, m)` đổi cách chia **theo thứ tự đọc**, còn `.T` hoán đổi trục. Hai phép cho kết quả khác nhau.
+
+**Lỗi 3: dùng nhiều hơn một `-1`.**
+
+**Lỗi 4: nhầm `concatenate` với `stack` khi ghép hai ảnh/vector.** Hãy kiểm tra `ndim` mong muốn của kết quả.
+
+## Liên hệ với ML
+
+- **Trải phẳng ảnh:** `imgs.reshape(N, -1)` đưa batch ảnh thành ma trận dữ liệu `(N, H*W)`.
+- **Ghép các batch** hoặc đặc trưng: `np.concatenate([X1, X2], axis=1)`.
+- **Multi-head attention:** tách và nối các đầu bằng `reshape` và `transpose`.
+
+## Tóm tắt
+
+| Hàm | Hiệu ứng lên shape |
+| --- | --- |
+| `reshape` | đổi shape, giữ tổng số phần tử |
+| `concatenate(axis=k)` | cộng độ dài ở trục `k` |
+| `stack(axis=k)` | thêm trục mới ở vị trí `k` |
+
+<MarkRead client:visible lesson="2.6" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="numpy" lesson="2.6" types={["np-reshape"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- `reshape`, `concatenate`, `stack`: tài liệu NumPy, mục "Array manipulation routines", [numpy.org/doc](https://numpy.org/doc/stable/).

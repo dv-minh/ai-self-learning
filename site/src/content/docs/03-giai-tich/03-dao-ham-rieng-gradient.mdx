@@ -1,0 +1,108 @@
+---
+title: Đạo hàm riêng và gradient
+description: Đạo hàm riêng, gradient, hướng tăng nhanh nhất, điểm dừng
+lesson: "3.3"
+prerequisites: ["3.1", "1.1"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExPartial from '../../../generated/lesson-3-3/partial.mdx';
+import ExGradient from '../../../generated/lesson-3-3/gradient-value.mdx';
+import ExSteepest from '../../../generated/lesson-3-3/steepest.mdx';
+import PropZero from '../../../generated/lesson-3-3/prop-zero-gradient.mdx';
+import ExMistake from '../../../generated/lesson-3-3/mistake-partial.mdx';
+
+## Mục tiêu
+
+- Tính đạo hàm riêng của hàm nhiều biến.
+- Tính gradient và giá trị của nó tại một điểm.
+- Hiểu gradient chỉ hướng tăng nhanh nhất và vì sao gradient descent đi ngược gradient.
+
+## Trực giác
+
+Hàm nhiều biến như mất mát $L(w_1, w_2)$ là một "mặt đồi" trên mặt phẳng các trọng số. Đạo hàm riêng theo $w_1$ là độ dốc khi bạn chỉ đi dọc theo hướng $w_1$ (giữ $w_2$ đứng yên). **Gradient** gom độ dốc theo mọi trục thành một vector, và vector đó chỉ hướng **dốc lên nhanh nhất**. Muốn đi xuống đáy (cực tiểu mất mát) ta đi theo hướng ngược lại.
+
+## Định nghĩa
+
+**Đạo hàm riêng (partial derivative)** theo $x_i$: đạo hàm theo $x_i$ khi coi mọi biến khác là hằng số,
+
+$$
+\frac{\partial f}{\partial x_i}(\mathbf{x}) = \lim_{h\to 0}\frac{f(\mathbf{x} + h\mathbf{e}_i) - f(\mathbf{x})}{h}.
+$$
+
+**Gradient (gradient)** của $f : \R^{n} \to \R$:
+
+$$
+\nabla f(\mathbf{x}) = \begin{bmatrix} \partial f/\partial x_1 \\ \vdots \\ \partial f/\partial x_n \end{bmatrix} \in \R^{n}.
+$$
+
+Đọc bằng lời: vector các đạo hàm riêng, cùng cỡ với $\mathbf{x}$.
+
+**Điểm dừng (critical point):** nơi $\nabla f = \mathbf{0}$. Cực trị (nếu có) của hàm khả vi nằm trong số các điểm dừng.
+
+**Hướng tăng nhanh nhất:** trong mọi hướng đơn vị $\mathbf{d}$, tốc độ tăng của $f$ là $\nabla f\T\mathbf{d}$ (bài 1.2), lớn nhất khi $\mathbf{d}$ cùng hướng với $\nabla f$.
+
+**Đạo hàm riêng bậc hai hỗn hợp** $\dfrac{\partial^2 f}{\partial x\,\partial y}$: đạo hàm theo $y$ trước rồi theo $x$.
+
+## Ví dụ
+
+### Đạo hàm riêng
+
+<ExPartial />
+
+### Gradient tại một điểm
+
+<ExGradient />
+
+### Gradient chỉ hướng tăng nhanh nhất
+
+<ExSteepest />
+
+## Tính chất
+
+- **Gradient bằng $\mathbf{0}$ tại cực trị của hàm khả vi.** Ví dụ:
+
+<PropZero />
+
+- **Gradient vuông góc với đường mức** của $f$ (đường nơi $f$ không đổi).
+- **Tuyến tính:** $\nabla(af + bg) = a\nabla f + b\nabla g$.
+- Với hàm đủ trơn, $\dfrac{\partial^2 f}{\partial x\,\partial y} = \dfrac{\partial^2 f}{\partial y\,\partial x}$ (bài 3.5).
+
+## Lỗi thường gặp
+
+**Lỗi 1: không coi biến còn lại là hằng số.**
+
+<ExMistake />
+
+**Lỗi 2: viết gradient là số, không phải vector.** $\nabla f$ có $n$ thành phần; chỉ đạo hàm riêng mới là số.
+
+**Lỗi 3: nhầm hướng:** gradient chỉ hướng **tăng** nhanh nhất; để **giảm** mất mát ta đi theo $-\nabla f$.
+
+**Lỗi 4: quên thay điểm** khi đề hỏi giá trị tại một điểm cụ thể.
+
+## Liên hệ với ML
+
+- **Gradient descent:** $\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla L(\mathbf{w})$, với $\eta > 0$ là learning rate.
+- **Mô hình tuyến tính, mất mát bình phương:** $L = \frac{1}{2}(w_1x_1 + w_2x_2 - y)^2$ có $\nabla L = (\hat{y} - y)\,(x_1, x_2)$.
+- **Điểm dừng** là nơi thuật toán tối ưu mong dừng; liệu nó là cực tiểu, cực đại hay yên ngựa phụ thuộc Hessian (bài 3.5).
+
+## Tóm tắt
+
+| Khái niệm | Công thức |
+| --- | --- |
+| Đạo hàm riêng | đạo hàm theo $x_i$, các biến khác là hằng |
+| Gradient | $\nabla f = (\partial f/\partial x_1, \dots, \partial f/\partial x_n)$ |
+| Hướng tăng nhanh nhất | $\nabla f$ |
+| Điểm dừng | $\nabla f = \mathbf{0}$ |
+
+<MarkRead client:visible lesson="3.3" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="calculus" lesson="3.3" types={["partial-deriv", "gradient"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Đạo hàm riêng và gradient: *Mathematics for Machine Learning*, chương về giải tích vector, [mml-book.github.io](https://mml-book.github.io).
+- Gradient và tối ưu hóa: *Dive into Deep Learning*, phụ lục về giải tích nhiều biến, [d2l.ai](https://d2l.ai).

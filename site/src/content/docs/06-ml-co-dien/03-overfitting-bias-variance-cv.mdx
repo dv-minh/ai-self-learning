@@ -1,0 +1,94 @@
+---
+title: Overfitting, bias–variance, cross-validation
+description: Phân rã sai số, chọn mô hình bằng cross-validation, tránh rò rỉ dữ liệu
+lesson: "6.3"
+prerequisites: ["6.1", "4.3"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExFolds from '../../../generated/lesson-6-3/kfold-indices.mdx';
+import ExBv from '../../../generated/lesson-6-3/bias-variance-numbers.mdx';
+import ExSelect from '../../../generated/lesson-6-3/select-by-cv.mdx';
+import ExMistake from '../../../generated/lesson-6-3/mistake-leak.mdx';
+
+## Mục tiêu
+
+- Phân biệt underfitting và overfitting qua lỗi huấn luyện và lỗi validation.
+- Tính bias, variance, và sai số kỳ vọng $= \text{bias}^2 + \text{variance} + \sigma^2$.
+- Chia dữ liệu cho cross-validation $k$-fold và tính lỗi CV.
+- Chọn siêu tham số bằng cross-validation mà không rò rỉ dữ liệu.
+
+## Trực giác
+
+Mô hình quá đơn giản (đường thẳng cho dữ liệu cong) sai một cách hệ thống: **bias** cao, **underfit**. Mô hình quá linh hoạt (đa thức bậc cao) khớp cả nhiễu nên dự đoán thay đổi mạnh theo từng bộ dữ liệu huấn luyện: **variance** cao, **overfit**. Lỗi huấn luyện luôn giảm khi mô hình phức tạp hơn, nhưng lỗi trên dữ liệu mới giảm rồi lại tăng (hình chữ U). Ta không thể chọn mô hình theo lỗi huấn luyện, nên cần ước lượng lỗi trên dữ liệu chưa thấy: tập validation hoặc cross-validation.
+
+## Định nghĩa
+
+Tại một điểm $x_0$ với giá trị thật $f(x_0)$ và nhãn quan sát $y = f(x_0) + \varepsilon$ ($\mathbb{E}\varepsilon = 0$, $\mathrm{Var}\,\varepsilon = \sigma^2$), mô hình $\hat{f}$ huấn luyện trên các bộ dữ liệu khác nhau:
+
+$$
+\mathbb{E}\big[(\hat{f}(x_0) - y)^2\big] = \underbrace{\big(\mathbb{E}[\hat{f}(x_0)] - f(x_0)\big)^2}_{\text{bias}^2} + \underbrace{\mathbb{E}\big[(\hat{f}(x_0) - \mathbb{E}\hat{f}(x_0))^2\big]}_{\text{variance}} + \underbrace{\sigma^2}_{\text{noise}}.
+$$
+
+**Cross-validation $k$-fold:** chia dữ liệu thành $k$ fold (nếu $n$ không chia hết cho $k$, các fold đầu nhận thêm một mẫu); lần lượt dùng mỗi fold làm validation và $k-1$ fold còn lại để huấn luyện; lỗi CV là trung bình lỗi trên các lần lặp (nếu các fold không cùng cỡ, dùng trung bình có trọng số theo kích thước, tức tổng số lỗi chia $n$). Chọn siêu tham số có lỗi CV nhỏ nhất; **tập kiểm tra cuối cùng** (test set) chỉ dùng một lần để báo cáo.
+
+## Ví dụ
+
+### Chia fold
+
+<ExFolds />
+
+### Phân rã bias–variance bằng số
+
+<ExBv />
+
+### Chọn siêu tham số bằng CV
+
+<ExSelect />
+
+## Tính chất
+
+- **Đánh đổi bias–variance:** tăng độ phức tạp thường giảm bias nhưng tăng variance; sai số kiểm tra tối thiểu ở giữa.
+- **Variance của mô hình giảm khi có nhiều dữ liệu hơn hoặc khi dùng regularization** (bài 5.7), trung bình nhiều mô hình (random forest, bài 6.7).
+- **$k$ lớn** (ví dụ leave-one-out) cho ước lượng ít chệch nhưng tốn kém và có phương sai cao; $k = 5$ hoặc $10$ là mặc định phổ biến.
+- **Nhiễu $\sigma^2$ không giảm được**: đó là sàn của sai số.
+
+## Lỗi thường gặp
+
+**Lỗi 1: rò rỉ dữ liệu (data leakage).**
+
+<ExMistake />
+
+**Lỗi 2: chọn mô hình dựa trên tập kiểm tra** rồi báo cáo chính sai số đó. Tập kiểm tra bị "dùng" nên sai số lạc quan.
+
+**Lỗi 3: lấy trung bình đơn giản các tỉ lệ lỗi khi các fold không cùng cỡ.** Dùng tổng số lỗi chia tổng số mẫu.
+
+**Lỗi 4: nhầm bias với sai số.** Bias chỉ là độ lệch của dự đoán **trung bình**; mô hình có thể có bias bằng $0$ mà variance rất lớn.
+
+## Liên hệ với ML
+
+- **Chọn siêu tham số** ($\lambda$ của ridge, $k$ của KNN, độ sâu cây, $C$ của SVM) bằng grid search với cross-validation.
+- **Chẩn đoán:** lỗi huấn luyện thấp nhưng validation cao $\Rightarrow$ overfit (thêm dữ liệu, regularization, mô hình đơn giản hơn); cả hai cùng cao $\Rightarrow$ underfit (mô hình phức tạp hơn, thêm đặc trưng).
+- **Dữ liệu chuỗi thời gian** cần cách chia theo thời gian, không xáo trộn ngẫu nhiên.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Sai số kỳ vọng | $\text{bias}^2 + \text{variance} + \sigma^2$ |
+| Underfit | bias cao, lỗi huấn luyện cao |
+| Overfit | variance cao, lỗi huấn luyện thấp nhưng validation cao |
+| $k$-fold CV | mỗi fold làm validation một lần; lỗi CV = trung bình |
+
+<MarkRead client:visible lesson="6.3" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="classical-ml" lesson="6.3" types={["kfold-cv", "bias-variance"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Phân rã bias–variance và cross-validation: *The Elements of Statistical Learning*, chương 7, [hastie.su.domains/ElemStatLearn](https://hastie.su.domains/ElemStatLearn/).
+- *Mathematics for Machine Learning*, chương 8 (model selection, cross-validation), [mml-book.github.io](https://mml-book.github.io).
+- Tài liệu scikit-learn về cross-validation: [scikit-learn.org/stable/modules/cross_validation.html](https://scikit-learn.org/stable/modules/cross_validation.html).

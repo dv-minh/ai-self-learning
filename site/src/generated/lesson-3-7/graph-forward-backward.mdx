@@ -1,0 +1,17 @@
+```python
+a = 2
+b = -3
+u = a * b
+v = u + a
+L = v ** 2
+```
+
+**Forward:** `u` = -6, `v` = -4, `L` = 16.
+
+**Backward** (bắt đầu từ $\partial L/\partial L = 1$, đi ngược):
+
+- Nút `L`: gradient đến nút này là $1$; truyền về `v` thêm $-8$.
+- Nút `v`: gradient đến nút này là $-8$; truyền về `u` thêm $-8$, `a` thêm $-8$.
+- Nút `u`: gradient đến nút này là $-8$; truyền về `a` thêm $24$, `b` thêm $-16$.
+
+Kết quả: $\partial L/\partial a = 16$ và $\partial L/\partial b = -16$. Chú ý `a` được dùng ở **hai chỗ** (`u` và `v`) nên nhận gradient cộng dồn từ cả hai.

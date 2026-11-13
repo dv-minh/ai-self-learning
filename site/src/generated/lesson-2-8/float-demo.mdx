@@ -1,0 +1,17 @@
+```python
+import numpy as np
+
+print(0.1 + 0.2 == 0.3)
+print(0.1 + 0.2)
+print(np.isclose(0.1 + 0.2, 0.3))
+print(1e16 + 1 == 1e16)     # số nhỏ bị "nuốt" khi cộng với số rất lớn
+```
+
+Kết quả in ra:
+
+```text
+False
+0.30000000000000004
+True
+True
+```

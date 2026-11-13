@@ -1,0 +1,99 @@
+---
+title: K láng giềng gần nhất (KNN)
+description: Phân loại và hồi quy bằng các điểm gần nhất, trọng số khoảng cách, tầm quan trọng của thang đo
+lesson: "6.5"
+prerequisites: ["1.2", "6.3"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExKnn from '../../../generated/lesson-6-5/knn-example.mdx';
+import ExReg from '../../../generated/lesson-6-5/knn-regress-example.mdx';
+import ExScale from '../../../generated/lesson-6-5/knn-scaling.mdx';
+import ExMistake from '../../../generated/lesson-6-5/mistake-k-too-small.mdx';
+
+## Mục tiêu
+
+- Phân loại một điểm bằng KNN với khoảng cách Euclid hoặc Manhattan và bầu chọn đa số hoặc có trọng số.
+- Dự đoán giá trị bằng hồi quy KNN.
+- Giải thích vì sao KNN nhạy với thang đo đặc trưng và với lựa chọn $k$.
+
+## Trực giác
+
+"Hãy nhìn hàng xóm": để đoán nhãn của một điểm mới, tìm $k$ điểm huấn luyện gần nó nhất và để chúng bỏ phiếu. KNN không "học" tham số: nó **ghi nhớ** toàn bộ dữ liệu (lazy learner) và mọi tính toán diễn ra lúc dự đoán. $k$ nhỏ cho biên quyết định gồ ghề (variance cao); $k$ lớn cho biên mượt (bias cao).
+
+## Định nghĩa
+
+Với điểm cần dự đoán $\mathbf{q}$, gọi $\mathcal{N}_k(\mathbf{q})$ là $k$ điểm huấn luyện gần $\mathbf{q}$ nhất theo một khoảng cách:
+
+$$
+d_2(\mathbf{x}, \mathbf{q})^2 = \sum_j (x_j - q_j)^2,\qquad d_1(\mathbf{x}, \mathbf{q}) = \sum_j |x_j - q_j|.
+$$
+
+- **Phân loại:** lớp được nhiều láng giềng nhất. Có trọng số: mỗi láng giềng đóng góp $w_i = 1/d_i^2$ cho lớp của nó, lớp có tổng trọng số lớn nhất thắng.
+- **Hồi quy:** $\hat{y} = \dfrac{1}{k}\sum_{i \in \mathcal{N}_k} y_i$, hoặc có trọng số $\hat{y} = \dfrac{\sum w_iy_i}{\sum w_i}$.
+
+So sánh khoảng cách bình phương cho cùng thứ tự với khoảng cách Euclid nên không cần lấy căn.
+
+## Ví dụ
+
+### Phân loại với $k = 3$
+
+<ExKnn />
+
+### Hồi quy KNN
+
+<ExReg />
+
+### Ảnh hưởng của thang đo
+
+<ExScale />
+
+## Tính chất
+
+- **$k = 1$:** lỗi huấn luyện bằng $0$; biên quyết định là các ô Voronoi quanh điểm huấn luyện.
+- **$k = n$:** luôn dự đoán lớp đa số (hoặc trung bình toàn bộ), underfit.
+- **Chọn $k$ lẻ** (với hai lớp) để tránh hòa phiếu; chọn $k$ bằng cross-validation (bài 6.3).
+- **Trọng số theo khoảng cách** làm điểm rất gần chiếm ưu thế, giảm ảnh hưởng của láng giềng xa trong $k$ điểm.
+- **Lời nguyền số chiều:** trong không gian nhiều chiều mọi điểm gần như cách đều nhau, "gần nhất" mất ý nghĩa.
+- **Chi phí dự đoán** $O(nd)$ cho mỗi điểm nếu duyệt toàn bộ.
+
+## Lỗi thường gặp
+
+**Lỗi 1: chọn $k$ quá nhỏ.**
+
+<ExMistake />
+
+**Lỗi 2: không chuẩn hóa đặc trưng.** Đặc trưng có thang đo lớn (ví dụ thu nhập so với số tuổi) chi phối khoảng cách.
+
+**Lỗi 3: bỏ sót láng giềng** khi hai khoảng cách bằng nhau; phải có quy tắc phá hòa (đề bài ở đây tránh trường hợp này).
+
+**Lỗi 4: dùng nhãn của điểm kiểm tra trong khi tìm láng giềng** (rò rỉ), hoặc tính chuẩn hóa trên toàn bộ dữ liệu (bài 6.3).
+
+## Liên hệ với ML
+
+- **Hệ gợi ý và tìm kiếm tương tự** (tìm láng giềng gần nhất xấp xỉ trên embedding, dùng cosine similarity ở bài 1.2).
+- **Đường cơ sở (baseline)** nhanh để kiểm tra dữ liệu có cấu trúc cục bộ hay không.
+- KNN là bước đầu tiên để hiểu **không gian đặc trưng** và **thang đo** trước khi học các mô hình tham số.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Phân loại | đa số phiếu của $k$ láng giềng gần nhất |
+| Hồi quy | trung bình $y$ của $k$ láng giềng |
+| Có trọng số | $w = 1/d^2$ |
+| $k$ nhỏ / lớn | variance cao / bias cao |
+| Điều kiện | chuẩn hóa đặc trưng trước |
+
+<MarkRead client:visible lesson="6.5" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="classical-ml" lesson="6.5" types={["knn-classify", "knn-regress"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- *The Elements of Statistical Learning*, chương 13 (prototype methods và nearest neighbors), [hastie.su.domains/ElemStatLearn](https://hastie.su.domains/ElemStatLearn/).
+- Tài liệu scikit-learn: Nearest Neighbors, [scikit-learn.org/stable/modules/neighbors.html](https://scikit-learn.org/stable/modules/neighbors.html).
+- [machinelearningcoban.com](https://machinelearningcoban.com): bài về K-nearest neighbors.

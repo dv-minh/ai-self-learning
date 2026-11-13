@@ -1,0 +1,44 @@
+$$
+\mathbf{v}_{1} = \begin{bmatrix} 3 \\ 4 \\ 3 \end{bmatrix}
+$$
+
+$$
+\mathbf{v}_{2} = \begin{bmatrix} 3 \\ 0 \\ 4 \end{bmatrix}
+$$
+
+$$
+\mathbf{v}_{3} = \begin{bmatrix} 3 \\ 8 \\ 2 \end{bmatrix}
+$$
+
+Xếp thành các cột rồi khử Gauss:
+
+1. Ma trận ban đầu:
+
+   $$
+   \begin{bmatrix} 3 & 3 & 3 \\ 4 & 0 & 8 \\ 3 & 4 & 2 \end{bmatrix}
+   $$
+
+2. $R_{2} \leftarrow R_{2} - \frac{4}{3}R_{1}$:
+
+   $$
+   \begin{bmatrix} 3 & 3 & 3 \\ 0 & -4 & 4 \\ 3 & 4 & 2 \end{bmatrix}
+   $$
+
+3. $R_{3} \leftarrow R_{3} - R_{1}$:
+
+   $$
+   \begin{bmatrix} 3 & 3 & 3 \\ 0 & -4 & 4 \\ 0 & 1 & -1 \end{bmatrix}
+   $$
+
+4. $R_{3} \leftarrow R_{3} + \frac{1}{4}R_{2}$:
+
+   $$
+   \begin{bmatrix} 3 & 3 & 3 \\ 0 & -4 & 4 \\ 0 & 0 & 0 \end{bmatrix}
+   $$
+
+
+Hạng là 2, nhỏ hơn số vector (3) nên chúng **phụ thuộc tuyến tính**. Một quan hệ cụ thể:
+
+$$
+2\mathbf{v}_1 - \mathbf{v}_2 - \mathbf{v}_3 = \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}
+$$

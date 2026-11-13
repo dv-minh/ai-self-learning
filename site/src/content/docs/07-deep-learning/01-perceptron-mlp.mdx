@@ -1,0 +1,102 @@
+---
+title: Perceptron và MLP
+description: Nơ-ron nhân tạo, lớp kết nối đầy đủ, forward pass và đếm tham số của MLP
+lesson: "7.1"
+prerequisites: ["1.5", "1.11", "6.2"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExForward from '../../../generated/lesson-7-1/mlp-forward-example.mdx';
+import ExGates from '../../../generated/lesson-7-1/perceptron-gates.mdx';
+import ExParams from '../../../generated/lesson-7-1/param-count-example.mdx';
+import PropLinear from '../../../generated/lesson-7-1/prop-linear-collapse.mdx';
+import ExMistake from '../../../generated/lesson-7-1/mistake-no-activation.mdx';
+
+## Mục tiêu
+
+- Tính đầu ra của một perceptron, một nơ-ron ReLU và một MLP nhiều lớp (forward pass).
+- Viết một lớp bằng nhân ma trận–vector: $\mathbf{z} = \mathbf{W}\mathbf{a} + \mathbf{b}$.
+- Đếm số tham số và số phép nhân–cộng (MAC) của MLP.
+- Giải thích vì sao cần hàm kích hoạt phi tuyến.
+
+## Trực giác
+
+Một **nơ-ron** nhân mỗi đầu vào với một trọng số, cộng lại, thêm hệ số chặn rồi cho qua một hàm kích hoạt. Một **lớp** là nhiều nơ-ron chạy song song cùng đọc một đầu vào, nên là một phép nhân ma trận. **MLP** (multilayer perceptron) xếp các lớp nối tiếp: đầu ra của lớp trước là đầu vào lớp sau. Mỗi lớp ẩn biến đổi biểu diễn của dữ liệu để lớp sau dễ phân loại hơn.
+
+## Định nghĩa
+
+Một lớp kết nối đầy đủ (fully connected) từ $n_{i}$ đến $n_{i+1}$ chiều:
+
+$$
+\mathbf{z}_{i+1} = \mathbf{W}_{i+1}\mathbf{a}_i + \mathbf{b}_{i+1},\qquad \mathbf{a}_{i+1} = \phi(\mathbf{z}_{i+1}),
+$$
+
+với $\mathbf{W}_{i+1} \in \R^{n_{i+1}\times n_i}$, $\mathbf{b}_{i+1} \in \R^{n_{i+1}}$, $\phi$ là hàm kích hoạt áp dụng từng phần tử, $\mathbf{a}_0 = \mathbf{x}$. Đọc bằng lời: nhân đầu vào với ma trận trọng số, cộng chặn, rồi bẻ cong bằng $\phi$.
+
+**Perceptron** (nơ-ron bước): $\hat{y} = \mathbb{1}[\mathbf{w}\T\mathbf{x} + b > 0]$. **ReLU:** $\phi(z) = \max(0, z)$.
+
+**Số tham số** lớp $i \to i+1$: $n_in_{i+1} + n_{i+1}$ (có chặn). **MAC** một lần forward cho một mẫu (chỉ phép nhân ma trận–vector): $\sum_i n_in_{i+1}$.
+
+## Ví dụ
+
+### Forward pass hai lớp
+
+<ExForward />
+
+### Perceptron: cổng AND và OR
+
+<ExGates />
+
+### Đếm tham số
+
+<ExParams />
+
+## Tính chất
+
+- **Không có hàm kích hoạt phi tuyến, mọi MLP suy biến thành một lớp tuyến tính:**
+
+<PropLinear />
+
+- Perceptron là bộ phân loại tuyến tính: không biểu diễn được XOR; MLP có một lớp ẩn là **xấp xỉ vạn năng** (universal approximation) với đủ nơ-ron.
+- Thứ tự phép tính: ma trận có kích thước $n_{i+1}\times n_i$ nhân vector cột $n_i$.
+- Với batch $N$ mẫu xếp thành hàng $\mathbf{X} \in \R^{N\times n_i}$, lớp tính $\mathbf{Z} = \mathbf{X}\mathbf{W}\T + \mathbf{b}$ (cách viết của PyTorch).
+
+## Lỗi thường gặp
+
+**Lỗi 1: quên hàm kích hoạt giữa các lớp.**
+
+<ExMistake />
+
+**Lỗi 2: nhầm chiều ma trận.** $\mathbf{W}$ cho lớp $n_i \to n_{i+1}$ có $n_{i+1}$ hàng và $n_i$ cột.
+
+**Lỗi 3: quên hệ số chặn khi đếm tham số**, hoặc đếm cả "tham số" của lớp đầu vào.
+
+**Lỗi 4: áp dụng ReLU cho lớp đầu ra của bài toán hồi quy**, khiến đầu ra không thể âm. Lớp cuối thường tuyến tính (hồi quy) hoặc softmax/sigmoid (phân loại).
+
+## Liên hệ với ML
+
+- MLP là khối cơ bản bên trong mọi kiến trúc: khối feed-forward của Transformer (bài 7.6) là MLP hai lớp.
+- Số tham số quyết định bộ nhớ; MAC quyết định tốc độ tính toán.
+- Hồi quy logistic (bài 6.2) chính là MLP không có lớp ẩn với đầu ra sigmoid.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Lớp | $\mathbf{z} = \mathbf{W}\mathbf{a} + \mathbf{b}$, $\mathbf{a}' = \phi(\mathbf{z})$ |
+| Tham số lớp | $n_in_{i+1} + n_{i+1}$ |
+| MAC | $\sum n_in_{i+1}$ |
+| Cần phi tuyến | tránh suy biến thành một lớp tuyến tính |
+
+<MarkRead client:visible lesson="7.1" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="deep-learning" lesson="7.1" types={["mlp-forward", "mlp-params"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Mạng neural truyền thẳng: *Dive into Deep Learning*, chương Multilayer Perceptrons, [d2l.ai](https://d2l.ai).
+- Goodfellow, Bengio và Courville, *Deep Learning*, chương 6, [deeplearningbook.org](https://www.deeplearningbook.org).
+- Hornik, Stinchcombe và White (1989), "Multilayer feedforward networks are universal approximators", *Neural Networks*.

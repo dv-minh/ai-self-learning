@@ -1,0 +1,13 @@
+$$
+\mathbf{X} = \begin{bmatrix} 1 & 3 \\ 5 & 7 \end{bmatrix}\ (\text{rows: samples, columns: features})
+$$
+
+$$
+\text{BatchNorm: mean over samples (per column)} = (3, 5)\T
+$$
+
+$$
+\text{LayerNorm: mean over features (per row)} = (2, 6)\T
+$$
+
+BatchNorm thống kê theo cột (qua batch) nên phụ thuộc kích thước batch; LayerNorm thống kê theo hàng (qua đặc trưng của một mẫu) nên không phụ thuộc batch, hợp với Transformer.

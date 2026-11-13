@@ -1,0 +1,9 @@
+$$
+n = 100,\ \mathrm{Var}(w) = c/n,\ \text{factor per ReLU layer} = c/2
+$$
+
+$$
+\begin{array}{cccccc} c & \ell=0 & \ell=1 & \ell=2 & \ell=3 & \ell=4 \\ \hline \frac{1}{2} & 1 & \frac{1}{4} & \frac{1}{16} & \frac{1}{64} & \frac{1}{256} \\ 2 & 1 & 1 & 1 & 1 & 1 \\ 4 & 1 & 2 & 4 & 8 & 16 \end{array}
+$$
+
+$c = 2$ (khởi tạo He) giữ $\mathbb{E}[a^2] = 1$ qua mọi lớp; $c < 2$ làm kích hoạt co về $0$ (gradient biến mất), $c > 2$ làm nó nổ.

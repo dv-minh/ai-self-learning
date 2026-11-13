@@ -1,0 +1,97 @@
+---
+title: np.linalg
+description: det, inv, solve, matrix_rank, eig, eigh, svd; vì sao dùng solve thay vì inv
+lesson: "2.7"
+prerequisites: ["1.7", "1.9", "1.12", "1.14"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExTour from '../../../generated/lesson-2-7/linalg-tour.mdx';
+import ExSolve from '../../../generated/lesson-2-7/solve-vs-inv.mdx';
+import ExMistake from '../../../generated/lesson-2-7/mistake-singular.mdx';
+
+## Mục tiêu
+
+- Nối mỗi đại lượng của Phần 1 với hàm tương ứng trong `np.linalg`.
+- Dự đoán shape đầu ra của `svd`, `eig`, `eigh`.
+- Biết vì sao `np.linalg.solve(A, b)` được ưa dùng hơn `np.linalg.inv(A) @ b`.
+
+## Toán ↔ NumPy
+
+| Toán | NumPy | Bài |
+| --- | --- | --- |
+| $\det(\mathbf{A})$ | `np.linalg.det(A)` | 1.8 |
+| $\mathbf{A}^{-1}$ | `np.linalg.inv(A)` | 1.9 |
+| nghiệm của $\mathbf{A}\mathbf{x} = \mathbf{b}$ | `np.linalg.solve(A, b)` | 1.7, 1.9 |
+| $\rank(\mathbf{A})$ | `np.linalg.matrix_rank(A)` | 1.10 |
+| trị riêng, vector riêng | `np.linalg.eig(A)` | 1.12 |
+| trị riêng của ma trận **đối xứng** | `np.linalg.eigh(S)` | 1.13 |
+| SVD $\mathbf{A} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}\T$ | `np.linalg.svd(A)` | 1.14 |
+| chuẩn $\norm{\mathbf{x}}_2$ | `np.linalg.norm(x)` | 1.1 |
+
+## Trực giác
+
+Mọi phép tính tay của Phần 1 đều có một hàm tương ứng trong `np.linalg`; trong thực tế ta dùng hàm thay vì tính tay. Nhưng NumPy tính bằng **số thực dấu phẩy động** nên kết quả có sai số rất nhỏ (bài 2.8), và nó chọn thuật toán khác với cách ta khử Gauss trên giấy.
+
+## Định nghĩa
+
+- `solve(A, b)`: giải $\mathbf{A}\mathbf{x} = \mathbf{b}$ bằng phân rã LU; báo `LinAlgError` nếu $\mathbf{A}$ suy biến.
+- `inv(A)`: nghịch đảo tường minh; chỉ cho ma trận vuông khả nghịch.
+- `eig(A)` trả về cặp `(w, V)`: `w` là các trị riêng, các **cột** của `V` là vector riêng. `eigh` dành cho ma trận đối xứng, trả trị riêng **tăng dần** và vector riêng trực giao.
+- `svd(A)` trả về `(U, s, Vt)`: `s` là **vector** các giá trị suy biến giảm dần (không phải ma trận $\boldsymbol{\Sigma}$), và `Vt` chính là $\mathbf{V}\T$. Mặc định `full_matrices=True`: `U` cỡ `(m, m)`, `Vt` cỡ `(n, n)`.
+
+## Ví dụ
+
+### Một vòng qua `np.linalg`
+
+<ExTour />
+
+### `solve` và `inv`
+
+<ExSolve />
+
+## Tính chất
+
+- `solve` không tạo ma trận nghịch đảo: nhanh hơn và ít sai số hơn `inv(A) @ b`, đặc biệt khi $\mathbf{A}$ lớn hoặc gần suy biến.
+- `matrix_rank` dùng SVD với một ngưỡng nhỏ, nên bền với sai số số học (khác với đếm pivot tay).
+- Dạng hàm trả về nhiều giá trị (`eig`, `svd`) thường được gán cho nhiều biến: `U, s, Vt = np.linalg.svd(A)`.
+
+## Lỗi thường gặp
+
+**Lỗi 1: dùng `inv` để giải hệ.** Hãy dùng `solve`.
+
+**Lỗi 2: giải hệ với ma trận suy biến.**
+
+<ExMistake />
+
+**Lỗi 3: dùng `eig` cho ma trận đối xứng.** `eigh` nhanh hơn, ổn định hơn và đảm bảo trị riêng thực, vector riêng trực giao.
+
+**Lỗi 4: nhầm `s` của `svd` với ma trận.** `s` là vector; ma trận $\boldsymbol{\Sigma}$ cần dựng thêm (ví dụ `np.diag(s)` cho trường hợp vuông).
+
+## Liên hệ với ML
+
+- **Hồi quy tuyến tính** (phương trình chuẩn): `np.linalg.solve(X.T @ X, X.T @ y)`, chứ không phải `inv`.
+- **PCA:** `np.linalg.eigh` trên ma trận hiệp phương sai hoặc `svd` trên dữ liệu đã căn giữa (bài 1.14).
+- **Hạng thấp:** `svd` cho xấp xỉ hạng thấp và kiểm tra hạng thực tế của dữ liệu.
+
+## Tóm tắt
+
+| Hàm | Trả về |
+| --- | --- |
+| `det(A)` | số thực |
+| `inv(A)`, `solve(A, b)` | ma trận / vector |
+| `matrix_rank(A)` | số nguyên |
+| `eig`, `eigh` | `(w, V)`: `w` trị riêng, cột của `V` là vector riêng |
+| `svd(A)` | `(U, s, Vt)`; `s` là vector |
+
+<MarkRead client:visible lesson="2.7" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="numpy" lesson="2.7" types={["np-linalg-map", "np-solve-vs-inv"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Các hàm của `np.linalg`: tài liệu NumPy, mục "Linear algebra (numpy.linalg)", [numpy.org/doc](https://numpy.org/doc/stable/).
+- Lý thuyết đằng sau từng hàm: các bài 1.7–1.14 của khóa này.

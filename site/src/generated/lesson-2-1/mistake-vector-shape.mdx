@@ -1,0 +1,18 @@
+```python
+import numpy as np
+
+v = np.array([1, 2, 3])
+col = v[:, None]       # thêm trục để thành vector cột
+
+print(v.shape, v.T.shape)   # .T không làm gì với mảng 1 chiều
+print(col.shape, col.T.shape)
+```
+
+Kết quả in ra:
+
+```text
+(3,) (3,)
+(3, 1) (1, 3)
+```
+
+Vector một chiều không có "hàng" hay "cột"; muốn vector cột hoặc hàng phải thêm trục (`v[:, None]`, `v[None, :]`).

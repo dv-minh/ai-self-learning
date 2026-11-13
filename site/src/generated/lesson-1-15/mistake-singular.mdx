@@ -1,0 +1,9 @@
+$$
+\mathbf{X} = \begin{bmatrix} 4 & 8 \\ 2 & 4 \\ 3 & 6 \\ 1 & 2 \end{bmatrix}
+$$
+
+$$
+\mathbf{X}\T\mathbf{X} = \begin{bmatrix} 30 & 60 \\ 60 & 120 \end{bmatrix},\qquad \det(\mathbf{X}\T\mathbf{X}) = 0
+$$
+
+**Sai:** vẫn áp dụng $\mathbf{w} = (\mathbf{X}\T\mathbf{X})^{-1}\mathbf{X}\T\mathbf{y}$. Cột thứ hai gấp đôi cột thứ nhất (đặc trưng thừa), nên $\mathbf{X}\T\mathbf{X}$ suy biến và không có nghịch đảo: phương trình chuẩn có vô số nghiệm. Cách xử lý: bỏ đặc trưng thừa hoặc thêm regularization (ridge).

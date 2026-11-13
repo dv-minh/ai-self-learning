@@ -1,0 +1,109 @@
+---
+title: Momentum
+description: Gradient descent có "đà", công thức cập nhật vận tốc, Nesterov
+lesson: "5.4"
+prerequisites: ["5.2"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import GdPath from '../../../components/viz/GdPath';
+import ExCompare from '../../../generated/lesson-5-4/momentum-vs-gd.mdx';
+import ExTwo from '../../../generated/lesson-5-4/momentum-two-steps.mdx';
+import ExNesterov from '../../../generated/lesson-5-4/nesterov-lookahead.mdx';
+import ExMistake from '../../../generated/lesson-5-4/mistake-v0.mdx';
+
+## Mục tiêu
+
+- Viết và chạy tay công thức momentum với vận tốc $v_t$.
+- So sánh momentum với gradient descent thường trên cùng một hàm.
+- Phân biệt momentum cổ điển (heavy ball) và Nesterov (nhìn trước).
+- Chọn đúng giá trị khởi đầu $v_0 = 0$ và hiểu vai trò của $\beta$.
+
+## Trực giác
+
+Quả bóng lăn xuống dốc không dừng lại và đổi hướng theo từng điểm: nó tích lũy **đà**. Momentum làm tương tự: giữ một "vận tốc" $v$ là trung bình có phai dần của các gradient gần đây. Theo hướng gradient luôn cùng dấu, vận tốc tích tụ và bước đi lớn dần; theo hướng gradient đổi dấu liên tục (dao động hai bên thung lũng hẹp), các đóng góp triệt tiêu nhau. Kết quả: đi nhanh dọc đáy thung lũng, ít lắc ngang.
+
+## Định nghĩa
+
+**Momentum (cách viết của PyTorch)**, với $v_0 = 0$, hệ số $\beta \in [0, 1)$ (thường $0{,}9$):
+
+$$
+g_t = \nabla f(\mathbf{x}_{t-1}),\qquad \mathbf{v}_t = \beta\,\mathbf{v}_{t-1} + g_t,\qquad \mathbf{x}_t = \mathbf{x}_{t-1} - \eta\,\mathbf{v}_t.
+$$
+
+Đọc bằng lời: vận tốc mới bằng $\beta$ lần vận tốc cũ cộng gradient mới; vị trí đi ngược vận tốc.
+
+**Nesterov momentum (nhìn trước):** gradient được tính tại vị trí mà đà sắp đưa tới:
+
+$$
+g_t = \nabla f\big(\mathbf{x}_{t-1} - \eta\beta\,\mathbf{v}_{t-1}\big),\qquad \mathbf{v}_t = \beta\,\mathbf{v}_{t-1} + g_t,\qquad \mathbf{x}_t = \mathbf{x}_{t-1} - \eta\,\mathbf{v}_t.
+$$
+
+Khi $\beta = 0$ cả hai trở về gradient descent thường.
+
+## Ví dụ
+
+### Momentum so với gradient descent
+
+<ExCompare />
+
+### Hình tương tác: momentum trong thung lũng hẹp
+
+Đặt $k$ lớn (thung lũng hẹp) và $\eta$ vừa phải, rồi tăng $\beta$ từ $0$: quỹ đạo bớt zigzag ngang và tiến nhanh dọc đáy; $\beta$ quá lớn thì vượt qua rồi quay lại.
+
+<GdPath client:visible />
+
+### Hai bước chạy tay
+
+<ExTwo />
+
+### Điểm nhìn trước của Nesterov
+
+<ExNesterov />
+
+## Tính chất
+
+- **Bước đầu giống hệt gradient descent:** $v_0 = 0$ nên $v_1 = g_1$.
+- **Tích lũy:** nếu gradient hằng $g$ thì $v_t \to g/(1-\beta)$; tốc độ hiệu dụng gấp $1/(1-\beta)$ lần (với $\beta = 0{,}9$ là $10$ lần).
+- **Dao động:** momentum có thể vượt qua cực tiểu rồi quay lại (như quả bóng lăn qua đáy), nên cần $\eta$ và $\beta$ phù hợp.
+- **Nesterov** thường ổn định hơn vì phản ứng sớm khi sắp "lố" cực tiểu.
+
+## Lỗi thường gặp
+
+**Lỗi 1: nhầm giá trị khởi đầu của vận tốc.**
+
+<ExMistake />
+
+**Lỗi 2: quên cộng $g_t$ vào $\beta v_{t-1}$** (chỉ nhân $\beta$) hoặc nhân cả $g_t$ với $(1-\beta)$. Công thức trong khóa này (và trong PyTorch) **không** có hệ số $(1-\beta)$ trước $g_t$; một số tài liệu dùng dạng trung bình động có hệ số đó thì $\eta$ phải điều chỉnh.
+
+**Lỗi 3: với Nesterov, tính gradient tại $\mathbf{x}_{t-1}$** thay vì điểm nhìn trước.
+
+**Lỗi 4: dùng $\mathbf{x}$ mới để tính $v$ bước sau theo thứ tự sai.** Thứ tự đúng mỗi bước: $g_t \to \mathbf{v}_t \to \mathbf{x}_t$.
+
+## Liên hệ với ML
+
+- **SGD với momentum** là bộ tối ưu mặc định cho nhiều mô hình thị giác máy tính (thường $\beta = 0{,}9$).
+- **Adam** (bài 5.5) kết hợp momentum (trung bình động của gradient) với chuẩn hóa theo từng tham số.
+- Momentum giúp vượt các vùng gần phẳng và giảm dao động trong thung lũng hẹp (điều kiện số xấu, bài 5.2).
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Momentum | $v_t = \beta v_{t-1} + g_t$, $x_t = x_{t-1} - \eta v_t$ |
+| Khởi tạo | $v_0 = 0$ (bước đầu như GD) |
+| Nesterov | $g_t$ tính tại $x_{t-1} - \eta\beta v_{t-1}$ |
+| $\beta = 0$ | quay về gradient descent |
+
+<MarkRead client:visible lesson="5.4" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="optimization" lesson="5.4" types={["momentum-steps"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Momentum: *Dive into Deep Learning*, chương Tối ưu hóa (momentum), [d2l.ai](https://d2l.ai).
+- Goh (2017), "Why Momentum Really Works", [distill.pub/2017/momentum](https://distill.pub/2017/momentum/).
+- Sutskever và cộng sự (2013), "On the importance of initialization and momentum in deep learning" (định nghĩa Nesterov nhìn trước). Công thức momentum ở trên trùng với `torch.optim.SGD(momentum=...)`; với `nesterov=True`, PyTorch lưu tham số theo một biến số khác: $\theta = \mathbf{x}_{t-1} - \eta\beta\mathbf{v}_{t-1}$ (chính điểm nhìn trước), nên công thức viết khác nhưng **tương đương chính xác** với định nghĩa nhìn trước ở trên.

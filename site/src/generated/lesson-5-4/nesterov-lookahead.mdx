@@ -1,0 +1,13 @@
+$$
+x_0 = 4,\ v_0 = 2,\ \eta = \frac{1}{4},\ \beta = \frac{1}{2},\ f(x) = \tfrac{1}{2}x^2
+$$
+
+$$
+\text{momentum: } g_1 = f'(x_0) = 4
+$$
+
+$$
+\text{Nesterov: } g_1 = f'\big(x_0 - \eta\beta v_0\big) = f'(\frac{15}{4}) = \frac{15}{4}
+$$
+
+Nesterov tính gradient tại vị trí mà momentum sắp đưa tới, nên "nhìn trước" và hiệu chỉnh sớm hơn.

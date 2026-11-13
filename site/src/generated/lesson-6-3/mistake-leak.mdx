@@ -1,0 +1,3 @@
+**Sai:** chuẩn hóa dữ liệu (hoặc chọn đặc trưng) bằng trung bình/độ lệch của **toàn bộ** tập dữ liệu rồi mới chia fold. Thông tin của tập validation đã rò rỉ vào huấn luyện (data leakage), lỗi CV bị đánh giá quá lạc quan.
+
+**Đúng:** trong mỗi lần lặp, chỉ tính thống kê trên các fold huấn luyện rồi áp dụng cho fold validation.

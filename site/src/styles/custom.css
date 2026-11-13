@@ -1,0 +1,257 @@
+/* Tuỳ biến giao diện: bài tập tương tác. Dùng biến màu của Starlight nên tự theo dark mode. */
+.exercise-player,
+.exercise-card {
+	--ex-border: var(--sl-color-gray-5);
+	--ex-ok: #1a7f37;
+	--ex-bad: #cf222e;
+	--ex-warn: #9a6700;
+}
+:root[data-theme='dark'] .exercise-player,
+:root[data-theme='dark'] .exercise-card {
+	--ex-ok: #3fb950;
+	--ex-bad: #ff7b72;
+	--ex-warn: #d29922;
+}
+
+.exercise-card {
+	border: 1px solid var(--ex-border);
+	border-radius: 0.5rem;
+	padding: 1rem 1.25rem;
+	margin: 1rem 0;
+	background: var(--sl-color-bg-nav);
+}
+.exercise-card header {
+	display: flex;
+	gap: 0.75rem;
+	align-items: center;
+	flex-wrap: wrap;
+	margin-bottom: 0.5rem;
+}
+.exercise-card .badge {
+	background: var(--sl-color-accent-low);
+	color: var(--sl-color-text-accent);
+	border-radius: 999px;
+	padding: 0.1rem 0.7rem;
+	font-size: var(--sl-text-sm);
+}
+.exercise-card .type { font-size: var(--sl-text-xs); color: var(--sl-color-gray-3); }
+.exercise-card .display { overflow-x: auto; margin: 0.4rem 0; }
+.exercise-card .answer-area { margin: 1rem 0; }
+
+.exercise-card button,
+.player-nav button {
+	border: 1px solid var(--ex-border);
+	border-radius: 0.375rem;
+	background: var(--sl-color-bg);
+	color: var(--sl-color-text);
+	padding: 0.4rem 0.9rem;
+	cursor: pointer;
+	font: inherit;
+}
+.exercise-card button.primary,
+.player-nav button.primary {
+	background: var(--sl-color-accent);
+	border-color: var(--sl-color-accent);
+	color: var(--sl-color-black);
+}
+.exercise-card button.chosen { outline: 2px solid var(--sl-color-accent); }
+.exercise-card button:disabled,
+.player-nav button:disabled { opacity: 0.5; cursor: not-allowed; }
+.exercise-card .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.exercise-card input[type='text'],
+.exercise-card .num-input,
+.exercise-card .shape-input input:not([type]),
+.matrix-input .cell {
+	border: 1px solid var(--ex-border);
+	border-radius: 0.3rem;
+	background: var(--sl-color-bg);
+	color: var(--sl-color-text);
+	padding: 0.35rem 0.5rem;
+	font: inherit;
+	text-align: center;
+}
+.num-input { width: 12rem; }
+.shape-input { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.shape-input input:not([type]) { width: 3.5rem; }
+
+.matrix-bracket {
+	display: inline-grid;
+	gap: 0.35rem;
+	padding: 0.4rem 0.8rem;
+	border-left: 3px solid var(--sl-color-text);
+	border-right: 3px solid var(--sl-color-text);
+	border-radius: 0.4rem;
+	max-width: 100%;
+	overflow-x: auto;
+}
+.matrix-input .cell { width: 100%; min-width: 0; }
+.matrix-input .cell.wrong { border-color: var(--ex-bad); background: color-mix(in srgb, var(--ex-bad) 18%, transparent); }
+.matrix-input .cell.right { border-color: var(--ex-ok); }
+
+.choices { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.4rem; }
+.msg { margin: 0.5rem 0; font-weight: 600; }
+.msg.ok { color: var(--ex-ok); }
+.msg.bad { color: var(--ex-bad); }
+.msg.warn { color: var(--ex-warn); }
+.hints, .solution ol { padding-left: 1.4rem; }
+.solution { border-top: 1px dashed var(--ex-border); margin-top: 1rem; padding-top: 0.5rem; }
+.solution h4 { margin: 0 0 0.3rem; }
+
+.player-bar { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.player-bar progress { flex: 1; min-width: 8rem; }
+.player-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: space-between; }
+
+@media (max-width: 50rem) {
+	.exercise-card { padding: 0.8rem; }
+}
+
+.solution-set-input { display: grid; gap: 0.6rem; }
+.ss-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.ss-label { min-width: 2.6rem; }
+
+.practice-filters { border: 1px solid var(--sl-color-gray-5); border-radius: 0.5rem; padding: 0.8rem 1rem; display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: flex-end; }
+.practice-filters label { display: grid; gap: 0.2rem; font-size: var(--sl-text-sm); }
+.practice-filters select { padding: 0.35rem 0.5rem; border-radius: 0.3rem; border: 1px solid var(--sl-color-gray-5); background: var(--sl-color-bg); color: var(--sl-color-text); font: inherit; max-width: 100%; }
+.practice-filters button { border: 1px solid var(--sl-color-accent); background: var(--sl-color-accent); color: var(--sl-color-black); border-radius: 0.375rem; padding: 0.45rem 1rem; cursor: pointer; font: inherit; }
+.practice-filters button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Hình minh họa lưới 2D */
+.grid-transform { margin: 1.2rem 0; border: 1px solid var(--sl-color-gray-5); border-radius: 0.5rem; padding: 0.8rem; background: var(--sl-color-bg-nav); }
+.gt-controls { display: grid; gap: 0.6rem; margin-bottom: 0.6rem; }
+.gt-presets { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.gt-presets button { border: 1px solid var(--sl-color-gray-5); border-radius: 0.3rem; background: var(--sl-color-bg); color: var(--sl-color-text); padding: 0.25rem 0.6rem; cursor: pointer; font: inherit; font-size: var(--sl-text-sm); }
+.gt-presets button.chosen { outline: 2px solid var(--sl-color-accent); }
+.gt-matrix { display: flex; align-items: center; gap: 0.5rem; }
+.gt-cells { display: grid; grid-template-columns: repeat(2, 4.2rem); gap: 0.3rem; padding: 0.2rem 0.6rem; border-left: 3px solid var(--sl-color-text); border-right: 3px solid var(--sl-color-text); }
+.gt-cells input { width: 100%; min-width: 0; text-align: center; border: 1px solid var(--sl-color-gray-5); border-radius: 0.3rem; background: var(--sl-color-bg); color: var(--sl-color-text); padding: 0.25rem; font: inherit; }
+.gt-slider { display: flex; align-items: center; gap: 0.6rem; font-size: var(--sl-text-sm); }
+.gt-slider input { flex: 1; max-width: 18rem; }
+.gt-svg { width: 100%; max-width: 30rem; height: auto; display: block; margin: 0 auto; background: var(--sl-color-bg); border-radius: 0.4rem; }
+.gt-orig { stroke: var(--sl-color-gray-5); stroke-width: 1; opacity: 0.6; }
+.gt-grid { stroke: var(--sl-color-accent); stroke-width: 1; opacity: 0.55; }
+.gt-square { fill: var(--sl-color-accent); fill-opacity: 0.25; stroke: var(--sl-color-accent); stroke-width: 1.5; }
+.gt-e1 { stroke: #d1242f; stroke-width: 3; } .gt-e1-fill { fill: #d1242f; }
+.gt-e2 { stroke: #1a7f37; stroke-width: 3; } .gt-e2-fill { fill: #1a7f37; }
+.gt-key-e1 { color: #d1242f; font-weight: 600; } .gt-key-e2 { color: #1a7f37; font-weight: 600; }
+:root[data-theme='dark'] .gt-e1, :root[data-theme='dark'] .gt-key-e1 { stroke: #ff7b72; color: #ff7b72; } :root[data-theme='dark'] .gt-e1-fill { fill: #ff7b72; }
+:root[data-theme='dark'] .gt-e2, :root[data-theme='dark'] .gt-key-e2 { stroke: #3fb950; color: #3fb950; } :root[data-theme='dark'] .gt-e2-fill { fill: #3fb950; }
+.gt-eigen { stroke: #fb8500; stroke-width: 2; stroke-dasharray: 6 4; }
+.grid-transform figcaption { font-size: var(--sl-text-sm); margin-top: 0.5rem; }
+
+/* Dấu tích bài đã đọc ở sidebar */
+.sidebar-content a.lesson-read::after { content: ' ✓'; color: #1a7f37; font-weight: 700; }
+:root[data-theme='dark'] .sidebar-content a.lesson-read::after { color: #3fb950; }
+
+/* Trang tiến độ */
+.progress-table { width: 100%; border-collapse: collapse; font-size: var(--sl-text-sm); }
+.progress-table th, .progress-table td { border: 1px solid var(--sl-color-gray-5); padding: 0.3rem 0.5rem; text-align: left; }
+.progress-bar-cell { min-width: 6rem; }
+.progress-bar-cell progress { width: 100%; }
+.progress-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin: 0.8rem 0; }
+.progress-actions button, .progress-actions label.btn { border: 1px solid var(--sl-color-gray-5); border-radius: 0.375rem; background: var(--sl-color-bg); color: var(--sl-color-text); padding: 0.4rem 0.9rem; cursor: pointer; font: inherit; }
+
+/* Code NumPy (Shiki) và ô nhập biểu thức */
+.code-block { margin: 0.6rem 0; border: 1px solid var(--sl-color-gray-5); border-radius: 0.4rem; background: var(--sl-color-bg); overflow-x: auto; }
+.code-block pre, .code-block.plain { margin: 0; padding: 0.7rem 0.9rem; font-size: var(--sl-text-sm); line-height: 1.5; background: transparent !important; }
+.code-block.plain code { font-family: var(--sl-font-mono); }
+.shiki span { color: var(--shiki-light); }
+:root[data-theme='dark'] .shiki span { color: var(--shiki-dark); }
+.expr-input { display: grid; gap: 0.5rem; }
+.num-input.expr { width: min(100%, 24rem); text-align: left; }
+.expr-preview { min-height: 2rem; padding: 0.3rem 0.6rem; border: 1px dashed var(--sl-color-gray-5); border-radius: 0.3rem; overflow-x: auto; }
+.expr-preview .hint { color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); }
+
+/* ===== Bố cục: nội dung giữa rộng hơn, cột mục lục bên phải hẹp lại ===== */
+:root { --sl-content-width: 76rem; }
+@media (min-width: 72rem) {
+	.right-sidebar-container { width: 13.5rem !important; }
+	/* Starlight mặc định dồn nội dung sát mục lục bên phải (margin auto 0); ta cho căn giữa trong vùng còn lại */
+	[data-has-sidebar][data-has-toc] .main-pane { --sl-content-margin-inline: auto; width: calc(100% - 13.5rem) !important; }
+	.right-sidebar { font-size: var(--sl-text-sm); }
+}
+
+/* ===== Công thức toán: dễ nhìn hơn ===== */
+.katex { font-size: 1.1em; }
+.katex-display { margin: 1.3em 0; }
+/* chỉ số trên/dưới nhỏ gọn hơn một chút */
+.katex .msupsub { font-size: 0.9em; }
+/* vạch phân số rõ hơn, không chen sát chữ */
+.katex .mfrac .frac-line { border-bottom-width: 0.05em; }
+.katex .mfrac { margin: 0 0.12em; }
+
+/* Hình quỹ đạo gradient descent */
+.gd-path .gt-controls { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+.gd-path label { display: grid; gap: 0.2rem; font-size: var(--sl-text-sm); }
+.gd-path svg { display: block; margin: 0 auto; background: var(--sl-color-bg); border-radius: 0.4rem; }
+
+/* ===== Cỡ chữ lớn hơn, dễ đọc hơn ===== */
+:root {
+	--sl-text-body: 1.125rem; /* 18px */
+	--sl-text-body-sm: 0.95rem;
+	--sl-line-height: 1.8;
+}
+.sl-markdown-content { font-size: 1.125rem; }
+.sl-markdown-content :not(a, strong, em, del, span, input, code, br, pre, kbd)
+	+ :not(a, strong, em, del, span, input, code, br, pre, kbd, :where(.not-content *)) { margin-top: 1.1em; }
+.katex { font-size: 1.2em; }
+.katex-display { margin: 1.2em 0; overflow-x: auto; overflow-y: hidden; padding: 0.3em 0; }
+
+/* Vạch phân số: tách khỏi chữ số ở mẫu (và tử) một khoảng thoáng */
+.katex .mfrac .vlist > span:first-child { transform: translateY(0.17em); }
+.katex .mfrac .vlist > span:last-child { transform: translateY(-0.03em); }
+.katex .mfrac .frac-line { border-bottom-width: 0.06em; }
+.katex .mfrac { margin: 0 0.15em; }
+
+/* ===== Khung nổi bật: định nghĩa, tính chất, lỗi thường gặp, liên hệ ML, tóm tắt ===== */
+.lesson-box {
+	--box-color: var(--sl-color-accent);
+	--box-bg: var(--sl-color-accent-low);
+	--box-label: '';
+	position: relative;
+	margin: 1.4rem 0;
+	padding: 1.7rem 1.25rem 1rem 1.4rem;
+	border: 1px solid color-mix(in srgb, var(--box-color) 35%, transparent);
+	border-left: 6px solid var(--box-color);
+	border-radius: 0.6rem;
+	background: color-mix(in srgb, var(--box-bg) 55%, var(--sl-color-bg));
+	box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+}
+.lesson-box::before {
+	content: var(--box-label);
+	position: absolute;
+	top: 0;
+	left: 1.1rem;
+	transform: translateY(-50%);
+	background: var(--box-color);
+	color: #fff;
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	padding: 0.12rem 0.7rem;
+	border-radius: 999px;
+}
+.lesson-box > :first-child { margin-top: 0 !important; }
+.lesson-box > :last-child { margin-bottom: 0 !important; }
+.lesson-box-def { --box-color: #2563eb; --box-bg: #dbeafe; --box-label: 'Định nghĩa'; }
+.lesson-box-prop { --box-color: #7c3aed; --box-bg: #ede9fe; --box-label: 'Tính chất'; }
+.lesson-box-warn { --box-color: #d97706; --box-bg: #fef3c7; --box-label: 'Lỗi thường gặp'; }
+.lesson-box-ml { --box-color: #0d9488; --box-bg: #ccfbf1; --box-label: 'Liên hệ với ML'; }
+.lesson-box-sum { --box-color: #16a34a; --box-bg: #dcfce7; --box-label: 'Tóm tắt'; }
+:root[data-theme='dark'] .lesson-box-def { --box-color: #60a5fa; --box-bg: #1e3a8a; }
+:root[data-theme='dark'] .lesson-box-prop { --box-color: #a78bfa; --box-bg: #4c1d95; }
+:root[data-theme='dark'] .lesson-box-warn { --box-color: #fbbf24; --box-bg: #78350f; }
+:root[data-theme='dark'] .lesson-box-ml { --box-color: #2dd4bf; --box-bg: #134e4a; }
+:root[data-theme='dark'] .lesson-box-sum { --box-color: #4ade80; --box-bg: #14532d; }
+:root[data-theme='dark'] .lesson-box::before { color: #0b1220; }
+.lesson-box table { margin-left: auto; margin-right: auto; }
+.lesson-box .katex-display { margin: 0.9em 0; }
+
+/* Công thức/kết luận đứng riêng: nổi hơn trong khung định nghĩa */
+.lesson-box-def .katex-display {
+	background: var(--sl-color-bg);
+	border: 1px dashed color-mix(in srgb, var(--box-color) 45%, transparent);
+	border-radius: 0.5rem;
+	padding: 0.7em 0.5em;
+}

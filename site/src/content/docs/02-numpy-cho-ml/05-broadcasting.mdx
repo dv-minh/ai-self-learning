@@ -1,0 +1,97 @@
+---
+title: Broadcasting
+description: Quy tắc broadcasting, cộng một vector vào mọi hàng của ma trận
+lesson: "2.5"
+prerequisites: ["2.1", "1.4"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExRow from '../../../generated/lesson-2-5/broadcast-row.mdx';
+import ExOuter from '../../../generated/lesson-2-5/broadcast-outer.mdx';
+import ExMistake from '../../../generated/lesson-2-5/mistake-broadcast.mdx';
+
+## Mục tiêu
+
+- Áp dụng quy tắc broadcasting để suy ra shape kết quả của phép toán giữa hai mảng.
+- Dự đoán giá trị của phép cộng/nhân khi một mảng được "kéo giãn".
+- Nhận biết khi nào broadcasting báo lỗi.
+
+## Toán ↔ NumPy
+
+| Toán | NumPy |
+| --- | --- |
+| cộng một vector vào **mọi hàng** của ma trận | `A + v` (với `v` shape `(n,)`) |
+| cộng một vector vào **mọi cột** | `A + v[:, None]` |
+| trừ vector trung bình $\bar{\mathbf{x}}$ khỏi từng mẫu | `X - X.mean(axis=0)` |
+| tích ngoài $\mathbf{u}\mathbf{v}\T$ | `u[:, None] * v[None, :]` |
+
+Toán học chỉ cho cộng hai ma trận **cùng cỡ** (bài 1.4); broadcasting là cách NumPy mở rộng điều đó một cách tiện lợi.
+
+## Trực giác
+
+Broadcasting cho phép phép toán giữa hai mảng khác shape bằng cách "kéo giãn" chiều có độ dài $1$ (hoặc chiều bị thiếu) cho khớp với mảng kia, **mà không thực sự sao chép dữ liệu**. Cộng một vector vào mọi hàng của ma trận là trường hợp quen thuộc nhất.
+
+## Định nghĩa
+
+Quy tắc, so sánh hai shape từ **bên phải sang trái**:
+
+1. Nếu hai shape khác độ dài, thêm chiều $1$ vào bên **trái** của shape ngắn hơn.
+2. Với mỗi cặp chiều: nếu bằng nhau thì giữ; nếu một chiều bằng $1$ thì kéo giãn theo chiều kia; ngược lại báo `ValueError`.
+3. Shape kết quả lấy chiều lớn hơn ở mỗi vị trí.
+
+Ví dụ: `(3, 1)` với `(4,)` $\to$ thêm $1$: `(1, 4)` $\to$ kết quả `(3, 4)`. Còn `(3, 4)` với `(3,)` $\to$ ghép `4` với `3` $\to$ lỗi.
+
+## Ví dụ
+
+### Cộng một vector vào mọi hàng
+
+<ExRow />
+
+### Cột cộng hàng cho ma trận
+
+<ExOuter />
+
+## Tính chất
+
+- Broadcasting áp dụng cho mọi phép toán từng phần tử (`+`, `-`, `*`, `/`, `**`, so sánh…), không áp dụng cho `@`.
+- Kết quả không phụ thuộc thứ tự toán hạng với phép giao hoán.
+- Broadcasting **không sao chép bộ nhớ** nên rất nhanh; nhưng kết quả mới thì được tạo ra đầy đủ.
+
+## Lỗi thường gặp
+
+**Lỗi 1: shape không ghép được.**
+
+<ExMistake />
+
+**Lỗi 2: broadcasting âm thầm cho kết quả sai.** `(n,)` với `(n, 1)` không lỗi mà cho ma trận `(n, n)`, thường không phải điều bạn muốn. Hãy luôn kiểm tra shape kết quả.
+
+**Lỗi 3: quên thêm trục** khi muốn thao tác theo cột: dùng `v[:, None]` hoặc `keepdims=True`.
+
+**Lỗi 4: tưởng broadcasting làm `@` chạy được.** `@` có quy tắc riêng (bài 2.3).
+
+## Liên hệ với ML
+
+- **Cộng bias:** `X @ W + b` với `b` shape `(h,)` được cộng vào mọi hàng của kết quả.
+- **Căn giữa và chuẩn hóa:** `(X - X.mean(axis=0)) / X.std(axis=0)`.
+- **Khoảng cách mọi cặp mẫu:** `X[:, None, :] - X[None, :, :]` tạo tensor `(N, N, d)` (bài 2.9).
+
+## Tóm tắt
+
+| Shape A | Shape B | Kết quả |
+| --- | --- | --- |
+| `(m, n)` | `(n,)` | `(m, n)` |
+| `(m, n)` | `(m, 1)` | `(m, n)` |
+| `(m, 1)` | `(1, n)` | `(m, n)` |
+| `(m, n)` | `(m,)` | lỗi nếu $m \neq n$ |
+
+<MarkRead client:visible lesson="2.5" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="numpy" lesson="2.5" types={["np-broadcast-shape", "np-broadcast-value"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Quy tắc broadcasting: tài liệu NumPy, mục "Broadcasting", [numpy.org/doc](https://numpy.org/doc/stable/).
+- Cộng ma trận cùng cỡ: bài 1.4.

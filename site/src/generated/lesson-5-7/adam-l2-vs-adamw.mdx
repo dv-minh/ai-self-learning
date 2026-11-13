@@ -1,0 +1,13 @@
+$$
+\theta_0 = 4,\ g_1 = -3,\ \eta = \frac{1}{10},\ \lambda = \frac{1}{2},\ \epsilon = 0
+$$
+
+$$
+\text{Adam + L2: } g' = g + \lambda\theta = -1,\ \mathrm{sign} = -1,\ \theta_1 = \frac{41}{10}
+$$
+
+$$
+\text{AdamW: } \mathrm{sign}(g) = -1,\ \theta_1 = 4 - \frac{1}{10}\left(-1 + \frac{1}{2}\cdot 4\right) = \frac{39}{10}
+$$
+
+Trong Adam + L2, số hạng $\lambda\theta$ bị chuẩn hóa cùng gradient (ở đây còn đổi cả dấu của bước); AdamW tách weight decay ra nên co đều theo $\theta$.

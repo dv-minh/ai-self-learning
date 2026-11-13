@@ -1,0 +1,3 @@
+**Sai:** nghĩ rằng K-means luôn tìm được phân cụm tốt nhất. Với dữ liệu $1, 2, 6, 7, 8$ chọn tâm khởi tạo $(1, 2)$ và $K = 2$ có thể hội tụ về cụm $\{1, 2\}$, $\{6, 7, 8\}$ (tốt), nhưng cách khởi tạo khác trên dữ liệu phức tạp hơn có thể kẹt ở cực tiểu địa phương tồi hơn.
+
+**Đúng:** chạy nhiều lần với khởi tạo khác nhau (hoặc dùng k-means++) và chọn kết quả có inertia nhỏ nhất.

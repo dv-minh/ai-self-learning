@@ -1,0 +1,95 @@
+---
+title: Self-supervised, contrastive và CLIP
+description: Học biểu diễn không cần nhãn, mất mát contrastive, DINO và mô hình ảnh–văn bản CLIP
+lesson: "8.8"
+prerequisites: ["1.2", "7.2", "8.4"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExSim from '../../../generated/lesson-8-8/clip-similarity.mdx';
+import ExLoss from '../../../generated/lesson-8-8/contrastive-loss-shape.mdx';
+import PropTemp from '../../../generated/lesson-8-8/prop-temperature.mdx';
+import ExMistake from '../../../generated/lesson-8-8/mistake-unnormalized.mdx';
+
+## Mục tiêu
+
+- Tính ma trận độ tương tự cosine giữa embedding ảnh và chú thích.
+- Thực hiện truy hồi top-1 và tính độ chính xác từ ma trận độ tương tự.
+- Hiểu mất mát contrastive (InfoNCE) và vai trò của nhiệt độ $\tau$.
+
+## Trực giác
+
+Gán nhãn ảnh rất đắt, nhưng ảnh thì vô tận. **Học tự giám sát** (self-supervised) tạo tín hiệu học từ chính dữ liệu: hai phiên bản biến đổi của cùng một ảnh nên có embedding gần nhau, ảnh khác nhau thì xa nhau (contrastive); hoặc học sinh bắt chước giáo viên là chính nó theo thời gian (DINO). **CLIP** áp dụng ý tưởng này cho cặp (ảnh, chú thích): một bộ mã hóa ảnh và một bộ mã hóa văn bản được huấn luyện để cặp đúng có độ tương tự cao nhất trong cả batch. Kết quả là một không gian chung nơi tìm ảnh bằng câu chữ và phân loại **không cần ví dụ** (zero-shot) chỉ bằng cách so ảnh với mô tả các lớp.
+
+## Định nghĩa
+
+Với batch $n$ cặp (ảnh, chú thích), embedding đã chuẩn hóa $\mathbf{i}_k, \mathbf{t}_k$ ($\|\cdot\| = 1$ nên cosine bằng tích vô hướng):
+
+$$
+\mathbf{S} = \mathbf{I}\mathbf{T}\T,\quad S_{ij} = \mathbf{i}_i\T\mathbf{t}_j,\qquad \ell_{i\to t} = -\ln\frac{e^{S_{ii}/\tau}}{\sum_j e^{S_{ij}/\tau}}.
+$$
+
+Đọc bằng lời: mỗi hàng của $\mathbf{S}/\tau$ là logit của một bài toán phân loại $n$ lớp (chú thích nào khớp ảnh $i$) với nhãn đúng là $i$; mất mát là cross-entropy (bài 7.2). Mất mát CLIP trung bình theo hai chiều (ảnh$\to$chữ và chữ$\to$ảnh). $\tau$ là **nhiệt độ** (thường học được).
+
+**Truy hồi top-1:** ảnh $i$ chọn chú thích $\arg\max_j S_{ij}$; đúng nếu bằng $i$. Độ chính xác là tỉ lệ ảnh truy hồi đúng. **DINO/DINOv2/v3:** huấn luyện học sinh khớp phân phối đầu ra của giáo viên (trung bình động của học sinh) trên các góc nhìn khác nhau của cùng ảnh, không cần nhãn; đặc trưng thu được dùng cho nhiều bài toán thị giác.
+
+## Ví dụ
+
+### Ma trận độ tương tự
+
+<ExSim />
+
+### Mất mát contrastive
+
+<ExLoss />
+
+## Tính chất
+
+- **Nhiệt độ $\tau$ không đổi thứ tự** trong mỗi hàng nhưng điều chỉnh độ "nhọn" của softmax:
+
+<PropTemp />
+
+- **Mỗi batch có $n$ cặp đúng và $n^2 - n$ cặp sai** làm ví dụ âm miễn phí; batch lớn cho nhiều ví dụ âm hơn.
+- **Chuẩn hóa embedding** làm $S_{ij} \in [-1, 1]$ là cosine thật.
+- **Zero-shot:** tạo chú thích như `a photo of a <tên lớp>` cho mỗi lớp, chọn lớp có độ tương tự cao nhất với ảnh.
+- Đặc trưng self-supervised thường cho linear probe (bài 8.5) rất tốt.
+
+## Lỗi thường gặp
+
+**Lỗi 1: dùng tích vô hướng khi chưa chuẩn hóa.**
+
+<ExMistake />
+
+**Lỗi 2: nhầm chiều của $\mathbf{S}$.** Hàng là ảnh, cột là chú thích; truy hồi ảnh$\to$chữ lấy argmax theo **hàng**, chữ$\to$ảnh theo **cột**.
+
+**Lỗi 3: coi hai ảnh khác nhau của cùng một lớp là ví dụ âm** trong mất mát contrastive thuần: có thể gây nhiễu (cần xử lý đặc biệt).
+
+**Lỗi 4: quên chia cho $\tau$** (hoặc nhân nhầm) khi tính logit.
+
+## Liên hệ với ML
+
+- **CLIP và họ** làm nền cho tìm kiếm ảnh theo văn bản, phân loại zero-shot, và bộ mã hóa ảnh của nhiều mô hình ngôn ngữ–thị giác.
+- **DINOv2/DINOv3** cho đặc trưng thị giác tổng quát mạnh mà không cần nhãn.
+- **Contrastive learning** cũng dùng cho âm thanh, văn bản, đề xuất (embedding người dùng–sản phẩm).
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Độ tương tự | $\mathbf{S} = \mathbf{I}\mathbf{T}\T$ (đã chuẩn hóa) |
+| InfoNCE | cross-entropy theo hàng của $\mathbf{S}/\tau$, nhãn là đường chéo |
+| Nhiệt độ | $\tau$ nhỏ $\Rightarrow$ softmax nhọn hơn |
+| Truy hồi | argmax theo hàng hoặc cột |
+
+<MarkRead client:visible lesson="8.8" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="computer-vision" lesson="8.8" types={["clip-retrieval"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Radford và cộng sự (2021), "Learning Transferable Visual Models From Natural Language Supervision" (CLIP), [arxiv.org/abs/2103.00020](https://arxiv.org/abs/2103.00020).
+- Caron và cộng sự (2021), "Emerging Properties in Self-Supervised Vision Transformers" (DINO), [arxiv.org/abs/2104.14294](https://arxiv.org/abs/2104.14294).
+- Oord, Li và Vinyals (2018), "Representation Learning with Contrastive Predictive Coding" (InfoNCE), [arxiv.org/abs/1807.03748](https://arxiv.org/abs/1807.03748).

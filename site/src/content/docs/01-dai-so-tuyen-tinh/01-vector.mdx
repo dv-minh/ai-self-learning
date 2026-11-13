@@ -1,0 +1,160 @@
+---
+title: Vector
+description: Vector cột và hàng, cộng, nhân vô hướng, tổ hợp tuyến tính, chuẩn L1/L2, vector đơn vị
+lesson: "1.1"
+prerequisites: []
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExAdd from '../../../generated/lesson-1-1/add.mdx';
+import ExLincomb4 from '../../../generated/lesson-1-1/lincomb4.mdx';
+import ExNorms from '../../../generated/lesson-1-1/norms.mdx';
+import ExUnit from '../../../generated/lesson-1-1/unit.mdx';
+import ExMistakeNorm from '../../../generated/lesson-1-1/mistake-norm.mdx';
+import PropCommute from '../../../generated/lesson-1-1/prop-commute.mdx';
+import PropDistribute from '../../../generated/lesson-1-1/prop-distribute.mdx';
+import PropNormScale from '../../../generated/lesson-1-1/prop-norm-scale.mdx';
+import PropTriangle from '../../../generated/lesson-1-1/prop-triangle.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Đọc và viết vector cột, vector hàng, và nói vector thuộc không gian nào.
+- Cộng hai vector, nhân vector với một số, và tính tổ hợp tuyến tính của nhiều vector.
+- Tính chuẩn L1 và chuẩn L2 của một vector.
+- Chuẩn hóa một vector thành vector đơn vị.
+
+## Trực giác
+
+Một vector là một danh sách có thứ tự các số. Có hai cách nhìn cùng đúng. Cách thứ nhất là hình học: một mũi tên có độ dài và hướng. Cách thứ hai, quan trọng hơn trong Machine Learning, là dữ liệu: một mẫu gồm nhiều đặc trưng (chiều cao, cân nặng, tuổi…) được xếp thành một vector. Một từ trong mô hình ngôn ngữ cũng được biểu diễn bằng một vector gọi là **embedding**.
+
+Phép cộng vector là "đi theo mũi tên thứ nhất rồi đi tiếp theo mũi tên thứ hai". Nhân với một số là kéo dài, rút ngắn, hoặc đảo chiều mũi tên. Chuẩn là độ dài của mũi tên.
+
+## Định nghĩa
+
+Vector cột $\mathbf{x}$ có $n$ thành phần thực thuộc không gian $\R^{n}$:
+
+$$
+\mathbf{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix} \in \R^{n}.
+$$
+
+Đọc bằng lời: $\mathbf{x}$ là một cột gồm $n$ số $x_1, \dots, x_n$. Vector hàng là chuyển vị $\mathbf{x}\T$ (viết ngang). Trong tài liệu này, "vector" mặc định là vector cột.
+
+**Cộng và nhân vô hướng (scalar multiplication).** Với $\mathbf{u}, \mathbf{v} \in \R^{n}$ và số $k$:
+
+$$
+(\mathbf{u}+\mathbf{v})_i = u_i + v_i, \qquad (k\mathbf{u})_i = k\,u_i.
+$$
+
+Đọc bằng lời: cộng từng thành phần cùng vị trí, và nhân từng thành phần với $k$. Hai vector phải cùng số thành phần mới cộng được.
+
+**Tổ hợp tuyến tính (linear combination).** Với các số $a_1, \dots, a_m$ và các vector $\mathbf{v}_1, \dots, \mathbf{v}_m$:
+
+$$
+a_1\mathbf{v}_1 + a_2\mathbf{v}_2 + \cdots + a_m\mathbf{v}_m.
+$$
+
+Đọc bằng lời: nhân mỗi vector với một hệ số rồi cộng tất cả lại. Khái niệm này sẽ xuất hiện lại ở phép nhân ma trận–vector (bài 1.5).
+
+**Chuẩn (norm).** Chuẩn L1 và chuẩn L2 của $\mathbf{x}$:
+
+$$
+\norm{\mathbf{x}}_1 = \sum_{i=1}^{n} |x_i|, \qquad \norm{\mathbf{x}}_2 = \sqrt{\sum_{i=1}^{n} x_i^2}.
+$$
+
+Đọc bằng lời: chuẩn L1 là tổng các giá trị tuyệt đối; chuẩn L2 là căn bậc hai của tổng các bình phương (độ dài thông thường). Khi chỉ viết $\norm{\mathbf{x}}$ ta hiểu là chuẩn L2.
+
+**Vector đơn vị (unit vector).** Vector có chuẩn L2 bằng $1$. Với $\mathbf{x} \neq \mathbf{0}$, vector cùng hướng và có độ dài $1$ là
+
+$$
+\hat{\mathbf{x}} = \frac{\mathbf{x}}{\norm{\mathbf{x}}_2}.
+$$
+
+Đọc bằng lời: chia mỗi thành phần cho độ dài của vector.
+
+## Ví dụ
+
+### Ví dụ nhỏ: cộng hai vector
+
+<ExAdd />
+
+### Ví dụ lớn hơn: tổ hợp tuyến tính trong $\R^{4}$
+
+Tính $2\mathbf{u} - \mathbf{v} + 3\mathbf{w}$ với ba vector cho dưới đây.
+
+<ExLincomb4 />
+
+### Chuẩn L1 và L2
+
+<ExNorms />
+
+### Vector đơn vị
+
+<ExUnit />
+
+## Tính chất
+
+1. **Giao hoán:** $\mathbf{u}+\mathbf{v} = \mathbf{v}+\mathbf{u}$. Kiểm tra bằng số:
+
+<PropCommute />
+
+2. **Phân phối:** $k(\mathbf{u}+\mathbf{v}) = k\mathbf{u}+k\mathbf{v}$. Kiểm tra bằng số:
+
+<PropDistribute />
+
+3. **Chuẩn và nhân vô hướng:** $\norm{k\mathbf{u}}_2 = |k|\,\norm{\mathbf{u}}_2$. Nhân với số âm làm đảo chiều nhưng độ dài chỉ phụ thuộc $|k|$:
+
+<PropNormScale />
+
+4. **Bất đẳng thức tam giác:** $\norm{\mathbf{u}+\mathbf{v}}_2 \le \norm{\mathbf{u}}_2 + \norm{\mathbf{v}}_2$. Đi thẳng không bao giờ dài hơn đi vòng:
+
+<PropTriangle />
+
+## Lỗi thường gặp
+
+**Lỗi 1: nhầm chuẩn L1 với chuẩn L2.**
+
+<ExMistakeNorm />
+
+**Lỗi 2: cộng hai vector khác số thành phần.** Một vector trong $\R^{2}$ và một vector trong $\R^{3}$ không thể cộng. Hãy kiểm tra số thành phần trước khi cộng.
+
+**Lỗi 3: quên nhân hệ số với mọi thành phần.** $k\mathbf{u}$ nhân $k$ với **tất cả** các thành phần, không chỉ thành phần đầu.
+
+**Lỗi 4: lấy căn trước khi cộng.** $\norm{\mathbf{x}}_2 = \sqrt{x_1^2 + x_2^2 + \cdots}$ chỉ có một dấu căn bao ngoài cả tổng, không phải tổng các căn.
+
+## Liên hệ với ML
+
+- **Mẫu dữ liệu và embedding** đều là vector; so sánh hai mẫu bắt đầu bằng phép trừ vector và chuẩn của hiệu (khoảng cách).
+- **Chuẩn L2 và L1** là nền của regularization: phạt $\norm{\mathbf{w}}_2^2$ (ridge, weight decay) hoặc $\norm{\mathbf{w}}_1$ (lasso) để giữ trọng số nhỏ.
+- **Tổ hợp tuyến tính** là phép tính cốt lõi của mọi lớp tuyến tính: đầu ra là tổ hợp các đặc trưng đầu vào với trọng số học được.
+- **Phép loại suy từ** ("vua − đàn ông + đàn bà") là một tổ hợp tuyến tính các vector embedding.
+
+## Tóm tắt
+
+| Khái niệm | Công thức |
+| --- | --- |
+| Cộng | $(\mathbf{u}+\mathbf{v})_i = u_i + v_i$ |
+| Nhân vô hướng | $(k\mathbf{u})_i = k\,u_i$ |
+| Tổ hợp tuyến tính | $a_1\mathbf{v}_1 + \cdots + a_m\mathbf{v}_m$ |
+| Chuẩn L1 | $\sum_i \lvert x_i \rvert$ |
+| Chuẩn L2 | $\sqrt{\sum_i x_i^2}$ |
+| Vector đơn vị | $\mathbf{x}/\norm{\mathbf{x}}_2$ |
+
+<MarkRead client:visible lesson="1.1" />
+
+## Bài tập
+
+<ExercisePlayer
+  client:visible
+  lesson="1.1"
+  types={["vec-add", "vec-scale", "vec-lincomb", "vec-norm"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Vector, cộng, nhân vô hướng, tổ hợp tuyến tính: MIT 18.06 (Gilbert Strang), bài giảng mở đầu về hình học của hệ phương trình tuyến tính, [ocw.mit.edu](https://ocw.mit.edu).
+- Chuẩn, vector đơn vị, bất đẳng thức tam giác: *Mathematics for Machine Learning*, phần về chuẩn và vector, [mml-book.github.io](https://mml-book.github.io).
+- Trực quan hình học của vector và tổ hợp tuyến tính: *Essence of Linear Algebra*, [3blue1brown.com](https://www.3blue1brown.com).

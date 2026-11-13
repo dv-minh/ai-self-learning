@@ -1,0 +1,104 @@
+---
+title: Khởi tạo trọng số, BatchNorm, LayerNorm
+description: Giữ phương sai kích hoạt ổn định bằng khởi tạo He/Xavier và chuẩn hóa theo batch hoặc theo đặc trưng
+lesson: "7.4"
+prerequisites: ["4.3", "7.1", "7.3"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExInit from '../../../generated/lesson-7-4/init-variance-demo.mdx';
+import ExBn from '../../../generated/lesson-7-4/batchnorm-example.mdx';
+import ExLn from '../../../generated/lesson-7-4/layernorm-vs-batchnorm.mdx';
+import ExMistake from '../../../generated/lesson-7-4/mistake-epsilon-and-eval.mdx';
+
+## Mục tiêu
+
+- Chọn phương sai khởi tạo He, Xavier, LeCun và tính độ lệch chuẩn hoặc biên của phân phối đều.
+- Dự đoán sự co hoặc nổ của kích hoạt qua nhiều lớp.
+- Tính BatchNorm và LayerNorm trên một vector và phân biệt trục chuẩn hóa.
+
+## Trực giác
+
+Nếu trọng số khởi tạo quá nhỏ, tín hiệu co dần về $0$ qua các lớp; nếu quá lớn, nó phình ra. Cả hai làm gradient biến mất hoặc bùng nổ ngay từ bước đầu. Khởi tạo đúng chọn phương sai trọng số sao cho phương sai kích hoạt giữ nguyên qua các lớp. **Chuẩn hóa** (BatchNorm, LayerNorm) giữ điều đó **trong lúc huấn luyện** bằng cách đưa kích hoạt về trung bình $0$, phương sai $1$ rồi cho mô hình học lại thang đo và độ dịch.
+
+## Định nghĩa
+
+Với lớp có $n_{\mathrm{in}}$ đầu vào, $n_{\mathrm{out}}$ đầu ra:
+
+| Phương pháp | $\mathrm{Var}(w)$ | Khi nào |
+| --- | --- | --- |
+| LeCun | $1/n_{\mathrm{in}}$ | tanh/tuyến tính |
+| Xavier (Glorot) | $2/(n_{\mathrm{in}} + n_{\mathrm{out}})$ | tanh, sigmoid |
+| He (Kaiming) | $2/n_{\mathrm{in}}$ | ReLU |
+
+Phân phối đều $U(-a, a)$ có phương sai $a^2/3$, nên Xavier đều dùng $a = \sqrt{6/(n_{\mathrm{in}} + n_{\mathrm{out}})}$. Với ReLU, nửa tín hiệu bị cắt nên $\mathbb{E}[a^2]$ bằng một nửa $\mathrm{Var}(z)$; mỗi lớp nhân $\mathbb{E}[a^2]$ với $n\,\mathrm{Var}(w)/2$, bằng $1$ khi $\mathrm{Var}(w) = 2/n$ (He).
+
+**Chuẩn hóa** một nhóm giá trị $x_1, \dots, x_n$:
+
+$$
+\mu = \frac{1}{n}\sum x_i,\quad \sigma^2 = \frac{1}{n}\sum (x_i - \mu)^2,\quad \hat{x}_i = \frac{x_i - \mu}{\sqrt{\sigma^2 + \epsilon}},\quad y_i = \gamma\hat{x}_i + \beta.
+$$
+
+Đọc bằng lời: trừ trung bình, chia độ lệch chuẩn, rồi co giãn và dịch bằng $\gamma, \beta$ học được. **BatchNorm** chuẩn hóa mỗi đặc trưng **qua các mẫu của batch**; **LayerNorm** chuẩn hóa **qua các đặc trưng của một mẫu**. Trong bài tập đặt $\epsilon = 0$.
+
+## Ví dụ
+
+### Phương sai kích hoạt qua các lớp
+
+<ExInit />
+
+### BatchNorm trên một đặc trưng
+
+<ExBn />
+
+### Trục chuẩn hóa
+
+<ExLn />
+
+## Tính chất
+
+- Sau chuẩn hóa, $\hat{\mathbf{x}}$ có trung bình $0$ và phương sai $1$ (với $\epsilon = 0$).
+- **BatchNorm** cần thống kê batch khi huấn luyện và **running mean/variance** khi suy luận; **LayerNorm** không phụ thuộc batch.
+- $\gamma, \beta$ cho phép mạng khôi phục phép đồng nhất nếu cần ($\gamma = \sigma$, $\beta = \mu$).
+- **Transformer dùng LayerNorm** vì chuỗi có độ dài và batch thay đổi, và batch nhỏ làm thống kê batch kém tin cậy.
+- Chuẩn hóa giúp learning rate lớn hơn và ít nhạy với khởi tạo.
+
+## Lỗi thường gặp
+
+**Lỗi 1: dùng thống kê batch khi suy luận.**
+
+<ExMistake />
+
+**Lỗi 2: chia phương sai cho $n-1$.** Trong BatchNorm/LayerNorm tiêu chuẩn phương sai chia cho $n$ (phương sai thiên lệch).
+
+**Lỗi 3: quên $\epsilon$** khi $\sigma^2$ gần $0$ (chia cho $0$); bài tập đặt $\epsilon = 0$ chỉ để tính tay và chọn dữ liệu có $\sigma^2 > 0$.
+
+**Lỗi 4: dùng khởi tạo He cho tanh** (hoặc ngược lại): hệ số $2$ chỉ đúng khi ReLU cắt một nửa tín hiệu.
+
+## Liên hệ với ML
+
+- Khởi tạo mặc định của `nn.Linear` và `nn.Conv2d` trong PyTorch là biến thể của Kaiming uniform.
+- **BatchNorm** có mặt trong ResNet và CNN (Phần 8); **LayerNorm/RMSNorm** có mặt trong Transformer và LLM (bài 7.6).
+- Khởi tạo xấu là một nguyên nhân thường gặp khiến mô hình không học ngay từ đầu.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| He | $\mathrm{Var}(w) = 2/n_{\mathrm{in}}$ (ReLU) |
+| Xavier | $2/(n_{\mathrm{in}} + n_{\mathrm{out}})$, đều: $a = \sqrt{6/(n_{\mathrm{in}} + n_{\mathrm{out}})}$ |
+| BatchNorm | chuẩn hóa mỗi đặc trưng qua batch |
+| LayerNorm | chuẩn hóa qua các đặc trưng của một mẫu |
+
+<MarkRead client:visible lesson="7.4" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="deep-learning" lesson="7.4" types={["init-var", "norm-compute"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Glorot và Bengio (2010), "Understanding the difficulty of training deep feedforward neural networks".
+- He và cộng sự (2015), "Delving Deep into Rectifiers", [arxiv.org/abs/1502.01852](https://arxiv.org/abs/1502.01852).
+- Ioffe và Szegedy (2015), "Batch Normalization", [arxiv.org/abs/1502.03167](https://arxiv.org/abs/1502.03167); Ba, Kiros và Hinton (2016), "Layer Normalization", [arxiv.org/abs/1607.06450](https://arxiv.org/abs/1607.06450).

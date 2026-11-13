@@ -1,0 +1,40 @@
+Ví dụ này dùng ma trận không vuông: $\mathbf{A}$ là $2\times 3$ và $\mathbf{B}$ là $3\times 2$.
+
+$$
+\mathbf{A} = \begin{bmatrix} -2 & 2 & 2 \\ 0 & 3 & -1 \end{bmatrix}
+$$
+
+$$
+\mathbf{B} = \begin{bmatrix} -2 & -1 \\ -4 & 3 \\ -2 & -3 \end{bmatrix}
+$$
+
+1. Kiểm tra kích thước: $\mathbf{A}$ là $2\times 3$, $\mathbf{B}$ là $3\times 2$. Số cột của $\mathbf{A}$ bằng số hàng của $\mathbf{B}$ nên phép nhân xác định, kết quả là $2\times 2$.
+2. Phần tử c_{11}: lấy hàng 1 của $\mathbf{A}$ nhân cột 1 của $\mathbf{B}$.
+
+   $$
+   c_{11} = (-2) \cdot (-2) + 2 \cdot (-4) + 2 \cdot (-2) = -8
+   $$
+
+3. Phần tử c_{12}: lấy hàng 1 của $\mathbf{A}$ nhân cột 2 của $\mathbf{B}$.
+
+   $$
+   c_{12} = (-2) \cdot (-1) + 2 \cdot 3 + 2 \cdot (-3) = 2
+   $$
+
+4. Phần tử c_{21}: lấy hàng 2 của $\mathbf{A}$ nhân cột 1 của $\mathbf{B}$.
+
+   $$
+   c_{21} = 0 \cdot (-2) + 3 \cdot (-4) + (-1) \cdot (-2) = -10
+   $$
+
+5. Phần tử c_{22}: lấy hàng 2 của $\mathbf{A}$ nhân cột 2 của $\mathbf{B}$.
+
+   $$
+   c_{22} = 0 \cdot (-1) + 3 \cdot 3 + (-1) \cdot (-3) = 12
+   $$
+
+6. Kết quả:
+
+   $$
+   \mathbf{A}\mathbf{B} = \begin{bmatrix} -8 & 2 \\ -10 & 12 \end{bmatrix}
+   $$

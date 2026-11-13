@@ -1,0 +1,93 @@
+---
+title: "@, * và .T"
+description: Tích ma trận khác tích từng phần tử, chuyển vị, shape của tích
+lesson: "2.3"
+prerequisites: ["1.5", "1.3"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExMatmul from '../../../generated/lesson-2-3/matmul-vs-mul.mdx';
+import ExGram from '../../../generated/lesson-2-3/transpose-gram.mdx';
+import ExMistake from '../../../generated/lesson-2-3/mistake-matmul-shape.mdx';
+
+## Mục tiêu
+
+- Phân biệt `A @ B` (tích ma trận) với `A * B` (nhân từng phần tử).
+- Dự đoán kết quả và shape của biểu thức có `@` và `.T`.
+- Biết `.T` không làm gì với mảng một chiều.
+
+## Toán ↔ NumPy
+
+| Toán | NumPy | Bài liên quan |
+| --- | --- | --- |
+| tích ma trận $\mathbf{AB}$ | `A @ B` (hoặc `np.matmul`, `np.dot`) | 1.5 |
+| tích Hadamard $\mathbf{A}\odot\mathbf{B}$ | `A * B` | 1.5 |
+| chuyển vị $\mathbf{A}\T$ | `A.T` | 1.3 |
+| tích vô hướng $\mathbf{u}\T\mathbf{v}$ | `u @ v` | 1.2 |
+| ma trận Gram $\mathbf{X}\T\mathbf{X}$ | `X.T @ X` | 1.6 |
+
+## Trực giác
+
+Toán dùng một ký hiệu cho tích ma trận, còn NumPy dùng **hai toán tử khác nhau** cho hai phép khác nhau. `@` là phép nhân "hàng nhân cột" của đại số tuyến tính. `*` luôn là phép từng phần tử, cho dù các mảng có vẻ là ma trận. Nhầm hai toán tử này là lỗi phổ biến nhất của người mới.
+
+## Định nghĩa
+
+- `A @ B`: tích ma trận; cần số cột của `A` bằng số hàng của `B`; `(m, n) @ (n, p)` cho `(m, p)`.
+- `A * B`: nhân từng phần tử; cần hai shape **cùng nhau hoặc broadcast được** (bài 2.5).
+- `A.T`: chuyển vị, đảo thứ tự các trục; `(m, n)` thành `(n, m)`. Với mảng một chiều `v.T` **không đổi**.
+- `u @ v` với hai vector một chiều cùng độ dài là tích vô hướng (một số).
+
+## Ví dụ
+
+### `@` và `*`
+
+<ExMatmul />
+
+### Ma trận Gram
+
+<ExGram />
+
+## Tính chất
+
+- `(A @ B).T` bằng `B.T @ A.T` (bài 1.5), còn `(A * B).T` bằng `A.T * B.T`.
+- `X.T @ X` luôn có shape `(d, d)` và đối xứng, bất kể số mẫu.
+- `A @ B` nói chung khác `B @ A`, còn `A * B` luôn bằng `B * A`.
+
+## Lỗi thường gặp
+
+**Lỗi 1: dùng `*` khi muốn nhân ma trận.** Với hai ma trận vuông cùng cỡ nó **vẫn chạy** nhưng cho kết quả sai; với shape khác nhau nó báo lỗi. Hãy xem lại ví dụ `@` và `*` ở trên: hai kết quả khác hẳn nhau.
+
+**Lỗi 2: sai thứ tự gây sai shape.**
+
+<ExMistake />
+
+**Lỗi 3: tưởng `v.T` đổi vector thành vector cột.** Với mảng một chiều `.T` không có tác dụng; thêm trục bằng `v[:, None]`.
+
+**Lỗi 4: dùng `np.matrix`.** NumPy khuyến nghị dùng `ndarray` với `@`; `np.matrix` không được dạy.
+
+## Liên hệ với ML
+
+- Dự đoán của lớp tuyến tính cho cả batch: `X @ W + b` với `X` cỡ `(N, d)`, `W` cỡ `(d, h)`.
+- Attention: điểm giữa mọi cặp truy vấn–khóa là `Q @ K.T`.
+- Phép nhân từng phần tử `*` xuất hiện ở cổng (gating) và mặt nạ dropout.
+
+## Tóm tắt
+
+| Biểu thức | Ý nghĩa | Yêu cầu shape |
+| --- | --- | --- |
+| `A @ B` | tích ma trận | `(m,n) @ (n,p)` |
+| `A * B` | từng phần tử | bằng nhau hoặc broadcast |
+| `A.T` | chuyển vị | không có |
+| `X.T @ X` | ma trận Gram | `(d, d)` |
+
+<MarkRead client:visible lesson="2.3" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="numpy" lesson="2.3" types={["np-matmul-vs-mul", "np-transpose"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Toán tử `@`, `np.matmul`, `.T`: tài liệu NumPy, mục "numpy.matmul" và "ndarray.T", [numpy.org/doc](https://numpy.org/doc/stable/).
+- Định nghĩa tích ma trận, tích Hadamard, chuyển vị của tích: bài 1.5 của khóa này.

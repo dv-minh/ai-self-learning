@@ -1,0 +1,140 @@
+---
+title: Ma trận trong ML
+description: Ma trận dữ liệu X, dự đoán Xw + b, phương trình chuẩn, shape trong mạng neural, shape của QKᵀ trong attention
+lesson: "1.15"
+prerequisites: ["1.5", "1.9", "1.13"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExDataMatrix from '../../../generated/lesson-1-15/data-matrix.mdx';
+import ExNormalEq from '../../../generated/lesson-1-15/normal-eq.mdx';
+import ExAttentionScores from '../../../generated/lesson-1-15/attention-scores.mdx';
+import ExParamCount from '../../../generated/lesson-1-15/param-count.mdx';
+import PropGramSym from '../../../generated/lesson-1-15/prop-gram-sym.mdx';
+import PropResidual from '../../../generated/lesson-1-15/prop-residual.mdx';
+import ExMistakeSingular from '../../../generated/lesson-1-15/mistake-singular.mdx';
+import ExMistakeShape from '../../../generated/lesson-1-15/mistake-shape.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Đọc ma trận dữ liệu $\mathbf{X}$ và viết dự đoán của một mô hình tuyến tính cho cả batch.
+- Giải hồi quy tuyến tính bằng phương trình chuẩn trên một tập dữ liệu nhỏ.
+- Suy luận kích thước (shape) trong mạng neural và đếm số tham số.
+- Hiểu shape và phép tính của $\mathbf{Q}\mathbf{K}\T$ trong attention.
+
+## Trực giác
+
+Bài này gom các khái niệm trước đó vào những tình huống thực tế của Machine Learning. Quy ước chung: ma trận dữ liệu có **mỗi hàng là một mẫu, mỗi cột là một đặc trưng**. Mọi phép tính cho cả batch mẫu được viết gọn thành một phép nhân ma trận, nên kỹ năng quan trọng nhất ở đây là **luôn kiểm tra kích thước**: viết kích thước các ma trận cạnh nhau và xem hai số ở giữa có khớp không.
+
+## Định nghĩa
+
+**Dự đoán của mô hình tuyến tính.** Với $\mathbf{X} \in \R^{N \times d}$, trọng số $\mathbf{w} \in \R^{d}$ và hệ số bù $b$:
+
+$$
+\hat{\mathbf{y}} = \mathbf{X}\mathbf{w} + b\mathbf{1}, \qquad \hat{\mathbf{y}} \in \R^{N}.
+$$
+
+Đọc bằng lời: mỗi mẫu (hàng của $\mathbf{X}$) nhân vô hướng với $\mathbf{w}$ rồi cộng $b$.
+
+**Phương trình chuẩn (normal equation).** Hồi quy bình phương tối thiểu tìm $\mathbf{w}$ cực tiểu hóa $\norm{\mathbf{X}\mathbf{w} - \mathbf{y}}_2^2$. Nghiệm thỏa
+
+$$
+\mathbf{X}\T\mathbf{X}\,\mathbf{w} = \mathbf{X}\T\mathbf{y}, \qquad \text{và nếu } \mathbf{X}\T\mathbf{X} \text{ khả nghịch thì } \mathbf{w} = (\mathbf{X}\T\mathbf{X})^{-1}\mathbf{X}\T\mathbf{y}.
+$$
+
+Đọc bằng lời: đây là điều kiện để phần dư $\mathbf{y} - \mathbf{X}\mathbf{w}$ vuông góc với mọi cột của $\mathbf{X}$. $\mathbf{X}\T\mathbf{X}$ khả nghịch khi các cột của $\mathbf{X}$ độc lập tuyến tính (bài 1.10). Để có hệ số chặn $w_0$, thêm một cột toàn số $1$ vào $\mathbf{X}$.
+
+**Lớp tuyến tính của mạng neural.** Với batch $\mathbf{X} \in \R^{N \times d}$:
+
+$$
+\mathbf{Z} = \mathbf{X}\mathbf{W} + \mathbf{b}, \qquad \mathbf{W} \in \R^{d \times h},\; \mathbf{Z} \in \R^{N \times h}.
+$$
+
+Đọc bằng lời: $h$ là số nơ-ron của lớp; vector $\mathbf{b}$ được cộng vào từng hàng. Số tham số của lớp là $dh + h$.
+
+**Attention.** Với truy vấn $\mathbf{Q} \in \R^{n \times d_k}$, khóa $\mathbf{K} \in \R^{m \times d_k}$, giá trị $\mathbf{V} \in \R^{m \times d_v}$:
+
+$$
+\mathrm{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \mathrm{softmax}\!\left(\frac{\mathbf{Q}\mathbf{K}\T}{\sqrt{d_k}}\right)\mathbf{V} \in \R^{n \times d_v}.
+$$
+
+Đọc bằng lời: ma trận điểm $\mathbf{Q}\mathbf{K}\T$ cỡ $n \times m$ chứa tích vô hướng giữa mọi cặp (truy vấn, khóa); chia cho $\sqrt{d_k}$, qua softmax theo từng hàng để thành trọng số, rồi lấy trung bình có trọng số của các hàng của $\mathbf{V}$.
+
+## Ví dụ
+
+### Ma trận dữ liệu và dự đoán cho cả batch
+
+<ExDataMatrix />
+
+### Hồi quy tuyến tính bằng phương trình chuẩn
+
+<ExNormalEq />
+
+### Điểm attention
+
+<ExAttentionScores />
+
+### Đếm tham số của một mạng
+
+<ExParamCount />
+
+## Tính chất
+
+1. **Ma trận Gram $\mathbf{X}\T\mathbf{X}$ đối xứng, cỡ $d \times d$** (không phụ thuộc số mẫu):
+
+<PropGramSym />
+
+2. **Phần dư của nghiệm bình phương tối thiểu vuông góc với các cột của $\mathbf{X}$:**
+
+<PropResidual />
+
+3. **Số tham số một lớp tuyến tính $d \to h$ là $dh + h$** (xem ví dụ đếm tham số); số này không phụ thuộc kích thước batch.
+4. **Batch không đổi qua các lớp:** mỗi lớp biến $N \times d$ thành $N \times h$; chiều $N$ (số mẫu) giữ nguyên.
+
+## Lỗi thường gặp
+
+**Lỗi 1: dùng phương trình chuẩn khi $\mathbf{X}\T\mathbf{X}$ suy biến.**
+
+<ExMistakeSingular />
+
+**Lỗi 2: nhân sai thứ tự gây sai kích thước.**
+
+<ExMistakeShape />
+
+**Lỗi 3: quên cột toàn $1$ cho hệ số chặn** khi dùng phương trình chuẩn, dẫn tới đường thẳng bị ép đi qua gốc tọa độ.
+
+**Lỗi 4: nhầm $\mathbf{Q}\mathbf{K}\T$ với $\mathbf{Q}\T\mathbf{K}$.** Với $\mathbf{Q}$ cỡ $n \times d_k$, $\mathbf{Q}\T\mathbf{K}$ thường không xác định; điểm attention là $\mathbf{Q}\mathbf{K}\T$.
+
+## Liên hệ với ML
+
+Bài này tự nó là phần nối Toán với ML: mọi kiến trúc ở Phần 6–8 (hồi quy logistic, MLP, CNN, Transformer) đều dựa trên các phép nhân ma trận có kích thước như trên. Phần 2 sẽ cho bạn đọc hiểu cùng các phép đó dưới dạng code NumPy, nơi `@` là phép nhân ma trận và lỗi sai kích thước là lỗi phổ biến nhất.
+
+## Tóm tắt
+
+| Nội dung | Công thức / kích thước |
+| --- | --- |
+| Dữ liệu | $\mathbf{X} \in \R^{N \times d}$, mỗi hàng là một mẫu |
+| Dự đoán tuyến tính | $\hat{\mathbf{y}} = \mathbf{X}\mathbf{w} + b$ |
+| Phương trình chuẩn | $\mathbf{X}\T\mathbf{X}\mathbf{w} = \mathbf{X}\T\mathbf{y}$ |
+| Lớp tuyến tính | $(N\times d)(d\times h) \to N \times h$, $dh + h$ tham số |
+| Điểm attention | $\mathbf{Q}\mathbf{K}\T/\sqrt{d_k}$ cỡ $n \times m$ |
+
+<MarkRead client:visible lesson="1.15" />
+
+## Bài tập
+
+<ExercisePlayer
+  client:visible
+  lesson="1.15"
+  types={["ml-shape", "normal-eq", "attention-shape"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Phương trình chuẩn, hồi quy bình phương tối thiểu, hình chiếu lên không gian cột: MIT 18.06 (Gilbert Strang), bài giảng về bình phương tối thiểu, [ocw.mit.edu](https://ocw.mit.edu).
+- Hồi quy tuyến tính, ước lượng tham số: *Mathematics for Machine Learning*, chương về hồi quy tuyến tính, [mml-book.github.io](https://mml-book.github.io).
+- Lớp tuyến tính, đếm tham số, attention: *Dive into Deep Learning*, các chương về mạng perceptron nhiều lớp và attention, [d2l.ai](https://d2l.ai).

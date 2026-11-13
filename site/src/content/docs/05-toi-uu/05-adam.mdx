@@ -1,0 +1,120 @@
+---
+title: Adam, RMSProp, AdaGrad
+description: Learning rate thích ứng theo từng tham số, trung bình động mũ và hiệu chỉnh độ chệch
+lesson: "5.5"
+prerequisites: ["5.4"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExEma from '../../../generated/lesson-5-5/ema-bias.mdx';
+import ExAdam from '../../../generated/lesson-5-5/adam-first-step.mdx';
+import ExAda from '../../../generated/lesson-5-5/adagrad-345.mdx';
+import ExRms from '../../../generated/lesson-5-5/rmsprop-forgets.mdx';
+import ExMistake from '../../../generated/lesson-5-5/mistake-bias-correction.mdx';
+
+## Mục tiêu
+
+- Tính trung bình động mũ (exponential moving average, EMA) và hiệu chỉnh độ chệch.
+- Chạy tay AdaGrad, RMSProp và Adam trong vài bước.
+- Giải thích vì sao bước đầu của Adam có độ lớn đúng $\eta$.
+- Phân biệt ba thuật toán: cái nào tích lũy mãi, cái nào "quên" dần, cái nào dùng thêm momentum.
+
+## Trực giác
+
+Gradient descent dùng **một** learning rate cho mọi tham số. Nhưng có tham số gradient luôn lớn (dễ dao động), có tham số gradient rất nhỏ (học chậm). Các thuật toán thích ứng chia bước đi của mỗi tham số cho một ước lượng "độ lớn gradient gần đây" của chính tham số đó: tham số có gradient lớn bước nhỏ lại, tham số có gradient nhỏ được bước dài hơn. Adam thêm hai ý: giữ momentum (trung bình động của gradient) và hiệu chỉnh độ chệch do khởi tạo bằng $0$.
+
+## Định nghĩa
+
+Mọi phép trên vector làm **theo từng thành phần**; $\epsilon$ là hằng số rất nhỏ để tránh chia cho $0$. Trong các bài tập ta đặt $\epsilon = 0$ (với điều kiện mọi $\sqrt{\hat{v}}$ khác $0$, tức gradient khác $0$) để tính tay chính xác (và chọn gradient sao cho căn bậc hai là số hữu tỉ).
+
+**AdaGrad** ($G_0 = 0$): tích lũy bình phương gradient, không bao giờ quên.
+
+$$
+G_t = G_{t-1} + g_t^2,\qquad \theta_t = \theta_{t-1} - \eta\,\frac{g_t}{\sqrt{G_t} + \epsilon}.
+$$
+
+**RMSProp** ($s_0 = 0$, hệ số quên $\rho$, thường $0{,}9$): trung bình động mũ của $g^2$.
+
+$$
+s_t = \rho\,s_{t-1} + (1-\rho)\,g_t^2,\qquad \theta_t = \theta_{t-1} - \eta\,\frac{g_t}{\sqrt{s_t} + \epsilon}.
+$$
+
+**Adam** ($m_0 = v_0 = 0$; $\beta_1 = 0{,}9$, $\beta_2 = 0{,}999$ thường dùng):
+
+$$
+m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t,\qquad v_t = \beta_2 v_{t-1} + (1-\beta_2)g_t^2,
+$$
+
+$$
+\hat{m}_t = \frac{m_t}{1-\beta_1^t},\qquad \hat{v}_t = \frac{v_t}{1-\beta_2^t},\qquad \theta_t = \theta_{t-1} - \eta\,\frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}.
+$$
+
+Đọc bằng lời: $m$ là trung bình động của gradient, $v$ là trung bình động của bình phương gradient; chia cho $1-\beta^t$ để bù việc khởi tạo từ $0$ làm các giá trị đầu bị nhỏ. Có thể kiểm tra $\hat{m}_t$ chính là **trung bình có trọng số** $\beta_1^{t-i}$ của các $g_i$ với tổng trọng số bằng $1$.
+
+## Ví dụ
+
+### EMA và hiệu chỉnh độ chệch
+
+<ExEma />
+
+### Bước đầu của Adam
+
+<ExAdam />
+
+### AdaGrad
+
+<ExAda />
+
+### RMSProp
+
+<ExRms />
+
+## Tính chất
+
+- **Bước đầu của Adam** (và $\epsilon = 0$): $\hat{m}_1 = g_1$, $\hat{v}_1 = g_1^2$, nên (khi $g_1 \ne 0$) $\Delta\theta = -\eta\,\mathrm{sign}(g_1)$: độ lớn đúng $\eta$ bất kể gradient lớn hay nhỏ.
+- **AdaGrad:** learning rate hiệu dụng $\eta/\sqrt{G_t}$ chỉ giảm (vì $G_t$ chỉ tăng), có thể quá nhỏ về sau.
+- **RMSProp:** $s_t$ phản ánh gradient **gần đây**, nên learning rate hiệu dụng không bị chết dần. Không có hiệu chỉnh độ chệch.
+- **Adam $\approx$ RMSProp + momentum + hiệu chỉnh độ chệch.**
+- Tham số có gradient luôn lớn thì $\sqrt{\hat{v}}$ lớn và bước nhỏ lại; gradient nhỏ thì $\sqrt{\hat{v}}$ nhỏ và bước được khuếch đại.
+
+## Lỗi thường gặp
+
+**Lỗi 1: quên hiệu chỉnh độ chệch** (dùng $m_t$ thay cho $\hat{m}_t$).
+
+<ExMistake />
+
+**Lỗi 2: lấy căn bậc hai trước khi hiệu chỉnh.** Phải tính $\hat{v}_t = v_t/(1-\beta_2^t)$ trước, rồi mới lấy $\sqrt{\hat{v}_t}$.
+
+**Lỗi 3: nhầm $\beta_1$ và $\beta_2$.** $\beta_1$ cho gradient (momentum), $\beta_2$ cho bình phương gradient.
+
+**Lỗi 4: dùng $\epsilon$ sai chỗ.** $\epsilon$ cộng vào **sau** căn bậc hai: $\sqrt{\hat{v}_t} + \epsilon$ (khác một số cách viết đặt trong căn; hãy theo đúng tài liệu).
+
+## Liên hệ với ML
+
+- **Adam** là bộ tối ưu mặc định để huấn luyện Transformer và nhiều mạng sâu; thường $\beta_1 = 0{,}9$, $\beta_2 = 0{,}999$ (hoặc $0{,}95$ cho mô hình ngôn ngữ lớn), $\epsilon \approx 10^{-8}$.
+- **AdaGrad** phù hợp dữ liệu thưa (đặc trưng hiếm nhận gradient hiếm nên được bước lớn).
+- **RMSProp** là tiền thân trực tiếp của Adam, thường dùng cho mạng hồi quy.
+
+## Tóm tắt
+
+| Thuật toán | Trạng thái | Chia bước cho |
+| --- | --- | --- |
+| AdaGrad | $G = \sum g^2$ | $\sqrt{G_t}$ |
+| RMSProp | $s$ = EMA của $g^2$ | $\sqrt{s_t}$ |
+| Adam | $m$ (EMA của $g$), $v$ (EMA của $g^2$) | $\sqrt{\hat{v}_t}$, dùng $\hat{m}_t$ |
+| Bước đầu của Adam | $\epsilon = 0$ | $\lvert\Delta\theta\rvert = \eta$ |
+
+<MarkRead client:visible lesson="5.5" />
+
+## Bài tập
+
+Các bài chọn gradient để căn bậc hai là số hữu tỉ và đặt $\epsilon = 0$ nhằm tính tay chính xác. Với vector, làm từng thành phần.
+
+<ExercisePlayer client:visible part="optimization" lesson="5.5" types={["adam-bias", "adam-steps", "adagrad-steps", "rmsprop-steps"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Kingma và Ba (2015), "Adam: A Method for Stochastic Optimization", [arxiv.org/abs/1412.6980](https://arxiv.org/abs/1412.6980).
+- Duchi, Hazan và Singer (2011), AdaGrad; Tieleman và Hinton (2012), bài giảng 6.5 "rmsprop" trong khóa *Neural Networks for Machine Learning* (Coursera); RMSProp không có bài báo chính thức.
+- Tổng quan: Ruder (2016), "An overview of gradient descent optimization algorithms", [arxiv.org/abs/1609.04747](https://arxiv.org/abs/1609.04747); *Dive into Deep Learning*, chương Tối ưu hóa, [d2l.ai](https://d2l.ai).

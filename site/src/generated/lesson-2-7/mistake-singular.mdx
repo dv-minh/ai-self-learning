@@ -1,0 +1,13 @@
+```python
+import numpy as np
+
+A = np.array([[1.0, 2.0], [2.0, 4.0]])   # hàng 2 = 2 x hàng 1: suy biến
+b = np.array([1.0, 2.0])
+print(np.linalg.solve(A, b))
+```
+
+Kết quả in ra:
+
+```text
+LinAlgError: Singular matrix
+```

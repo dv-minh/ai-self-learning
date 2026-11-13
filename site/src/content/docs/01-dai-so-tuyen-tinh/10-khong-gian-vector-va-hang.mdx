@@ -1,0 +1,146 @@
+---
+title: Không gian vector và hạng
+description: Độc lập tuyến tính, span, cơ sở, số chiều, hạng, không gian cột, không gian null
+lesson: "1.10"
+prerequisites: ["1.1", "1.7"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExDependent from '../../../generated/lesson-1-10/dependent.mdx';
+import ExIndependent from '../../../generated/lesson-1-10/independent.mdx';
+import ExRank from '../../../generated/lesson-1-10/rank.mdx';
+import ExBasisCol from '../../../generated/lesson-1-10/basis-col.mdx';
+import ExNullSpace from '../../../generated/lesson-1-10/null-space.mdx';
+import PropRankNullity from '../../../generated/lesson-1-10/prop-rank-nullity.mdx';
+import PropRankTranspose from '../../../generated/lesson-1-10/prop-rank-transpose.mdx';
+import PropRankBound from '../../../generated/lesson-1-10/prop-rank-bound.mdx';
+import ExMistakeBasis from '../../../generated/lesson-1-10/mistake-basis.mdx';
+import ExMistakeRank from '../../../generated/lesson-1-10/mistake-rank.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Quyết định một nhóm vector có độc lập tuyến tính hay không.
+- Hiểu span, cơ sở và số chiều của một không gian.
+- Tính hạng của ma trận và dùng nó để suy ra số chiều của không gian cột.
+- Tìm cơ sở của không gian cột và của không gian null.
+
+## Trực giác
+
+Một nhóm vector "độc lập" khi mỗi vector mang một hướng mới mà các vector còn lại không tạo ra được. Nếu một vector là tổ hợp của các vector khác thì nó thừa: bỏ nó đi, tập hợp những gì ta tạo ra được vẫn nguyên vẹn. **Số chiều** là số hướng thực sự độc lập cần có để mô tả cả không gian, và **hạng** của ma trận là số hướng độc lập thực sự chứa trong các cột của nó.
+
+Trong dữ liệu, hạng cho biết lượng thông tin độc lập: nếu một đặc trưng luôn là tổ hợp của các đặc trưng khác thì nó không đem thêm gì mới.
+
+## Định nghĩa
+
+**Độc lập tuyến tính (linear independence).** Các vector $\mathbf{v}_1, \dots, \mathbf{v}_k$ độc lập tuyến tính nếu
+
+$$
+c_1\mathbf{v}_1 + c_2\mathbf{v}_2 + \cdots + c_k\mathbf{v}_k = \mathbf{0} \;\Longrightarrow\; c_1 = c_2 = \cdots = c_k = 0.
+$$
+
+Đọc bằng lời: cách duy nhất để tổ hợp chúng ra $\mathbf{0}$ là cho mọi hệ số bằng $0$. Ngược lại, chúng **phụ thuộc tuyến tính**.
+
+**Span** của $\mathbf{v}_1, \dots, \mathbf{v}_k$ là tập mọi tổ hợp tuyến tính của chúng. **Cơ sở (basis)** của một không gian là nhóm vector độc lập mà span ra đúng không gian đó. **Số chiều (dimension)** là số vector trong một cơ sở (mọi cơ sở có cùng số vector).
+
+**Hạng (rank):** $\rank(\mathbf{A})$ là số pivot sau khi khử Gauss, cũng bằng số chiều của không gian cột.
+
+**Không gian cột (column space)** $\mathcal{C}(\mathbf{A})$ là span các cột của $\mathbf{A}$. **Không gian null (null space)** $\mathcal{N}(\mathbf{A}) = \{\mathbf{x} : \mathbf{A}\mathbf{x} = \mathbf{0}\}$.
+
+**Định lý hạng–số chiều không gian null (rank–nullity):** với $\mathbf{A} \in \R^{m \times n}$,
+
+$$
+\rank(\mathbf{A}) + \dim\mathcal{N}(\mathbf{A}) = n.
+$$
+
+Đọc bằng lời: số pivot cộng số ẩn tự do bằng tổng số cột.
+
+**Cách tìm cơ sở.** Khử Gauss–Jordan để biết cột pivot. Cơ sở không gian cột là các cột pivot của $\mathbf{A}$ **gốc**. Cơ sở không gian null có một vector cho mỗi ẩn tự do (đặt ẩn đó bằng $1$, các ẩn tự do khác bằng $0$, rồi giải các ẩn pivot).
+
+## Ví dụ
+
+### Nhóm vector phụ thuộc
+
+<ExDependent />
+
+### Nhóm vector độc lập
+
+<ExIndependent />
+
+### Tính hạng
+
+<ExRank />
+
+### Cơ sở của không gian cột
+
+<ExBasisCol />
+
+### Cơ sở của không gian null
+
+<ExNullSpace />
+
+## Tính chất
+
+1. **Định lý hạng–số chiều không gian null.** Kiểm tra bằng số:
+
+<PropRankNullity />
+
+2. **Hạng của ma trận và của chuyển vị bằng nhau:** $\rank(\mathbf{A}) = \rank(\mathbf{A}\T)$.
+
+<PropRankTranspose />
+
+3. **Hạng bị chặn:** $\rank(\mathbf{A}) \le \min(m, n)$. Nhóm nhiều hơn $n$ vector trong $\R^{n}$ luôn phụ thuộc tuyến tính.
+
+<PropRankBound />
+
+4. **$\mathbf{A}$ vuông $n\times n$ khả nghịch $\iff \rank(\mathbf{A}) = n \iff$ các cột độc lập $\iff \mathcal{N}(\mathbf{A}) = \{\mathbf{0}\}$.** Bốn điều kiện này tương đương nhau (liên hệ với bài 1.9).
+
+## Lỗi thường gặp
+
+**Lỗi 1: lấy cột của dạng bậc thang làm cơ sở không gian cột.**
+
+<ExMistakeBasis />
+
+**Lỗi 2: đếm hàng khác $0$ mà chưa khử Gauss.**
+
+<ExMistakeRank />
+
+**Lỗi 3: cho rằng $\mathbf{0}$ có thể nằm trong một nhóm độc lập.** Bất kỳ nhóm nào chứa $\mathbf{0}$ đều phụ thuộc tuyến tính (cho hệ số của $\mathbf{0}$ bằng $1$, các hệ số khác bằng $0$).
+
+**Lỗi 4: nhầm số chiều của không gian cột với số cột.** Số chiều của không gian cột là hạng, có thể nhỏ hơn số cột.
+
+## Liên hệ với ML
+
+- **Đa cộng tuyến (multicollinearity):** nếu các cột (đặc trưng) của ma trận dữ liệu phụ thuộc tuyến tính thì hồi quy tuyến tính không có nghiệm duy nhất. Hạng cho biết có bao nhiêu đặc trưng độc lập thực sự.
+- **Giảm chiều:** dữ liệu có hạng thấp có thể biểu diễn trong không gian ít chiều hơn; đây là ý tưởng của PCA và SVD (bài 1.14).
+- **LoRA:** cập nhật trọng số hạng thấp là cập nhật nằm trong một không gian cột nhỏ (bài 1.14).
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Độc lập tuyến tính | cách duy nhất ra $\mathbf{0}$ là mọi hệ số bằng $0$ |
+| Hạng | số pivot = $\dim\mathcal{C}(\mathbf{A})$ |
+| Cơ sở không gian cột | cột pivot của $\mathbf{A}$ gốc |
+| Cơ sở không gian null | một vector cho mỗi ẩn tự do |
+| Rank–nullity | $\rank + \dim\mathcal{N} = n$ |
+
+<MarkRead client:visible lesson="1.10" />
+
+## Bài tập
+
+Với các bài yêu cầu nhập cơ sở, bạn nhập các vector thành các **cột** của ma trận; mọi cơ sở đúng đều được chấp nhận.
+
+<ExercisePlayer
+  client:visible
+  lesson="1.10"
+  types={["lin-indep", "rank", "basis-col", "null-space"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Độc lập tuyến tính, không gian cột, không gian null, cơ sở, số chiều, rank–nullity: MIT 18.06 (Gilbert Strang), các bài giảng về không gian vector, [ocw.mit.edu](https://ocw.mit.edu).
+- Không gian vector, cơ sở, hạng, không gian con: *Mathematics for Machine Learning*, chương về đại số tuyến tính, [mml-book.github.io](https://mml-book.github.io).

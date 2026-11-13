@@ -1,0 +1,27 @@
+$$
+\mathbf{X} = \begin{bmatrix} -4 & 3 \\ 2 & -1 \\ -4 & -3 \\ -2 & -3 \end{bmatrix}
+$$
+
+**Bước 1: trừ trung bình.** Vector trung bình và dữ liệu đã căn giữa:
+
+$$
+\bar{\mathbf{x}} = \begin{bmatrix} -2 \\ -1 \end{bmatrix}
+$$
+
+$$
+\mathbf{X}_c = \begin{bmatrix} -2 & 4 \\ 4 & 0 \\ -2 & -2 \\ 0 & -2 \end{bmatrix}
+$$
+
+**Bước 2: ma trận hiệp phương sai** $\mathbf{C} = \frac{1}{n-1}\mathbf{X}_c\T\mathbf{X}_c$:
+
+$$
+\mathbf{C} = \begin{bmatrix} 8 & -\frac{4}{3} \\ -\frac{4}{3} & 8 \end{bmatrix}
+$$
+
+**Bước 3: trị riêng.** Phương trình đặc trưng:
+
+$$
+\lambda^2 - 16\lambda + \frac{560}{9} = 0 \;\Rightarrow\; \lambda_1 = \frac{28}{3},\; \lambda_2 = \frac{20}{3}
+$$
+
+**Bước 4: thành phần chính.** Vector riêng ứng với $\lambda_1$ (hướng PC1) là $\mathbf{v}_1 = (-1, 1)\T$ (chưa chuẩn hóa). PC1 giải thích tỉ lệ $\frac{7}{12}$ tổng phương sai.

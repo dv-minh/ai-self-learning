@@ -1,0 +1,91 @@
+---
+title: Số thực dấu phẩy động
+description: Vì sao 0.1 + 0.2 khác 0.3; định thức ra 1e-16 thay vì 0; so sánh bằng allclose
+lesson: "2.8"
+prerequisites: ["2.1", "1.8"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExFloat from '../../../generated/lesson-2-8/float-demo.mdx';
+import ExDet from '../../../generated/lesson-2-8/det-tiny.mdx';
+import ExMistake from '../../../generated/lesson-2-8/mistake-equal.mdx';
+
+## Mục tiêu
+
+- Hiểu vì sao phép tính số thực trên máy có sai số làm tròn.
+- Dự đoán kết quả `True`/`False` của các phép so sánh số thực.
+- Chọn cách so sánh đúng: `np.isclose`, `np.allclose`.
+
+## Toán ↔ NumPy
+
+| Toán | NumPy |
+| --- | --- |
+| $a = b$ (hai số thực) | `np.isclose(a, b)` |
+| hai ma trận bằng nhau | `np.allclose(A, B)` |
+| $\det(\mathbf{A}) = 0$ | `np.isclose(np.linalg.det(A), 0)` hoặc `np.linalg.matrix_rank(A) < n` |
+
+## Trực giác
+
+Máy tính lưu số thực bằng **nhị phân hữu hạn** (chuẩn IEEE 754, `float64` có khoảng 16 chữ số thập phân có nghĩa). Nhiều số thập phân đơn giản như $0{,}1$ không biểu diễn chính xác được trong nhị phân, giống như $1/3$ không viết hết được trong thập phân. Mỗi phép tính làm tròn một chút, và sai số nhỏ đó tích lũy.
+
+## Định nghĩa
+
+- **Sai số làm tròn:** `float64` có độ chính xác tương đối cỡ $10^{-16}$ (máy epsilon).
+- `np.isclose(a, b)` đúng khi $|a - b| \le \text{atol} + \text{rtol}\cdot|b|$ với mặc định `rtol=1e-5`, `atol=1e-8`. `np.allclose` áp dụng cho cả mảng.
+- Số $a$ rất nhỏ so với $b$ có thể bị "nuốt": `1e16 + 1 == 1e16` đúng.
+- `nan` (không phải số) không bằng chính nó; kiểm tra bằng `np.isnan`.
+
+## Ví dụ
+
+### Sai số quen thuộc
+
+<ExFloat />
+
+### Ma trận suy biến
+
+<ExDet />
+
+## Tính chất
+
+- Các số có dạng $k/2^{m}$ (như $0{,}5$ và $0{,}25$) biểu diễn **chính xác**; các số như $0{,}1$ thì không.
+- Phép cộng số thực **không** hoàn toàn kết hợp: $(a + b) + c$ có thể khác $a + (b + c)$ vì làm tròn.
+- `float32` có ít chữ số chính xác hơn `float64` (cỡ $10^{-7}$ so với $10^{-16}$).
+
+## Lỗi thường gặp
+
+**Lỗi 1: so sánh số thực bằng `==`.**
+
+<ExMistake />
+
+**Lỗi 2: kiểm tra suy biến bằng `det == 0`.** Định thức tính bằng số thực có thể ra $10^{-16}$ cho ma trận suy biến thật sự. Hãy dùng `matrix_rank` hoặc so với một dung sai.
+
+**Lỗi 3: đòi hỏi kết quả "đẹp".** `np.round(x, 6)` để in, nhưng đừng làm tròn trong tính toán.
+
+**Lỗi 4: quên `nan` và `inf` lan truyền.** Một giá trị `nan` làm hỏng mọi phép tính dùng nó.
+
+## Liên hệ với ML
+
+- **Test code ML:** so sánh đầu ra với giá trị mong đợi bằng `np.allclose`, không bằng `==`.
+- **Ổn định số:** softmax, log-sum-exp, chuẩn hóa đều cần chú ý tràn số và mất độ chính xác (bài 2.9).
+- **Độ chính xác hỗn hợp:** huấn luyện mô hình lớn dùng `float16`/`bfloat16` để tiết kiệm bộ nhớ, đổi lấy độ chính xác thấp hơn.
+
+## Tóm tắt
+
+| Tình huống | Nên làm |
+| --- | --- |
+| so hai số thực | `np.isclose(a, b)` |
+| so hai mảng | `np.allclose(A, B)` |
+| kiểm tra định thức $0$ | `matrix_rank` hoặc `np.isclose(det, 0)` |
+| kiểm tra `nan` | `np.isnan(x)` |
+
+<MarkRead client:visible lesson="2.8" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="numpy" lesson="2.8" types={["np-float"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- `np.isclose`, `np.allclose`, `np.finfo`: tài liệu NumPy, [numpy.org/doc](https://numpy.org/doc/stable/).
+- Chuẩn số thực dấu phẩy động IEEE 754 và sai số làm tròn: tài liệu Python, mục "Floating Point Arithmetic: Issues and Limitations", [docs.python.org](https://docs.python.org/3/tutorial/floatingpoint.html).

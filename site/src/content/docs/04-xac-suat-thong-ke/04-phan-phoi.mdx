@@ -1,0 +1,117 @@
+---
+title: "Phân phối: Bernoulli, nhị thức, chuẩn"
+description: Bernoulli, categorical, nhị thức, phân phối chuẩn và chuẩn hóa z, chuẩn nhiều chiều và khoảng cách Mahalanobis
+lesson: "4.4"
+prerequisites: ["4.3", "1.9"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExBinom from '../../../generated/lesson-4-4/binomial-table.mdx';
+import ExZ from '../../../generated/lesson-4-4/zscore-example.mdx';
+import ExMaha from '../../../generated/lesson-4-4/mahalanobis-example.mdx';
+import PropMoments from '../../../generated/lesson-4-4/prop-binomial-moments.mdx';
+import ExMistake from '../../../generated/lesson-4-4/mistake-zscore.mdx';
+
+## Mục tiêu
+
+- Nhận biết và dùng phân phối Bernoulli, categorical và nhị thức.
+- Chuẩn hóa một giá trị bằng điểm chuẩn hóa (z-score) và hiểu phân phối chuẩn.
+- Tính khoảng cách Mahalanobis trong phân phối chuẩn nhiều chiều.
+
+## Trực giác
+
+Mỗi phân phối là một "mẫu hình ngẫu nhiên" quen thuộc. **Bernoulli** mô tả một lần thử thành công/thất bại. **Nhị thức** đếm số thành công trong nhiều lần thử độc lập. **Categorical** mở rộng Bernoulli sang nhiều lớp. **Phân phối chuẩn** (hình chuông) mô tả các đại lượng là tổng của nhiều tác động nhỏ độc lập, và là phân phối xuất hiện nhiều nhất trong thống kê. Trong nhiều chiều, **khoảng cách Mahalanobis** đo mức bất thường của một điểm có tính đến hình dạng và hướng của đám mây dữ liệu.
+
+## Định nghĩa
+
+**Bernoulli($p$):** $P(X = 1) = p$, $P(X = 0) = 1 - p$; $\mathbb{E}[X] = p$, $\mathrm{Var}(X) = p(1-p)$.
+
+**Categorical($p_1, \dots, p_K$):** $P(Z = j) = p_j$ với $\sum_j p_j = 1$.
+
+**Nhị thức Binomial($n, p$):** số thành công trong $n$ lần thử độc lập,
+
+$$
+P(X = k) = \binom{n}{k}p^{k}(1-p)^{n-k}, \qquad \mathbb{E}[X] = np, \quad \mathrm{Var}(X) = np(1-p).
+$$
+
+Đọc bằng lời: có $\binom{n}{k}$ cách chọn các lần thành công, mỗi cách có xác suất $p^k(1-p)^{n-k}$.
+
+**Phân phối chuẩn $\mathcal{N}(\mu, \sigma^2)$** có mật độ $\dfrac{1}{\sqrt{2\pi\sigma^2}}\,e^{-(x-\mu)^2/(2\sigma^2)}$. **Điểm chuẩn hóa (z-score):**
+
+$$
+z = \frac{x - \mu}{\sigma}, \qquad x = \mu + z\sigma.
+$$
+
+Đọc bằng lời: $z$ cho biết $x$ cách trung bình bao nhiêu **độ lệch chuẩn**. Nếu $X \sim \mathcal{N}(\mu, \sigma^2)$ thì $Z \sim \mathcal{N}(0, 1)$.
+
+**Chuẩn nhiều chiều $\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})$:** mật độ phụ thuộc $\mathbf{x}$ qua **bình phương khoảng cách Mahalanobis**
+
+$$
+d^2 = (\mathbf{x} - \boldsymbol{\mu})\T\boldsymbol{\Sigma}^{-1}(\mathbf{x} - \boldsymbol{\mu}).
+$$
+
+Đọc bằng lời: độ lệch khỏi tâm, nhưng đo theo thang của hiệp phương sai (bài 1.13): hướng nào dữ liệu biến thiên nhiều thì một độ lệch cùng độ dài "đáng ngạc nhiên" ít hơn.
+
+## Ví dụ
+
+### Bảng phân phối nhị thức
+
+<ExBinom />
+
+### Điểm chuẩn hóa
+
+<ExZ />
+
+### Khoảng cách Mahalanobis
+
+<ExMaha />
+
+## Tính chất
+
+- **Kỳ vọng và phương sai của nhị thức** là $np$ và $np(1-p)$ (tổng của $n$ biến Bernoulli độc lập):
+
+<PropMoments />
+
+- Nhị thức với $n = 1$ chính là Bernoulli.
+- **Chuẩn hóa không đổi hình dạng:** $z$ có trung bình $0$ và độ lệch chuẩn $1$.
+- Với $\boldsymbol{\Sigma} = \mathbf{I}$, khoảng cách Mahalanobis trùng khoảng cách Euclid.
+
+## Lỗi thường gặp
+
+**Lỗi 1: chia cho phương sai thay vì độ lệch chuẩn.**
+
+<ExMistake />
+
+**Lỗi 2: quên hệ số tổ hợp** $\binom{n}{k}$ trong công thức nhị thức.
+
+**Lỗi 3: dùng nhị thức khi các lần thử không độc lập** hoặc xác suất thay đổi (ví dụ rút không hoàn lại).
+
+**Lỗi 4: quên nghịch đảo $\boldsymbol{\Sigma}$** (dùng $\boldsymbol{\Sigma}$ thay cho $\boldsymbol{\Sigma}^{-1}$) trong khoảng cách Mahalanobis.
+
+## Liên hệ với ML
+
+- **Dropout:** mỗi nơ-ron được giữ như một biến Bernoulli độc lập; số nơ-ron được giữ là nhị thức.
+- **BatchNorm và chuẩn hóa dữ liệu** là phép tính z-score (có thêm $\varepsilon$ ở mẫu số để ổn định).
+- **Phát hiện ngoại lai** và **mô hình Gaussian**: khoảng cách Mahalanobis lớn nghĩa là điểm bất thường so với phân phối chuẩn đã học.
+- **Softmax** cho ra tham số của phân phối categorical trên các lớp.
+
+## Tóm tắt
+
+| Phân phối | Đặc trưng |
+| --- | --- |
+| Bernoulli($p$) | $\mathbb{E} = p$, $\mathrm{Var} = p(1-p)$ |
+| Binomial($n, p$) | $\binom{n}{k}p^k(1-p)^{n-k}$; $np$, $np(1-p)$ |
+| $\mathcal{N}(\mu, \sigma^2)$ | $z = (x - \mu)/\sigma$ |
+| $\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})$ | $d^2 = (\mathbf{x}-\boldsymbol{\mu})\T\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})$ |
+
+<MarkRead client:visible lesson="4.4" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="probability" lesson="4.4" types={["binom-prob", "normal-z", "mahalanobis"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Phân phối Bernoulli, nhị thức, Gaussian và Gaussian nhiều chiều: *Mathematics for Machine Learning*, chương về xác suất và phân phối, [mml-book.github.io](https://mml-book.github.io).
+- Chuẩn hóa và Gaussian trong học sâu: *Dive into Deep Learning*, phụ lục về phân phối, [d2l.ai](https://d2l.ai).

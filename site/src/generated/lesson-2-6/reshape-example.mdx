@@ -1,0 +1,19 @@
+```python
+import numpy as np
+
+a = np.arange(6)
+print(a.reshape(2, 3))     # đọc theo thứ tự hàng trước
+print(a.reshape(3, -1))    # -1: tự suy ra (ở đây là 2)
+print(a.reshape(2, 3).T.reshape(-1))   # chuyển vị rồi trải phẳng
+```
+
+Kết quả in ra:
+
+```text
+[[0 1 2]
+ [3 4 5]]
+[[0 1]
+ [2 3]
+ [4 5]]
+[0 3 1 4 2 5]
+```

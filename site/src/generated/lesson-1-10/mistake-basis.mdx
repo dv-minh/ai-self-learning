@@ -1,0 +1,17 @@
+$$
+\mathbf{A} = \begin{bmatrix} 3 & 6 & 2 \\ -1 & -2 & -1 \\ 0 & 0 & 1 \end{bmatrix}
+$$
+
+**Sai:** lấy các cột pivot của **dạng bậc thang rút gọn** làm cơ sở không gian cột:
+
+$$
+\begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 0 & 0 \end{bmatrix}
+$$
+
+Phép biến đổi hàng làm đổi không gian cột, nên các cột này nói chung **không** thuộc không gian cột của $\mathbf{A}$ ban đầu.
+
+**Đúng:** dùng RREF chỉ để *tìm vị trí* các cột pivot, rồi lấy cột tương ứng của $\mathbf{A}$ gốc:
+
+$$
+\begin{bmatrix} 3 & 2 \\ -1 & -1 \\ 0 & 1 \end{bmatrix}
+$$

@@ -1,0 +1,93 @@
+---
+title: Rút gọn theo trục
+description: sum, mean, max theo axis; keepdims; shape sau khi rút gọn
+lesson: "2.4"
+prerequisites: ["2.1", "1.4"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExAxisSum from '../../../generated/lesson-2-4/axis-sum.mdx';
+import ExKeepdims from '../../../generated/lesson-2-4/axis-keepdims.mdx';
+import ExMistake from '../../../generated/lesson-2-4/mistake-axis.mdx';
+
+## Mục tiêu
+
+- Dự đoán kết quả của `sum`, `mean`, `max`, `min` với `axis=0`, `axis=1`.
+- Dự đoán shape sau khi rút gọn, có và không có `keepdims`.
+
+## Toán ↔ NumPy
+
+| Toán | NumPy |
+| --- | --- |
+| tổng mọi phần tử | `A.sum()` |
+| tổng từng cột (một số cho mỗi đặc trưng) | `A.sum(axis=0)` |
+| tổng từng hàng (một số cho mỗi mẫu) | `A.sum(axis=1)` |
+| trung bình mỗi đặc trưng $\bar{x}_j$ | `X.mean(axis=0)` |
+
+## Trực giác
+
+Rút gọn theo trục là "nén" một trục thành một số bằng một phép toán (cộng, lấy lớn nhất, trung bình…). Trục bị nén **biến mất** khỏi shape. Cách dễ nhớ: `axis=k` nghĩa là "chạy dọc theo trục $k$ và gộp lại"; kết quả có một giá trị cho mỗi vị trí của **các trục còn lại**.
+
+## Định nghĩa
+
+Với `A` có shape `(m, n)`:
+
+- `A.sum(axis=0)` gộp các **hàng** lại: cho mảng shape `(n,)` (một giá trị mỗi cột).
+- `A.sum(axis=1)` gộp các **cột** lại: cho mảng shape `(m,)` (một giá trị mỗi hàng).
+- `keepdims=True` giữ trục đã gộp với độ dài $1$: `(1, n)` hoặc `(m, 1)`, để sau đó **broadcast** được (bài 2.5).
+- Với mảng nhiều chiều, `axis` có thể là tuple, ví dụ `axis=(1, 2)`.
+
+## Ví dụ
+
+### `axis=0` và `axis=1`
+
+<ExAxisSum />
+
+### `keepdims`
+
+<ExKeepdims />
+
+## Tính chất
+
+- Shape kết quả bằng shape gốc **bỏ đi** các trục đã gộp (hoặc đặt $1$ nếu `keepdims=True`).
+- Không chỉ `axis` thì rút gọn mọi trục, cho một số.
+- `argmax(axis=k)` cho **chỉ số** của phần tử lớn nhất theo trục đó, không phải giá trị.
+
+## Lỗi thường gặp
+
+**Lỗi 1: nhầm hướng của `axis`.**
+
+<ExMistake />
+
+**Lỗi 2: quên `keepdims=True` rồi gặp lỗi shape khi broadcast.** `A / A.sum(axis=1)` ghép `(m, n)` với `(m,)` và lỗi (hoặc sai) khi $m \neq n$; dùng `keepdims=True` để được `(m, 1)`.
+
+**Lỗi 3: mong `mean` của số nguyên là số nguyên.** `mean` luôn trả số thực.
+
+**Lỗi 4: dùng `sum` Python thay cho `np.sum`.** Hàm có sẵn của Python không hỗ trợ `axis` theo cách này và chậm hơn nhiều với mảng lớn.
+
+## Liên hệ với ML
+
+- **Trung bình theo batch:** `X.mean(axis=0)` cho trung bình từng đặc trưng; nền của chuẩn hóa và PCA (bài 1.14).
+- **Softmax:** mẫu số là `np.exp(z).sum(axis=1, keepdims=True)` (bài 2.9).
+- **Dự đoán lớp:** `probs.argmax(axis=1)` chọn lớp có xác suất cao nhất cho mỗi mẫu.
+
+## Tóm tắt
+
+| Biểu thức (`A`: `(m, n)`) | Shape kết quả |
+| --- | --- |
+| `A.sum()` | số vô hướng |
+| `A.sum(axis=0)` | `(n,)` |
+| `A.sum(axis=1)` | `(m,)` |
+| `A.sum(axis=0, keepdims=True)` | `(1, n)` |
+| `A.sum(axis=1, keepdims=True)` | `(m, 1)` |
+
+<MarkRead client:visible lesson="2.4" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="numpy" lesson="2.4" types={["np-axis"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- `axis`, `keepdims`, các hàm rút gọn: tài liệu NumPy, mục "numpy.sum" và "Array methods", [numpy.org/doc](https://numpy.org/doc/stable/).

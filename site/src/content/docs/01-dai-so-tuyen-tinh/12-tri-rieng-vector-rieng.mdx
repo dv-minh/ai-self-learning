@@ -1,0 +1,164 @@
+---
+title: Trị riêng, vector riêng
+description: Phương trình đặc trưng, tìm trị riêng và vector riêng, chéo hóa A = PDP⁻¹, lũy thừa qua chéo hóa
+lesson: "1.12"
+prerequisites: ["1.8", "1.9", "1.10", "1.11"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import GridTransform from '../../../components/viz/GridTransform';
+import MarkRead from '../../../components/MarkRead';
+import ExEig2 from '../../../generated/lesson-1-12/eig2.mdx';
+import ExEig3 from '../../../generated/lesson-1-12/eig3.mdx';
+import ExDiagonalize from '../../../generated/lesson-1-12/diagonalize.mdx';
+import ExPower from '../../../generated/lesson-1-12/power.mdx';
+import ExDefective from '../../../generated/lesson-1-12/defective.mdx';
+import PropTraceDet from '../../../generated/lesson-1-12/prop-trace-det.mdx';
+import PropTriangular from '../../../generated/lesson-1-12/prop-triangular.mdx';
+import PropScale from '../../../generated/lesson-1-12/prop-scale.mdx';
+import PropPowerEig from '../../../generated/lesson-1-12/prop-power-eig.mdx';
+import ExMistakeZero from '../../../generated/lesson-1-12/mistake-zero.mdx';
+import ExMistakeOrder from '../../../generated/lesson-1-12/mistake-order.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Tìm trị riêng của ma trận bằng phương trình đặc trưng.
+- Tìm vector riêng ứng với một trị riêng.
+- Chéo hóa ma trận $\mathbf{A} = \mathbf{P}\mathbf{D}\mathbf{P}^{-1}$ và kiểm tra khi nào chéo hóa được.
+- Tính lũy thừa của ma trận qua chéo hóa.
+
+## Trực giác
+
+Hầu hết các vector bị ma trận $\mathbf{A}$ vừa kéo giãn vừa xoay sang hướng khác. Nhưng có những hướng đặc biệt mà $\mathbf{A}$ chỉ **kéo giãn** vector dọc theo chính hướng đó, không làm nó lệch đi. Đó là các **vector riêng**, và hệ số kéo giãn là **trị riêng**. Chúng là "trục tự nhiên" của phép biến đổi: nếu mô tả mọi thứ theo các trục đó, ma trận trở thành ma trận đường chéo rất đơn giản. Hãy thử hình minh họa bên dưới: các đường được tô là các hướng riêng (nếu có).
+
+<GridTransform client:visible showEigen />
+
+## Định nghĩa
+
+Với ma trận vuông $\mathbf{A}$, số $\lambda$ là **trị riêng (eigenvalue)** và $\mathbf{v} \neq \mathbf{0}$ là **vector riêng (eigenvector)** tương ứng nếu
+
+$$
+\mathbf{A}\mathbf{v} = \lambda\mathbf{v}.
+$$
+
+Đọc bằng lời: nhân $\mathbf{A}$ với $\mathbf{v}$ chỉ cho ra một bội $\lambda$ của chính $\mathbf{v}$.
+
+**Phương trình đặc trưng (characteristic equation).** $(\mathbf{A} - \lambda\mathbf{I})\mathbf{v} = \mathbf{0}$ có nghiệm $\mathbf{v} \neq \mathbf{0}$ khi và chỉ khi ma trận $\mathbf{A} - \lambda\mathbf{I}$ suy biến, tức
+
+$$
+\det(\lambda\mathbf{I} - \mathbf{A}) = 0.
+$$
+
+Đọc bằng lời: trị riêng là nghiệm của đa thức đặc trưng. Với mỗi trị riêng $\lambda$, vector riêng là nghiệm khác $\mathbf{0}$ của hệ $(\mathbf{A} - \lambda\mathbf{I})\mathbf{v} = \mathbf{0}$ (cơ sở không gian null, bài 1.10).
+
+**Chéo hóa (diagonalization).** Nếu $\mathbf{A} \in \R^{n \times n}$ có $n$ vector riêng độc lập $\mathbf{p}_1, \dots, \mathbf{p}_n$ ứng với $\lambda_1, \dots, \lambda_n$ thì
+
+$$
+\mathbf{A} = \mathbf{P}\mathbf{D}\mathbf{P}^{-1}, \qquad \mathbf{P} = \begin{bmatrix} \mathbf{p}_1 & \cdots & \mathbf{p}_n \end{bmatrix}, \quad \mathbf{D} = \diag(\lambda_1, \dots, \lambda_n).
+$$
+
+Đọc bằng lời: các cột của $\mathbf{P}$ là vector riêng, $\mathbf{D}$ là ma trận đường chéo chứa các trị riêng **theo cùng thứ tự các cột**. Ma trận chéo hóa được khi có đủ $n$ vector riêng độc lập; điều này đúng nếu $\mathbf{A}$ có $n$ trị riêng phân biệt, nhưng cũng có thể đúng khi có trị riêng bội. Với mỗi trị riêng, số vector riêng độc lập (bội hình học) không vượt quá bội đại số; chéo hóa được khi chúng bằng nhau với mọi trị riêng.
+
+**Lũy thừa qua chéo hóa:**
+
+$$
+\mathbf{A}^{k} = \mathbf{P}\mathbf{D}^{k}\mathbf{P}^{-1}, \qquad \mathbf{D}^{k} = \diag(\lambda_1^{k}, \dots, \lambda_n^{k}).
+$$
+
+Đọc bằng lời: lũy thừa $\mathbf{A}$ chỉ cần lũy thừa các trị riêng, vì các $\mathbf{P}$ và $\mathbf{P}^{-1}$ ở giữa triệt tiêu nhau.
+
+## Ví dụ
+
+### Ma trận $2\times 2$
+
+<ExEig2 />
+
+### Ma trận $3\times 3$
+
+<ExEig3 />
+
+### Chéo hóa
+
+<ExDiagonalize />
+
+### Lũy thừa qua chéo hóa
+
+<ExPower />
+
+### Ma trận không chéo hóa được
+
+<ExDefective />
+
+## Tính chất
+
+1. **Tổng trị riêng bằng vết, tích trị riêng bằng định thức** (tính cả bội):
+
+<PropTraceDet />
+
+2. **Ma trận tam giác:** trị riêng là các phần tử đường chéo.
+
+<PropTriangular />
+
+3. **Bội vô hướng của vector riêng vẫn là vector riêng** (cùng trị riêng):
+
+<PropScale />
+
+4. **Lũy thừa:** nếu $\mathbf{A}\mathbf{v} = \lambda\mathbf{v}$ thì $\mathbf{A}^{k}\mathbf{v} = \lambda^{k}\mathbf{v}$:
+
+<PropPowerEig />
+
+5. **Vector riêng của các trị riêng khác nhau độc lập tuyến tính.**
+6. **$\mathbf{A}$ khả nghịch $\iff$ không có trị riêng bằng $0$,** vì $\det(\mathbf{A})$ là tích các trị riêng.
+
+## Lỗi thường gặp
+
+**Lỗi 1: coi $\mathbf{0}$ là vector riêng.**
+
+<ExMistakeZero />
+
+**Lỗi 2: sai thứ tự giữa $\mathbf{P}$ và $\mathbf{D}$.**
+
+<ExMistakeOrder />
+
+**Lỗi 3: cho rằng mọi ma trận đều chéo hóa được.** Khối Jordan (ví dụ ma trận không chéo hóa được ở trên) là phản ví dụ; cần đủ vector riêng độc lập.
+
+**Lỗi 4: quên kiểm tra $\mathbf{A}\mathbf{v} = \lambda\mathbf{v}$ sau khi tìm vector riêng.** Phép kiểm tra này nhanh và bắt được lỗi số học.
+
+## Liên hệ với ML
+
+- **PCA:** các thành phần chính là vector riêng của ma trận hiệp phương sai, trị riêng là phương sai dọc theo từng thành phần (bài 1.13–1.14).
+- **Ổn định khi lặp:** các thuật toán lặp (gradient descent, mạng hồi quy) có dạng $\mathbf{x}_{t+1} = \mathbf{A}\mathbf{x}_t$; trị riêng của $\mathbf{A}$ quyết định chuỗi hội tụ hay bùng nổ ($\mathbf{A}^{k} = \mathbf{P}\mathbf{D}^{k}\mathbf{P}^{-1}$).
+- **Spectral clustering và PageRank** dùng vector riêng của ma trận đồ thị.
+- **Hessian:** dấu các trị riêng của Hessian cho biết điểm dừng là cực tiểu, cực đại hay yên ngựa (bài 1.13).
+
+## Tóm tắt
+
+| Nội dung | Quy tắc |
+| --- | --- |
+| Trị riêng, vector riêng | $\mathbf{A}\mathbf{v} = \lambda\mathbf{v}$, $\mathbf{v} \neq \mathbf{0}$ |
+| Phương trình đặc trưng | $\det(\lambda\mathbf{I} - \mathbf{A}) = 0$ |
+| Vector riêng | nghiệm khác $\mathbf{0}$ của $(\mathbf{A} - \lambda\mathbf{I})\mathbf{v} = \mathbf{0}$ |
+| Chéo hóa | $\mathbf{A} = \mathbf{P}\mathbf{D}\mathbf{P}^{-1}$ |
+| Lũy thừa | $\mathbf{A}^{k} = \mathbf{P}\mathbf{D}^{k}\mathbf{P}^{-1}$ |
+| Vết, định thức | $\sum\lambda_i = \tr(\mathbf{A})$, $\prod\lambda_i = \det(\mathbf{A})$ |
+
+<MarkRead client:visible lesson="1.12" />
+
+## Bài tập
+
+Với bài yêu cầu một vector riêng, mọi bội vô hướng khác $0$ đều được chấp nhận.
+
+<ExercisePlayer
+  client:visible
+  lesson="1.12"
+  types={["eig-values", "eig-vectors", "diagonalize", "power-via-diag"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Trị riêng, vector riêng, phương trình đặc trưng, chéo hóa, lũy thừa ma trận: MIT 18.06 (Gilbert Strang), các bài giảng về trị riêng và chéo hóa, [ocw.mit.edu](https://ocw.mit.edu).
+- Trị riêng và vector riêng, phân rã trị riêng: *Mathematics for Machine Learning*, chương về phân rã ma trận, [mml-book.github.io](https://mml-book.github.io).
+- Trực quan hình học về trị riêng và vector riêng: *Essence of Linear Algebra*, [3blue1brown.com](https://www.3blue1brown.com).

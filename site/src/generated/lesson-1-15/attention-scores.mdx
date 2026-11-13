@@ -1,0 +1,17 @@
+$$
+\mathbf{Q} = \begin{bmatrix} -2 & 1 & -2 & 1 \\ -1 & -2 & -1 & -2 \end{bmatrix}
+$$
+
+$$
+\mathbf{K} = \begin{bmatrix} 2 & -1 & -1 & -1 \\ -2 & -2 & -1 & -1 \\ 2 & 1 & 2 & 1 \end{bmatrix}
+$$
+
+$$
+\mathbf{Q}\mathbf{K}\T = \begin{bmatrix} -4 & 3 & -6 \\ 3 & 9 & -8 \end{bmatrix}
+$$
+
+$$
+\frac{\mathbf{Q}\mathbf{K}\T}{\sqrt{d_k}} = \frac{1}{2}\begin{bmatrix} -4 & 3 & -6 \\ 3 & 9 & -8 \end{bmatrix} = \begin{bmatrix} -2 & \frac{3}{2} & -3 \\ \frac{3}{2} & \frac{9}{2} & -4 \end{bmatrix}
+$$
+
+$\mathbf{Q}$ có 2 truy vấn và $\mathbf{K}$ có 3 khóa (cùng $d_k = 4$), nên ma trận điểm cỡ $2\times 3$: mỗi hàng chứa điểm của một truy vấn với mọi khóa. Chia cho $\sqrt{d_k}$ giữ cho điểm không quá lớn trước khi qua softmax.

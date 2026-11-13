@@ -1,0 +1,93 @@
+---
+title: ndarray, shape, dtype
+description: Mảng NumPy là vector và ma trận; shape, số chiều, kiểu dữ liệu
+lesson: "2.1"
+prerequisites: ["1.1", "1.3"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExArrayShape from '../../../generated/lesson-2-1/array-shape.mdx';
+import ExDtype from '../../../generated/lesson-2-1/dtype-promotion.mdx';
+import ExMistake from '../../../generated/lesson-2-1/mistake-vector-shape.mdx';
+
+## Mục tiêu
+
+- Đọc một đoạn code NumPy và nói mỗi mảng là vector hay ma trận cỡ bao nhiêu.
+- Dự đoán `shape`, `ndim`, `size` của một mảng.
+- Dự đoán kiểu dữ liệu (`dtype`) khi trộn số nguyên, số thực và `bool`.
+
+Bài tập của Phần 2 **không viết code**: bạn đọc code rồi điền shape, giá trị hoặc chọn đáp án. Kết quả trong bài này do chính NumPy tính khi xây dựng website.
+
+## Toán ↔ NumPy
+
+| Toán | NumPy | Bài liên quan |
+| --- | --- | --- |
+| vector $\mathbf{x} \in \R^{n}$ | `np.array([...])`, shape `(n,)` | 1.1 |
+| ma trận $\mathbf{A} \in \R^{m \times n}$ | `np.array([[...], ...])`, shape `(m, n)` | 1.3 |
+| kích thước $m \times n$ | `A.shape` | 1.3 |
+| số phần tử | `A.size` | 1.3 |
+
+## Trực giác
+
+`ndarray` là một bảng các số **cùng kiểu**, xếp thành một hoặc nhiều **trục** (axis). `shape` cho biết độ dài từng trục, `ndim` là số trục. Vector là mảng một trục, ma trận là mảng hai trục, và dữ liệu như một batch ảnh là mảng nhiều trục hơn.
+
+## Định nghĩa
+
+- `a.shape`: tuple độ dài từng chiều. Mảng một chiều dài $n$ có shape `(n,)`, **có dấu phẩy**.
+- `a.ndim`: số chiều, bằng `len(a.shape)`. `a.size`: tổng số phần tử, bằng tích các độ dài.
+- `a.dtype`: kiểu dữ liệu chung của mọi phần tử. Với NumPy 2, số nguyên mặc định là `int64`, số thực là `float64`.
+
+**Quy tắc nâng kiểu:** khi một mảng có nhiều kiểu, NumPy chọn kiểu "rộng" nhất: có một số thực thì cả mảng là `float64`; phép chia `/` luôn cho số thực; phép so sánh cho `bool`.
+
+## Ví dụ
+
+### Shape của vector và ma trận
+
+<ExArrayShape />
+
+### Kiểu dữ liệu
+
+<ExDtype />
+
+## Tính chất
+
+- `size` bằng tích các phần tử của `shape`. Với ví dụ trên, ma trận có `size` bằng tích hai số trong shape của nó.
+- Mọi phần tử của một mảng có **cùng** `dtype`; không thể trộn chuỗi và số mà giữ kiểu số.
+- `shape` của kết quả mọi phép toán là thứ ta suy luận bằng quy tắc (các bài sau): đó là kỹ năng chính của Phần 2.
+
+## Lỗi thường gặp
+
+**Lỗi 1: tưởng vector một chiều là vector cột.**
+
+<ExMistake />
+
+**Lỗi 2: quên dấu phẩy của shape một chiều.** `(3,)` là tuple một phần tử, còn `(3)` chỉ là số $3$.
+
+**Lỗi 3: tưởng `/` giữ kiểu nguyên.** Trong NumPy (và Python 3), `/` luôn cho số thực; dùng `//` nếu cần chia nguyên.
+
+## Liên hệ với ML
+
+- Ma trận dữ liệu $\mathbf{X}$ có shape `(N, d)`: $N$ mẫu, $d$ đặc trưng; nhãn $\mathbf{y}$ có shape `(N,)`.
+- Ảnh: `(H, W)` cho ảnh xám, `(H, W, C)` hoặc `(C, H, W)` cho ảnh màu; batch ảnh thêm một trục đầu `(N, ...)`.
+- `dtype` quan trọng với bộ nhớ và tốc độ: huấn luyện mạng neural thường dùng `float32`, không phải `float64`.
+
+## Tóm tắt
+
+| Thuộc tính | Ý nghĩa |
+| --- | --- |
+| `shape` | tuple độ dài các trục |
+| `ndim` | số trục |
+| `size` | tổng số phần tử |
+| `dtype` | kiểu chung của mọi phần tử |
+
+<MarkRead client:visible lesson="2.1" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="numpy" lesson="2.1" types={["np-shape", "np-dtype"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Mảng NumPy, `shape`, `dtype`, quy tắc nâng kiểu: tài liệu NumPy, mục "NumPy quickstart" và "Data types", [numpy.org/doc](https://numpy.org/doc/stable/).
+- Ký hiệu vector và ma trận: bài 1.1 và 1.3 của khóa này.

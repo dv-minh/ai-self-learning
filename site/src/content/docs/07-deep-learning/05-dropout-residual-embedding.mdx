@@ -1,0 +1,98 @@
+---
+title: Dropout, residual connection, embedding
+description: Chống overfit bằng dropout, đường tắt residual cho mạng sâu, và bảng embedding cho dữ liệu rời rạc
+lesson: "7.5"
+prerequisites: ["7.3", "7.4", "4.3"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExDrop from '../../../generated/lesson-7-5/dropout-example.mdx';
+import ExRes from '../../../generated/lesson-7-5/residual-depth.mdx';
+import ExEmb from '../../../generated/lesson-7-5/embedding-example.mdx';
+import ExMistake from '../../../generated/lesson-7-5/mistake-dropout-eval.mdx';
+
+## Mục tiêu
+
+- Áp dụng inverted dropout và tính kỳ vọng, phương sai của đầu ra.
+- Tính gradient qua khối residual và so với mạng thường.
+- Tra bảng embedding, cộng embedding vị trí, và dùng weight tying.
+
+## Trực giác
+
+**Dropout** ngẫu nhiên tắt một phần nơ-ron ở mỗi bước huấn luyện, buộc mạng không dựa vào một vài nơ-ron riêng lẻ (giống huấn luyện cả "tập hợp" các mạng con). **Residual connection** cộng đầu vào vào đầu ra của khối: $y = x + F(x)$, tạo một đường tắt cho gradient đi thẳng về các lớp đầu nên mạng hàng trăm lớp vẫn huấn luyện được. **Embedding** biến ID rời rạc (từ, token, người dùng) thành vector thực học được bằng một phép tra bảng.
+
+## Định nghĩa
+
+**Inverted dropout** với xác suất bỏ $p$, mặt nạ $m_i \in \{0, 1\}$ ($P(m_i = 1) = 1 - p$):
+
+$$
+y_i = \frac{m_i\,x_i}{1 - p},\qquad \mathbb{E}[y_i] = x_i,\qquad \mathrm{Var}(y_i) = x_i^2\,\frac{p}{1 - p}.
+$$
+
+Đọc bằng lời: phần tử được giữ nhân lên $1/(1-p)$ để kỳ vọng không đổi; phần tử bị bỏ thành $0$. Khi suy luận tắt dropout.
+
+**Residual:** $y = x + F(x)$, nên $\dfrac{dy}{dx} = 1 + F'(x)$. Qua $n$ khối: gradient là tích $\prod (1 + F_i')$.
+
+**Embedding:** bảng $\mathbf{E} \in \R^{V\times d}$, token $i$ có vector là hàng $i$ ($\mathbf{e}_i\T\mathbf{E}$ với $\mathbf{e}_i$ one-hot). Chuỗi $T$ token cho ma trận $T\times d$; đầu vào Transformer là embedding token **cộng** embedding vị trí. **Weight tying:** logit trên từ vựng $= \mathbf{E}\mathbf{h}$ dùng lại chính $\mathbf{E}$.
+
+## Ví dụ
+
+### Dropout
+
+<ExDrop />
+
+### Residual giữ gradient qua nhiều khối
+
+<ExRes />
+
+### Tra bảng embedding
+
+<ExEmb />
+
+## Tính chất
+
+- **Dropout là điều chuẩn hóa:** làm giảm co-adaptation; tắt khi suy luận (`eval`).
+- **Kỳ vọng của đầu ra dropout bằng đầu vào**, phương sai tăng theo $p/(1-p)$.
+- **Residual giữ "con đường đồng nhất":** cả forward lẫn backward đều có số hạng $1$, nên gradient không biến mất do tích nhiều thừa số nhỏ.
+- **Embedding là tra bảng, không phải nhân ma trận đầy đủ:** chi phí độc lập với $V$ cho mỗi token; tham số $Vd$ thường chiếm phần lớn mô hình ngôn ngữ nhỏ.
+- **Embedding vị trí** cho mô hình biết thứ tự (attention tự nó không biết thứ tự, bài 7.6).
+
+## Lỗi thường gặp
+
+**Lỗi 1: để dropout bật khi suy luận.**
+
+<ExMistake />
+
+**Lỗi 2: nhầm $p$ là xác suất giữ** thay vì xác suất bỏ (PyTorch `nn.Dropout(p)`: $p$ là xác suất bỏ).
+
+**Lỗi 3: quên hệ số $1/(1-p)$** (không phải inverted), khiến kích hoạt lúc huấn luyện và suy luận lệch thang.
+
+**Lỗi 4: cộng khối residual với đầu ra có kích thước khác** (cần phép chiếu $1\times 1$ hoặc tuyến tính để khớp shape).
+
+## Liên hệ với ML
+
+- **Mọi Transformer** dùng residual quanh attention và quanh feed-forward, cùng LayerNorm (bài 7.6); **ResNet** dùng residual trong CNN (bài 8.3).
+- **Dropout** phổ biến trong mô hình nhỏ và fine-tuning; LLM lớn thường dùng ít hoặc không dùng.
+- **Embedding** là cách duy nhất đưa dữ liệu rời rạc (token, danh mục, người dùng) vào mạng.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Inverted dropout | $y = m\,x/(1-p)$; $\mathbb{E}[y] = x$ |
+| Residual | $y = x + F(x)$, $dy/dx = 1 + F'$ |
+| Embedding | tra hàng của $\mathbf{E}$; cộng embedding vị trí |
+| Weight tying | logit $= \mathbf{E}\mathbf{h}$ |
+
+<MarkRead client:visible lesson="7.5" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="deep-learning" lesson="7.5" types={["dropout-calc", "resid-grad", "embed-lookup"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Srivastava và cộng sự (2014), "Dropout: A Simple Way to Prevent Neural Networks from Overfitting", *JMLR*.
+- He và cộng sự (2015), "Deep Residual Learning for Image Recognition", [arxiv.org/abs/1512.03385](https://arxiv.org/abs/1512.03385).
+- Press và Wolf (2017), "Using the Output Embedding to Improve Language Models" (weight tying), [arxiv.org/abs/1608.05859](https://arxiv.org/abs/1608.05859).

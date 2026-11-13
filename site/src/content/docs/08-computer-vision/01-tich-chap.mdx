@@ -1,0 +1,108 @@
+---
+title: Ảnh là tensor, tích chập, padding, stride
+description: Biểu diễn ảnh, tương quan chéo 2D, kích thước đầu ra, padding, stride và nhiều kênh
+lesson: "8.1"
+prerequisites: ["1.5", "7.1"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExConv from '../../../generated/lesson-8-1/conv-worked.mdx';
+import ExPad from '../../../generated/lesson-8-1/conv-padding.mdx';
+import ExShape from '../../../generated/lesson-8-1/shape-table.mdx';
+import PropTrans from '../../../generated/lesson-8-1/prop-translation.mdx';
+import ExMistake from '../../../generated/lesson-8-1/mistake-flip.mdx';
+
+## Mục tiêu
+
+- Hiểu ảnh là tensor $C\times H\times W$ và một batch là tensor $N\times C\times H\times W$.
+- Tính tích chập 2D (tương quan chéo) trên ảnh nhỏ, có padding và nhiều kênh.
+- Tính kích thước đầu ra theo $n, k, p, s$ (và dilation).
+
+## Trực giác
+
+Một ảnh xám là một ma trận cường độ; ảnh màu có ba kênh (R, G, B) nên là tensor ba chiều. Lớp kết nối đầy đủ trên ảnh $224\times 224\times 3$ cần hàng chục triệu trọng số và bỏ qua cấu trúc không gian. **Tích chập** dùng một **kernel** nhỏ trượt khắp ảnh, tại mỗi vị trí tính tổng có trọng số của cửa sổ: cùng một bộ trọng số (chia sẻ trọng số) phát hiện cùng một mẫu hình ở mọi nơi. Mỗi kernel tạo một bản đồ đặc trưng (feature map); nhiều kernel cho nhiều kênh đầu ra.
+
+## Định nghĩa
+
+Với ảnh $\mathbf{X}$ và kernel $\mathbf{K} \in \R^{k\times k}$, đầu ra (không padding, stride $1$):
+
+$$
+Y_{ij} = \sum_{a=0}^{k-1}\sum_{b=0}^{k-1} K_{ab}\,X_{i+a,\,j+b}.
+$$
+
+Đọc bằng lời: đặt kernel lên cửa sổ $k\times k$ bắt đầu tại $(i, j)$, nhân từng cặp phần tử rồi cộng. Đây là **tương quan chéo** (cross-correlation): kernel **không** bị lật; các framework gọi nó là "convolution".
+
+- **Padding $p$:** thêm viền $p$ số $0$ quanh ảnh. Với kernel lẻ $k$ và $p = (k-1)/2$, stride $1$ giữ nguyên kích thước ("same").
+- **Stride $s$:** bước trượt; $s = 2$ giảm một nửa kích thước.
+- **Dilation $d$:** các phần tử kernel cách nhau $d$; kernel hiệu dụng rộng $d(k-1) + 1$.
+- **Nhiều kênh vào:** mỗi kênh có một lát kernel riêng; kết quả các kênh được **cộng** thành một bản đồ đầu ra. Một bộ lọc là tensor $C_{\mathrm{in}}\times k\times k$.
+
+**Kích thước đầu ra** (mỗi chiều):
+
+$$
+n_{\mathrm{out}} = \left\lfloor \frac{n + 2p - d(k-1) - 1}{s} \right\rfloor + 1.
+$$
+
+## Ví dụ
+
+### Tích chập $3\times 3$ trên ảnh $4\times 4$
+
+<ExConv />
+
+### Padding
+
+<ExPad />
+
+### Bảng kích thước
+
+<ExShape />
+
+## Tính chất
+
+- **Đồng biến tịnh tiến:** dịch ảnh thì bản đồ đặc trưng dịch tương ứng.
+
+<PropTrans />
+
+- **Chia sẻ trọng số** làm số tham số không phụ thuộc kích thước ảnh (bài 8.3).
+- **Tuyến tính:** $(\mathbf{X}_1 + \mathbf{X}_2) * \mathbf{K} = \mathbf{X}_1 * \mathbf{K} + \mathbf{X}_2 * \mathbf{K}$.
+- Kernel cố định cổ điển: Sobel (cạnh), Laplacian (cạnh theo mọi hướng), làm mờ (trung bình); CNN **học** kernel thay vì thiết kế tay.
+
+## Lỗi thường gặp
+
+**Lỗi 1: lật kernel khi tính tay.**
+
+<ExMistake />
+
+**Lỗi 2: quên padding** khi đề nói "same" hoặc "padding $p$": kích thước đầu ra sai.
+
+**Lỗi 3: quên cộng các kênh đầu vào.** Một bộ lọc cho **một** kênh đầu ra dù ảnh vào có nhiều kênh.
+
+**Lỗi 4: quên $\lfloor\cdot\rfloor$** khi $(n + 2p - k)$ không chia hết cho $s$.
+
+## Liên hệ với ML
+
+- **CNN** xếp nhiều lớp tích chập, kích hoạt và pooling; các lớp đầu học cạnh, lớp sau học bộ phận và đối tượng.
+- **Tensor ảnh** trong PyTorch có shape `(N, C, H, W)`; `nn.Conv2d(C_in, C_out, k, stride, padding)`.
+- Tích chập cũng dùng cho âm thanh, văn bản (1D) và video (3D).
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Tương quan chéo | $Y_{ij} = \sum K_{ab}X_{i+a,j+b}$, không lật kernel |
+| Kích thước ra | $\lfloor (n + 2p - d(k-1) - 1)/s \rfloor + 1$ |
+| Nhiều kênh | cộng kết quả các kênh vào |
+| Đồng biến tịnh tiến | dịch vào $\Rightarrow$ dịch ra |
+
+<MarkRead client:visible lesson="8.1" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="computer-vision" lesson="8.1" types={["conv2d-compute", "conv-shape"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- CS231n, ghi chú về mạng tích chập, [cs231n.github.io/convolutional-networks](https://cs231n.github.io/convolutional-networks/).
+- *Dive into Deep Learning*, chương Convolutional Neural Networks, [d2l.ai](https://d2l.ai).
+- Dumoulin và Visin (2016), "A guide to convolution arithmetic for deep learning", [arxiv.org/abs/1603.07285](https://arxiv.org/abs/1603.07285).

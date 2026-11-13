@@ -1,0 +1,101 @@
+---
+title: Lan truyền ngược (backpropagation)
+description: Forward rồi backward theo chain rule, gradient của trọng số, kiểm tra bằng sai phân
+lesson: "7.3"
+prerequisites: ["3.2", "3.7", "7.1", "7.2"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExScalar from '../../../generated/lesson-7-3/backprop-scalar.mdx';
+import ExMatrix from '../../../generated/lesson-7-3/backprop-matrix.mdx';
+import ExCheck from '../../../generated/lesson-7-3/gradient-check.mdx';
+import PropAcc from '../../../generated/lesson-7-3/prop-gradient-accumulates.mdx';
+import ExMistake from '../../../generated/lesson-7-3/mistake-relu-backward.mdx';
+
+## Mục tiêu
+
+- Chạy forward lưu các giá trị trung gian, rồi backward tính gradient theo chain rule.
+- Tính gradient của trọng số cho mạng hai lớp với ReLU và mất mát bình phương.
+- Biết công thức ma trận: $\partial L/\partial\mathbf{W} = (\partial L/\partial\mathbf{z})\,\mathbf{a}\T$.
+- Kiểm tra gradient bằng sai phân hữu hạn.
+
+## Trực giác
+
+Hàm mất mát là một hàm hợp rất sâu của các tham số. Chain rule cho gradient của hàm hợp bằng tích các đạo hàm cục bộ. **Backpropagation** chỉ là cách tổ chức phép nhân đó cho hiệu quả: sau một lượt **forward** (lưu mọi giá trị trung gian), ta đi ngược từ mất mát về tham số, mỗi nút nhận gradient từ phía sau, nhân với đạo hàm cục bộ của mình rồi chuyển cho phía trước. Chi phí của lượt backward cùng bậc với forward. Đây chính là vi phân ngược trên đồ thị tính toán ở bài 3.7.
+
+## Định nghĩa
+
+Với lớp $\mathbf{z} = \mathbf{W}\mathbf{a}_{\mathrm{prev}} + \mathbf{b}$, $\mathbf{a} = \phi(\mathbf{z})$, gọi $\mathbf{g}_a = \partial L/\partial\mathbf{a}$ là gradient từ phía sau:
+
+$$
+\frac{\partial L}{\partial\mathbf{z}} = \mathbf{g}_a \odot \phi'(\mathbf{z}),\quad \frac{\partial L}{\partial\mathbf{W}} = \frac{\partial L}{\partial\mathbf{z}}\,\mathbf{a}_{\mathrm{prev}}\T,\quad \frac{\partial L}{\partial\mathbf{b}} = \frac{\partial L}{\partial\mathbf{z}},\quad \frac{\partial L}{\partial\mathbf{a}_{\mathrm{prev}}} = \mathbf{W}\T\frac{\partial L}{\partial\mathbf{z}}.
+$$
+
+Đọc bằng lời: nhân gradient đến với đạo hàm hàm kích hoạt (từng phần tử), gradient trọng số là tích ngoài của gradient đó với đầu vào của lớp, và gradient đi tiếp về phía trước nhân với $\mathbf{W}\T$.
+
+Với mất mát $L = \frac{1}{2}(\hat{y} - y)^2$ ở đầu ra tuyến tính: $\partial L/\partial\hat{y} = \hat{y} - y$. Với softmax và cross-entropy: $\partial L/\partial\mathbf{z} = \mathbf{p} - \mathbf{y}$ (bài 7.2). Với mini-batch, lấy **trung bình** gradient các mẫu.
+
+## Ví dụ
+
+### Mạng một chiều
+
+<ExScalar />
+
+### Mạng với ma trận
+
+<ExMatrix />
+
+### Kiểm tra bằng sai phân hữu hạn
+
+<ExCheck />
+
+## Tính chất
+
+- **Biến dùng ở nhiều nhánh** nhận gradient là **tổng** các đóng góp:
+
+<PropAcc />
+
+- **Bộ nhớ:** backward cần các giá trị forward, nên phải lưu chúng (đánh đổi bộ nhớ lấy thời gian; gradient checkpointing tính lại thay vì lưu).
+- **Nơ-ron ReLU không hoạt động** ($z \le 0$) cho gradient $0$ tại hàng tương ứng.
+- **Gradient biến mất/bùng nổ:** tích nhiều đạo hàm cục bộ nhỏ hơn hoặc lớn hơn $1$ qua nhiều lớp (liên quan khởi tạo, bài 7.4, và residual, bài 7.5).
+
+## Lỗi thường gặp
+
+**Lỗi 1: bỏ qua đạo hàm hàm kích hoạt.**
+
+<ExMistake />
+
+**Lỗi 2: dùng giá trị forward cũ hoặc sai** khi tính gradient; phải dùng đúng giá trị tại điểm hiện tại.
+
+**Lỗi 3: nhầm thứ tự nhân ma trận.** $\partial L/\partial\mathbf{W}$ có cùng kích thước với $\mathbf{W}$: $(\partial L/\partial\mathbf{z})\,\mathbf{a}\T$ cho $n_{\mathrm{out}}\times n_{\mathrm{in}}$.
+
+**Lỗi 4: quên lấy trung bình trên batch** (hoặc chia hai lần).
+
+## Liên hệ với ML
+
+- Mọi framework (PyTorch, JAX) tự động hóa backpropagation (autograd); hiểu nó giúp gỡ lỗi gradient NaN, gradient bằng $0$, hay bộ nhớ tăng đột biến.
+- `loss.backward()` thực hiện đúng lượt backward trên đồ thị tính toán mà `forward` đã dựng.
+- Kiểm tra gradient bằng sai phân hữu hạn (gradient check) là kỹ thuật chuẩn khi tự viết lớp mới.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Forward | lưu $\mathbf{z}, \mathbf{a}$ mỗi lớp |
+| $\partial L/\partial\mathbf{z}$ | $\mathbf{g}_a \odot \phi'(\mathbf{z})$ |
+| $\partial L/\partial\mathbf{W}$ | $(\partial L/\partial\mathbf{z})\,\mathbf{a}_{\mathrm{prev}}\T$ |
+| Đi tiếp | $\mathbf{W}\T\,\partial L/\partial\mathbf{z}$ |
+| Nhánh chung | cộng các gradient |
+
+<MarkRead client:visible lesson="7.3" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="deep-learning" lesson="7.3" types={["backprop-net"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Rumelhart, Hinton và Williams (1986), "Learning representations by back-propagating errors", *Nature*.
+- *Dive into Deep Learning*, mục Forward Propagation, Backward Propagation, and Computational Graphs, [d2l.ai](https://d2l.ai).
+- CS231n, ghi chú về backpropagation, [cs231n.github.io/optimization-2](https://cs231n.github.io/optimization-2/).

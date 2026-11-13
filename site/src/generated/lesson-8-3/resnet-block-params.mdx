@@ -1,0 +1,13 @@
+$$
+C = 64
+$$
+
+$$
+\text{basic} = 2\cdot 9C^2 = 73728\ (\text{input and output } 64\text{ channels})
+$$
+
+$$
+\text{bottleneck} = 4C^2 + 9C^2 + 4C^2 = 69632\ (\text{input and output } 256\text{ channels})
+$$
+
+Bottleneck nén xuống $C$ kênh trước khi làm conv $3\times 3$ đắt đỏ rồi mở lại $4C$ kênh, nên làm việc với biểu diễn rộng hơn mà vẫn tiết kiệm.

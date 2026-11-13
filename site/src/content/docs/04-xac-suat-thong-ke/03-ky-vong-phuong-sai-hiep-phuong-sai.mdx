@@ -1,0 +1,114 @@
+---
+title: Kỳ vọng, phương sai, hiệp phương sai
+description: Biến ngẫu nhiên rời rạc, kỳ vọng, phương sai, hiệp phương sai, ma trận hiệp phương sai
+lesson: "4.3"
+prerequisites: ["4.1", "1.13"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExExpect from '../../../generated/lesson-4-3/expectation-variance.mdx';
+import ExLinear from '../../../generated/lesson-4-3/linear-transform.mdx';
+import ExCov from '../../../generated/lesson-4-3/covariance-example.mdx';
+import PropUncorr from '../../../generated/lesson-4-3/prop-uncorrelated.mdx';
+import ExMistake from '../../../generated/lesson-4-3/mistake-variance-add.mdx';
+
+## Mục tiêu
+
+- Tính kỳ vọng và phương sai của biến ngẫu nhiên rời rạc.
+- Áp dụng quy tắc biến đổi tuyến tính $\mathbb{E}[aX+b]$, $\mathrm{Var}(aX+b)$.
+- Tính hiệp phương sai và ma trận hiệp phương sai của dữ liệu.
+
+## Trực giác
+
+Biến ngẫu nhiên gán một số cho mỗi kết quả của thí nghiệm ngẫu nhiên. **Kỳ vọng** là "giá trị trung bình dài hạn" (tâm của phân phối). **Phương sai** đo độ phân tán quanh tâm đó. **Hiệp phương sai** đo hai biến có xu hướng **cùng tăng** (dương), **ngược chiều** (âm) hay không liên quan tuyến tính (gần $0$). Ma trận hiệp phương sai gom mọi cặp biến vào một ma trận đối xứng bán xác định dương (bài 1.13).
+
+## Định nghĩa
+
+Với biến rời rạc $X$ nhận giá trị $x$ với xác suất $P(X = x)$:
+
+$$
+\mathbb{E}[X] = \sum_x x\,P(X = x), \qquad \mathrm{Var}(X) = \mathbb{E}\big[(X - \mu)^2\big] = \mathbb{E}[X^2] - \mu^2, \quad \mu = \mathbb{E}[X].
+$$
+
+Đọc bằng lời: kỳ vọng là trung bình có trọng số bằng xác suất; phương sai là kỳ vọng của bình phương độ lệch khỏi $\mu$.
+
+**Biến đổi tuyến tính:** $\mathbb{E}[aX + b] = a\,\mathbb{E}[X] + b$ và $\mathrm{Var}(aX + b) = a^2\,\mathrm{Var}(X)$.
+
+**Hiệp phương sai (covariance)** của $X, Y$:
+
+$$
+\mathrm{Cov}(X, Y) = \mathbb{E}[(X - \mu_X)(Y - \mu_Y)] = \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y].
+$$
+
+**Từ dữ liệu**, hiệp phương sai mẫu của $n$ cặp dùng $\frac{1}{n-1}$:
+
+$$
+s_{xy} = \frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y}), \qquad \mathbf{C} = \frac{1}{n-1}\mathbf{X}_c\T\mathbf{X}_c.
+$$
+
+Đường chéo của $\mathbf{C}$ là các phương sai, phần tử ngoài đường chéo là các hiệp phương sai (bài 1.14).
+
+## Ví dụ
+
+### Kỳ vọng và phương sai
+
+<ExExpect />
+
+### Biến đổi tuyến tính
+
+<ExLinear />
+
+### Hiệp phương sai từ dữ liệu
+
+<ExCov />
+
+## Tính chất
+
+- **Tuyến tính của kỳ vọng:** $\mathbb{E}[X + Y] = \mathbb{E}[X] + \mathbb{E}[Y]$ luôn đúng, kể cả khi $X, Y$ phụ thuộc.
+- **Phương sai của tổng:** $\mathrm{Var}(X + Y) = \mathrm{Var}(X) + \mathrm{Var}(Y) + 2\,\mathrm{Cov}(X, Y)$.
+- **Độc lập $\Rightarrow$ không tương quan, nhưng không ngược lại:**
+
+<PropUncorr />
+
+- $\mathrm{Cov}(X, X) = \mathrm{Var}(X)$ và $\mathrm{Cov}(X, Y) = \mathrm{Cov}(Y, X)$.
+
+## Lỗi thường gặp
+
+**Lỗi 1: cho rằng phương sai luôn cộng được.**
+
+<ExMistake />
+
+**Lỗi 2: quên bình phương hệ số** trong $\mathrm{Var}(aX + b) = a^2\mathrm{Var}(X)$, và cộng nhầm $b$ vào phương sai.
+
+**Lỗi 3: nhầm $\mathbb{E}[X^2]$ với $(\mathbb{E}[X])^2$.** Chúng chỉ bằng nhau khi phương sai bằng $0$.
+
+**Lỗi 4: chia cho $n$ hay $n-1$ mà không nói rõ.** Tài liệu này dùng hiệp phương sai **mẫu** (chia cho $n-1$).
+
+## Liên hệ với ML
+
+- **PCA** dùng ma trận hiệp phương sai của đặc trưng (bài 1.14).
+- **Chuẩn hóa dữ liệu** trừ kỳ vọng và chia độ lệch chuẩn từng cột.
+- **Kỳ vọng mất mát** $\mathbb{E}[L]$ là đại lượng mà ta thực sự muốn cực tiểu; mất mát trung bình trên tập huấn luyện là ước lượng của nó.
+- **Phương sai của gradient** trong SGD ảnh hưởng độ ổn định huấn luyện (Phần 5).
+
+## Tóm tắt
+
+| Khái niệm | Công thức |
+| --- | --- |
+| Kỳ vọng | $\sum_x xP(X=x)$ |
+| Phương sai | $\mathbb{E}[X^2] - (\mathbb{E}[X])^2$ |
+| Biến đổi tuyến tính | $a\mu + b$; $a^2\sigma^2$ |
+| Hiệp phương sai | $\mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y]$ |
+| Ma trận hiệp phương sai mẫu | $\frac{1}{n-1}\mathbf{X}_c\T\mathbf{X}_c$ |
+
+<MarkRead client:visible lesson="4.3" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="probability" lesson="4.3" types={["expect-var", "covariance"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Kỳ vọng, phương sai, hiệp phương sai: *Mathematics for Machine Learning*, chương về xác suất và phân phối, [mml-book.github.io](https://mml-book.github.io).
+- Ma trận hiệp phương sai và PCA: bài 1.14 của khóa này.

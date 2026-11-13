@@ -1,0 +1,11 @@
+$$
+\mathbf{z} = (-1, 4)\T,\ \mathbf{h} = (0, 4)\T,\ \hat{y} = 8,\ \delta = \hat{y} - y = 5
+$$
+
+$$
+\dfrac{\partial L}{\partial\mathbf{z}} = \delta\,(\mathbf{w}_2 \odot \mathbb{1}[\mathbf{z} > 0]) = (0, 10)\T
+$$
+
+$$
+\dfrac{\partial L}{\partial\mathbf{W}_1} = \dfrac{\partial L}{\partial\mathbf{z}}\,\mathbf{x}\T = \begin{bmatrix} 0 & 0 \\ 10 & 20 \end{bmatrix}
+$$

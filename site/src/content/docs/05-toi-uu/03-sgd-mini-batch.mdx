@@ -1,0 +1,96 @@
+---
+title: SGD và mini-batch
+description: Gradient trên một phần dữ liệu, epoch, tính không chệch của gradient mini-batch
+lesson: "5.3"
+prerequisites: ["5.2"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExMini from '../../../generated/lesson-5-3/minibatch-step.mdx';
+import ExEpoch from '../../../generated/lesson-5-3/epoch-two-updates.mdx';
+import PropUnbiased from '../../../generated/lesson-5-3/unbiased.mdx';
+import ExMistake from '../../../generated/lesson-5-3/mistake-divide.mdx';
+
+## Mục tiêu
+
+- Phân biệt full-batch gradient descent, mini-batch SGD và SGD thuần (batch cỡ $1$).
+- Tính một bước cập nhật với mini-batch cho trước.
+- Mô phỏng một epoch gồm nhiều lần cập nhật.
+- Giải thích vì sao gradient mini-batch là ước lượng không chệch của gradient toàn bộ.
+
+## Trực giác
+
+Hàm mất mát thường là trung bình trên hàng triệu mẫu: tính gradient đầy đủ ở mỗi bước rất đắt. Thay vào đó, ta lấy một nhóm nhỏ (mini-batch) làm đại diện, tính gradient trên nhóm đó rồi bước. Gradient này hơi "nhiễu" so với gradient thật, nhưng **trung bình** thì đúng, và vì rẻ nên ta đi được rất nhiều bước. Nhiễu đôi khi còn giúp thoát khỏi điểm yên ngựa.
+
+## Định nghĩa
+
+Với mất mát $L(\mathbf{w}) = \dfrac{1}{N}\sum_{i=1}^{N} \ell_i(\mathbf{w})$:
+
+- **Full-batch:** $\mathbf{g} = \dfrac{1}{N}\sum_{i=1}^{N}\nabla\ell_i(\mathbf{w})$.
+- **Mini-batch** $\mathcal{B} \subset \{1, \dots, N\}$: $\mathbf{g}_{\mathcal{B}} = \dfrac{1}{|\mathcal{B}|}\sum_{i \in \mathcal{B}}\nabla\ell_i(\mathbf{w})$, rồi $\mathbf{w} \leftarrow \mathbf{w} - \eta\,\mathbf{g}_{\mathcal{B}}$.
+- **SGD thuần (stochastic gradient descent):** $|\mathcal{B}| = 1$.
+- **Epoch:** một lượt đi qua toàn bộ dữ liệu; với cỡ batch $B$ có $N/B$ lần cập nhật. Thông thường dữ liệu được xáo trộn trước mỗi epoch (trong các bài tập ở đây thứ tự cố định để tính tay được).
+
+Với mô hình $\hat{y} = wx + b$ và $\ell_i = \frac{1}{2}(\hat{y}_i - y_i)^2$: $\dfrac{\partial\ell_i}{\partial w} = e_i x_i$ và $\dfrac{\partial\ell_i}{\partial b} = e_i$, với $e_i = \hat{y}_i - y_i$.
+
+**Không chệch (unbiased):** nếu mini-batch được chọn ngẫu nhiên đều, $\mathbb{E}[\mathbf{g}_{\mathcal{B}}] = \mathbf{g}$. Đọc bằng lời: bước đi trung bình của SGD chính là bước của gradient descent thật.
+
+## Ví dụ
+
+### Một bước với mini-batch
+
+<ExMini />
+
+### Một epoch
+
+<ExEpoch />
+
+## Tính chất
+
+- **Gradient mini-batch không chệch.** Với mọi cách chọn $B$ mẫu từ $N$ mẫu (không hoàn lại), trung bình gradient trên mọi mini-batch bằng gradient toàn bộ. Kiểm tra bằng liệt kê:
+
+<PropUnbiased />
+
+- **Phương sai giảm khi batch lớn:** batch lớn cho gradient ổn định hơn nhưng mỗi bước đắt hơn.
+- **Learning rate nên giảm dần** (bài 5.6) vì nhiễu của SGD không tự mất đi gần cực tiểu.
+- Với $B = N$ ta quay về full-batch gradient descent.
+
+## Lỗi thường gặp
+
+**Lỗi 1: chia cho $N$ thay vì $|\mathcal{B}|$.**
+
+<ExMistake />
+
+**Lỗi 2: dùng cùng một $\mathbf{w}$ cho mọi batch trong epoch.** Mỗi mini-batch dùng tham số **vừa được cập nhật** bởi batch trước.
+
+**Lỗi 3: đếm sai số lần cập nhật trong một epoch.** $N = 6$, $B = 2$ cho $3$ lần cập nhật, không phải $6$.
+
+**Lỗi 4: lẫn "epoch" với "iteration".** Iteration là một lần cập nhật; epoch là một lượt qua dữ liệu.
+
+## Liên hệ với ML
+
+- **Huấn luyện mạng neural** hầu như luôn dùng mini-batch (kích thước $32$ đến vài nghìn).
+- **Kích thước batch** là siêu tham số: batch lớn tận dụng GPU tốt, batch nhỏ cho nhiễu có lợi (regularization ngầm).
+- **Shuffle dữ liệu mỗi epoch** để các mini-batch thực sự "ngẫu nhiên" và gradient không chệch.
+
+## Tóm tắt
+
+| Khái niệm | Nội dung |
+| --- | --- |
+| Mini-batch gradient | trung bình gradient trên $\lvert\mathcal{B}\rvert$ mẫu của batch |
+| Số cập nhật mỗi epoch | $N / B$ |
+| Không chệch | $\mathbb{E}[\mathbf{g}_{\mathcal{B}}] = \mathbf{g}$ |
+| SGD thuần | $\lvert\mathcal{B}\rvert = 1$ |
+
+<MarkRead client:visible lesson="5.3" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="optimization" lesson="5.3" types={["sgd-minibatch", "sgd-epoch", "sgd-unbiased"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- SGD và mini-batch: *Dive into Deep Learning*, chương Tối ưu hóa (stochastic gradient descent, minibatch), [d2l.ai](https://d2l.ai).
+- *Mathematics for Machine Learning*, mục về stochastic gradient descent trong chương 7, [mml-book.github.io](https://mml-book.github.io).
+- Tổng quan SGD và các biến thể: Ruder (2016), "An overview of gradient descent optimization algorithms", [arxiv.org/abs/1609.04747](https://arxiv.org/abs/1609.04747).

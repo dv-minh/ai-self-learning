@@ -1,0 +1,18 @@
+```python
+import numpy as np
+
+X = np.array([[0.0, 0.0], [3.0, 4.0], [6.0, 8.0]])
+
+D = ((X[:, None, :] - X[None, :, :]) ** 2).sum(axis=-1)
+print(D)    # D[i, j] = bình phương khoảng cách giữa mẫu i và mẫu j
+```
+
+Kết quả in ra:
+
+```text
+[[  0.  25. 100.]
+ [ 25.   0.  25.]
+ [100.  25.   0.]]
+```
+
+`X[:, None, :]` có shape `(N, 1, d)` và `X[None, :, :]` có shape `(1, N, d)`; broadcasting tạo ra mọi cặp.

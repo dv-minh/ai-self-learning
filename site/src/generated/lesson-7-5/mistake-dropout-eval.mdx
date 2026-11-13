@@ -1,0 +1,3 @@
+**Sai:** để dropout bật khi suy luận. Kết quả cho cùng một đầu vào thay đổi ngẫu nhiên giữa các lần chạy.
+
+**Đúng:** dropout chỉ áp dụng khi huấn luyện (`model.train()`); khi suy luận (`model.eval()`) tắt dropout. Với inverted dropout không cần nhân thêm hệ số lúc suy luận.

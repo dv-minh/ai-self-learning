@@ -1,0 +1,58 @@
+$$
+\mathbf{A} = \begin{bmatrix} 5 & 0 & 2 \\ 2 & 0 & 1 \\ -1 & 1 & 0 \end{bmatrix}
+$$
+
+1. Ma trận ban đầu:
+
+   $$
+   \left[\begin{array}{ccc|ccc} 5 & 0 & 2 & 1 & 0 & 0 \\ 2 & 0 & 1 & 0 & 1 & 0 \\ -1 & 1 & 0 & 0 & 0 & 1 \end{array}\right]
+   $$
+
+2. $R_{1} \leftarrow \frac{1}{5}R_{1}$:
+
+   $$
+   \left[\begin{array}{ccc|ccc} 1 & 0 & \frac{2}{5} & \frac{1}{5} & 0 & 0 \\ 2 & 0 & 1 & 0 & 1 & 0 \\ -1 & 1 & 0 & 0 & 0 & 1 \end{array}\right]
+   $$
+
+3. $R_{2} \leftarrow R_{2} - 2R_{1}$:
+
+   $$
+   \left[\begin{array}{ccc|ccc} 1 & 0 & \frac{2}{5} & \frac{1}{5} & 0 & 0 \\ 0 & 0 & \frac{1}{5} & -\frac{2}{5} & 1 & 0 \\ -1 & 1 & 0 & 0 & 0 & 1 \end{array}\right]
+   $$
+
+4. $R_{3} \leftarrow R_{3} + R_{1}$:
+
+   $$
+   \left[\begin{array}{ccc|ccc} 1 & 0 & \frac{2}{5} & \frac{1}{5} & 0 & 0 \\ 0 & 0 & \frac{1}{5} & -\frac{2}{5} & 1 & 0 \\ 0 & 1 & \frac{2}{5} & \frac{1}{5} & 0 & 1 \end{array}\right]
+   $$
+
+5. $R_{2} \leftrightarrow R_{3}$:
+
+   $$
+   \left[\begin{array}{ccc|ccc} 1 & 0 & \frac{2}{5} & \frac{1}{5} & 0 & 0 \\ 0 & 1 & \frac{2}{5} & \frac{1}{5} & 0 & 1 \\ 0 & 0 & \frac{1}{5} & -\frac{2}{5} & 1 & 0 \end{array}\right]
+   $$
+
+6. $R_{3} \leftarrow 5R_{3}$:
+
+   $$
+   \left[\begin{array}{ccc|ccc} 1 & 0 & \frac{2}{5} & \frac{1}{5} & 0 & 0 \\ 0 & 1 & \frac{2}{5} & \frac{1}{5} & 0 & 1 \\ 0 & 0 & 1 & -2 & 5 & 0 \end{array}\right]
+   $$
+
+7. $R_{1} \leftarrow R_{1} - \frac{2}{5}R_{3}$:
+
+   $$
+   \left[\begin{array}{ccc|ccc} 1 & 0 & 0 & 1 & -2 & 0 \\ 0 & 1 & \frac{2}{5} & \frac{1}{5} & 0 & 1 \\ 0 & 0 & 1 & -2 & 5 & 0 \end{array}\right]
+   $$
+
+8. $R_{2} \leftarrow R_{2} - \frac{2}{5}R_{3}$:
+
+   $$
+   \left[\begin{array}{ccc|ccc} 1 & 0 & 0 & 1 & -2 & 0 \\ 0 & 1 & 0 & 1 & -2 & 1 \\ 0 & 0 & 1 & -2 & 5 & 0 \end{array}\right]
+   $$
+
+
+Vế phải là nghịch đảo:
+
+$$
+\mathbf{A}^{-1} = \begin{bmatrix} 1 & -2 & 0 \\ 1 & -2 & 1 \\ -2 & 5 & 0 \end{bmatrix}
+$$

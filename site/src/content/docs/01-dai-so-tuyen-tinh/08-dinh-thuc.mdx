@@ -1,0 +1,152 @@
+---
+title: Định thức
+description: Công thức 2×2, quy tắc Sarrus, khai triển Laplace, biến đổi hàng, tính chất, ý nghĩa diện tích
+lesson: "1.8"
+prerequisites: ["1.5", "1.7"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExDet2 from '../../../generated/lesson-1-8/det2.mdx';
+import ExSarrus from '../../../generated/lesson-1-8/sarrus.mdx';
+import ExLaplace4 from '../../../generated/lesson-1-8/laplace4.mdx';
+import ExRowopsDet from '../../../generated/lesson-1-8/rowops-det.mdx';
+import ExArea from '../../../generated/lesson-1-8/area.mdx';
+import ExMistakeAdd from '../../../generated/lesson-1-8/mistake-add.mdx';
+import ExMistakeScalar from '../../../generated/lesson-1-8/mistake-scalar.mdx';
+import PropTranspose from '../../../generated/lesson-1-8/prop-transpose.mdx';
+import PropProduct from '../../../generated/lesson-1-8/prop-product.mdx';
+import PropSwap from '../../../generated/lesson-1-8/prop-swap.mdx';
+import PropEqualRows from '../../../generated/lesson-1-8/prop-equal-rows.mdx';
+
+## Mục tiêu
+
+Sau bài này bạn có thể:
+
+- Tính định thức $2\times 2$ bằng công thức, $3\times 3$ bằng quy tắc Sarrus.
+- Tính định thức cấp bất kỳ bằng khai triển Laplace hoặc bằng biến đổi hàng.
+- Dùng các tính chất của định thức để tính nhanh và để suy luận.
+- Tìm tham số làm định thức bằng $0$.
+
+## Trực giác
+
+Định thức là một con số gắn với ma trận vuông, cho biết phép biến đổi tuyến tính do ma trận đó biểu diễn **co giãn diện tích (hoặc thể tích) bao nhiêu lần**, có kèm dấu cho biết có lật hướng hay không. Nếu định thức bằng $0$, phép biến đổi "ép dẹt" không gian xuống số chiều thấp hơn và không thể đảo ngược. Vì vậy định thức khác $0$ là dấu hiệu của ma trận khả nghịch (bài 1.9).
+
+## Định nghĩa
+
+Định thức (determinant) của ma trận vuông $\mathbf{A}$ ký hiệu $\det(\mathbf{A})$ hoặc $|\mathbf{A}|$.
+
+**Cấp $2$:**
+
+$$
+\det\begin{bmatrix} a & b \\ c & d \end{bmatrix} = ad - bc.
+$$
+
+Đọc bằng lời: tích đường chéo chính trừ tích đường chéo phụ.
+
+**Cấp $3$ (quy tắc Sarrus):** cộng ba tích theo đường chéo chính, trừ ba tích theo đường chéo phụ (xem ví dụ bên dưới).
+
+**Khai triển Laplace (cofactor expansion)** theo hàng $i$:
+
+$$
+\det(\mathbf{A}) = \sum_{j=1}^{n} a_{ij}\,C_{ij}, \qquad C_{ij} = (-1)^{i+j} M_{ij}.
+$$
+
+Đọc bằng lời: lấy từng phần tử trên hàng $i$, nhân với phần phụ đại số của nó, rồi cộng. Ở đây $M_{ij}$ là định thức của ma trận con nhận được khi bỏ hàng $i$ và cột $j$, và dấu $(-1)^{i+j}$ theo kiểu bàn cờ ($+$ ở góc trái trên). Có thể khai triển theo cột tương tự. Nên chọn hàng hoặc cột có nhiều số $0$ nhất.
+
+**Tính bằng biến đổi hàng.** Đưa ma trận về tam giác trên; định thức bằng tích các phần tử đường chéo, nhân $(-1)$ cho mỗi lần đổi chỗ hai hàng. Phép $R_i \leftarrow R_i + kR_j$ không đổi định thức.
+
+## Ví dụ
+
+### Cấp $2$
+
+<ExDet2 />
+
+### Cấp $3$: quy tắc Sarrus
+
+<ExSarrus />
+
+### Cấp $4$: khai triển Laplace
+
+<ExLaplace4 />
+
+### Tính bằng biến đổi hàng
+
+<ExRowopsDet />
+
+### Ý nghĩa hình học: diện tích
+
+<ExArea />
+
+## Tính chất
+
+Với các ma trận vuông cùng cỡ:
+
+1. **Chuyển vị:** $\det(\mathbf{A}\T) = \det(\mathbf{A})$.
+
+<PropTranspose />
+
+2. **Tích:** $\det(\mathbf{AB}) = \det(\mathbf{A})\det(\mathbf{B})$.
+
+<PropProduct />
+
+3. **Đổi chỗ hai hàng đổi dấu** định thức.
+
+<PropSwap />
+
+4. **Hai hàng bằng nhau (hoặc tỉ lệ) cho định thức $0$.**
+
+<PropEqualRows />
+
+5. **Nhân một hàng với $k$ nhân định thức với $k$**, do đó $\det(k\mathbf{A}) = k^{n}\det(\mathbf{A})$ cho ma trận cấp $n$ (xem lỗi thường gặp bên dưới).
+6. **Nghịch đảo:** nếu $\det(\mathbf{A}) \neq 0$ thì $\det(\mathbf{A}^{-1}) = 1/\det(\mathbf{A})$ (xem bài 1.9).
+7. **Ma trận tam giác:** định thức bằng tích đường chéo.
+
+## Lỗi thường gặp
+
+**Lỗi 1: cho rằng định thức cộng được.**
+
+<ExMistakeAdd />
+
+**Lỗi 2: $\det(k\mathbf{A}) = k\det(\mathbf{A})$.**
+
+<ExMistakeScalar />
+
+**Lỗi 3: quên dấu bàn cờ $(-1)^{i+j}$ trong khai triển Laplace.** Dấu xen kẽ theo cả hàng lẫn cột.
+
+**Lỗi 4: quên đổi dấu khi đổi chỗ hai hàng**, hoặc đổi dấu khi chỉ làm phép $R_i \leftarrow R_i + kR_j$.
+
+## Liên hệ với ML
+
+- **Khả nghịch:** $\det(\mathbf{A}) = 0$ nghĩa là không có nghịch đảo. Trong hồi quy tuyến tính, nếu các đặc trưng phụ thuộc tuyến tính (đa cộng tuyến) thì $\det(\mathbf{X}\T\mathbf{X}) = 0$ và phương trình chuẩn không có nghiệm duy nhất.
+- **Phân phối chuẩn nhiều chiều** có $\det(\boldsymbol{\Sigma})$ của ma trận hiệp phương sai trong công thức mật độ (Phần 4).
+- **Biến đổi không gian:** định thức của Jacobian cho biết thể tích bị co giãn bao nhiêu khi đổi biến, dùng trong các mô hình sinh (normalizing flow).
+
+## Tóm tắt
+
+| Nội dung | Quy tắc |
+| --- | --- |
+| Cấp $2$ | $ad - bc$ |
+| Cấp $3$ | Sarrus |
+| Cấp bất kỳ | Laplace theo hàng/cột, hoặc biến đổi hàng |
+| Biến đổi hàng | cộng bội: không đổi; đổi chỗ: đổi dấu; nhân hàng với $k$: nhân $k$ |
+| Tích | $\det(\mathbf{AB}) = \det\mathbf{A}\det\mathbf{B}$ |
+| Hằng số | $\det(k\mathbf{A}) = k^n\det\mathbf{A}$ |
+| Khả nghịch | $\det \neq 0$ |
+
+<MarkRead client:visible lesson="1.8" />
+
+## Bài tập
+
+<ExercisePlayer
+  client:visible
+  lesson="1.8"
+  types={["det", "det-laplace", "det-rowops", "det-properties", "det-param"]}
+  perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }}
+/>
+
+## Tham khảo
+
+- Định thức, các tính chất và khai triển phần phụ đại số: MIT 18.06 (Gilbert Strang), phần về định thức, [ocw.mit.edu](https://ocw.mit.edu).
+- Định nghĩa định thức, khai triển Laplace, tính chất: *Mathematics for Machine Learning*, mục về định thức và vết, [mml-book.github.io](https://mml-book.github.io).
+- Ý nghĩa hình học của định thức: *Essence of Linear Algebra*, [3blue1brown.com](https://www.3blue1brown.com).

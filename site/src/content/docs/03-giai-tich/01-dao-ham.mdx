@@ -1,0 +1,121 @@
+---
+title: Đạo hàm
+description: Đạo hàm một biến, các quy tắc lũy thừa, tích, thương, đạo hàm của hàm mũ, logarit và lượng giác
+lesson: "3.1"
+prerequisites: []
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExPoly from '../../../generated/lesson-3-1/poly.mdx';
+import ExProduct from '../../../generated/lesson-3-1/product.mdx';
+import ExQuotient from '../../../generated/lesson-3-1/quotient.mdx';
+import ExValue from '../../../generated/lesson-3-1/value-at-point.mdx';
+import PropLin from '../../../generated/lesson-3-1/prop-linearity.mdx';
+import ExMistake from '../../../generated/lesson-3-1/mistake-product.mdx';
+
+## Mục tiêu
+
+- Hiểu đạo hàm là tốc độ thay đổi tức thời và là hệ số góc của tiếp tuyến.
+- Tính đạo hàm của đa thức, hàm mũ, logarit, $\sin$, $\cos$ và của tích, thương.
+- Tính giá trị đạo hàm tại một điểm.
+
+## Trực giác
+
+Đạo hàm $f'(a)$ cho biết nếu $x$ tăng một chút xíu từ $a$ thì $f(x)$ tăng khoảng bao nhiêu **trên mỗi đơn vị** tăng của $x$. Trên đồ thị, đó là độ dốc của đường thẳng tiếp xúc với đồ thị tại điểm đó. Trong ML, đạo hàm của hàm mất mát theo một trọng số cho biết: tăng trọng số thêm một chút thì mất mát tăng hay giảm và nhanh đến đâu. Đó là thứ thuật toán gradient descent dùng để cập nhật trọng số.
+
+## Định nghĩa
+
+**Đạo hàm (derivative)** của $f$ tại $a$:
+
+$$
+f'(a) = \lim_{h \to 0}\frac{f(a + h) - f(a)}{h}.
+$$
+
+Đọc bằng lời: tỉ số giữa mức tăng của $f$ và mức tăng $h$ của $x$, khi $h$ nhỏ dần về $0$.
+
+**Các đạo hàm cơ bản** (với $n$ là số thực bất kỳ):
+
+$$
+(x^n)' = n x^{n-1},\quad (e^x)' = e^x,\quad (\ln x)' = \frac{1}{x},\quad (\sin x)' = \cos x,\quad (\cos x)' = -\sin x.
+$$
+
+**Quy tắc:**
+
+$$
+(af + bg)' = af' + bg', \qquad (uv)' = u'v + uv', \qquad \left(\frac{u}{v}\right)' = \frac{u'v - uv'}{v^2}.
+$$
+
+Đọc bằng lời: đạo hàm là tuyến tính; tích thì "đạo hàm thừa số đầu nhân thừa số sau, cộng thừa số đầu nhân đạo hàm thừa số sau"; thương có mẫu là $v^2$.
+
+Các căn và nghịch đảo viết dưới dạng lũy thừa: $\sqrt{x} = x^{1/2}$, $1/x = x^{-1}$.
+
+## Ví dụ
+
+### Đa thức
+
+<ExPoly />
+
+### Quy tắc tích
+
+<ExProduct />
+
+### Quy tắc thương
+
+<ExQuotient />
+
+### Giá trị đạo hàm tại một điểm
+
+<ExValue />
+
+## Tính chất
+
+- **Tuyến tính:** $(af + bg)' = af' + bg'$. Kiểm tra bằng số:
+
+<PropLin />
+
+- **Hằng số có đạo hàm $0$.**
+- **Hàm khả vi thì liên tục**, nhưng ngược lại không đúng (ví dụ $|x|$ không có đạo hàm tại $0$).
+- **Điểm cực trị** của hàm khả vi nằm trong số các điểm có $f'(x) = 0$ (xem bài 3.3 và 3.5).
+
+## Lỗi thường gặp
+
+**Lỗi 1: cho rằng $(uv)' = u'v'$.**
+
+<ExMistake />
+
+**Lỗi 2: quên dấu $-$ trong $(\cos x)' = -\sin x$**, hoặc quên bình phương mẫu trong quy tắc thương.
+
+**Lỗi 3: sai khi hạ bậc** $(x^n)' = nx^{n-1}$ với $n$ âm hoặc phân số: $(x^{-1})' = -x^{-2}$, $(\sqrt{x})' = \frac{1}{2}x^{-1/2}$.
+
+**Lỗi 4: đạo hàm của hằng số nhân hàm.** $(5f)' = 5f'$, hệ số $5$ không biến mất.
+
+## Liên hệ với ML
+
+- **Gradient descent** cập nhật $w \leftarrow w - \eta\,\dfrac{dL}{dw}$ dựa trên đạo hàm của mất mát.
+- **Đạo hàm của các hàm kích hoạt:** $\mathrm{ReLU}'(z) = 1$ nếu $z > 0$, ngược lại $0$; $\sigma'(z) = \sigma(z)(1 - \sigma(z))$ (bài 3.2).
+- **Hàm mất mát bình phương** $\frac{1}{2}(\hat{y} - y)^2$ có đạo hàm theo $\hat{y}$ là $\hat{y} - y$.
+
+## Tóm tắt
+
+| Hàm | Đạo hàm |
+| --- | --- |
+| $x^n$ | $n x^{n-1}$ |
+| $e^x$ | $e^x$ |
+| $\ln x$ | $1/x$ |
+| $\sin x$, $\cos x$ | $\cos x$, $-\sin x$ |
+| $uv$ | $u'v + uv'$ |
+| $u/v$ | $(u'v - uv')/v^2$ |
+
+<MarkRead client:visible lesson="3.1" />
+
+## Bài tập
+
+Các bài "tính đạo hàm" yêu cầu **nhập biểu thức**, ví dụ `3x^2 + 2x` hoặc `x^2*exp(x)`; hệ thống chấm bằng cách so giá trị tại nhiều điểm, nên mọi dạng tương đương đều được chấp nhận. Có xem trước công thức khi bạn gõ.
+
+<ExercisePlayer client:visible part="calculus" lesson="3.1" types={["deriv-poly", "deriv-rules", "deriv-eval"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Định nghĩa đạo hàm, các quy tắc tích, thương, lũy thừa: *Mathematics for Machine Learning*, chương về giải tích vector, [mml-book.github.io](https://mml-book.github.io).
+- Đạo hàm và gradient trong học sâu: *Dive into Deep Learning*, phụ lục toán về giải tích, [d2l.ai](https://d2l.ai).

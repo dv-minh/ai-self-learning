@@ -1,0 +1,98 @@
+---
+title: Vector hóa công thức ML
+description: Xw + b, MSE, softmax ổn định số, khoảng cách giữa các cặp điểm; đọc hiểu và tìm lỗi
+lesson: "2.9"
+prerequisites: ["2.3", "2.4", "2.5", "1.15"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExSoftmax from '../../../generated/lesson-2-9/softmax-stable.mdx';
+import ExMse from '../../../generated/lesson-2-9/mse-vectorized.mdx';
+import ExPairwise from '../../../generated/lesson-2-9/pairwise.mdx';
+
+## Mục tiêu
+
+- Chuyển một công thức ML thành một dòng NumPy không dùng vòng lặp.
+- Nhận ra lỗi `axis`, `keepdims`, `@` và `*` trong một đoạn code.
+- Hiểu vì sao softmax cần trừ giá trị lớn nhất để ổn định số.
+
+## Toán ↔ NumPy
+
+| Công thức | NumPy |
+| --- | --- |
+| $\hat{\mathbf{y}} = \mathbf{X}\mathbf{w} + b$ | `X @ w + b` |
+| $\frac{1}{N}\sum_i(\hat{y}_i - y_i)^2$ | `np.mean((y_hat - y) ** 2)` |
+| softmax theo hàng, ổn định | `e = np.exp(z - z.max(axis=1, keepdims=True)); e / e.sum(axis=1, keepdims=True)` |
+| chuẩn hóa từng cột | `(X - X.mean(axis=0)) / X.std(axis=0)` |
+| khoảng cách bình phương mọi cặp | `((X[:, None, :] - X[None, :, :]) ** 2).sum(axis=-1)` |
+
+## Trực giác
+
+"Vector hóa" là viết phép tính cho **cả batch cùng lúc** bằng phép toán trên mảng, thay vì vòng lặp từng mẫu. Code ngắn hơn, nhanh hơn hàng chục đến hàng trăm lần, và gần với công thức toán. Điều kiện là bạn kiểm soát được shape ở mọi bước, đúng như các bài 2.1–2.6.
+
+## Định nghĩa
+
+Quy trình viết một công thức vector hóa:
+
+1. Ghi shape của từng đại lượng (`X`: `(N, d)`, `w`: `(d,)`, …).
+2. Chọn `@` cho tích ma trận và `*` cho từng phần tử.
+3. Với mỗi phép rút gọn, chọn `axis` đúng và dùng `keepdims=True` nếu kết quả cần broadcast tiếp.
+4. Kiểm tra shape kết quả khớp với định nghĩa.
+
+**Softmax ổn định số.** $p_{ij} = e^{z_{ij}} / \sum_k e^{z_{ik}}$ không đổi nếu trừ cùng một hằng số khỏi mọi $z_{ik}$ trong hàng; ta trừ giá trị lớn nhất để số mũ không vượt quá $0$, tránh `inf`.
+
+## Ví dụ
+
+### Softmax ổn định số
+
+<ExSoftmax />
+
+### Dự đoán và MSE cho cả batch
+
+<ExMse />
+
+### Khoảng cách giữa mọi cặp mẫu
+
+<ExPairwise />
+
+## Tính chất
+
+- Mỗi dòng vector hóa nên có thể được **kiểm tra shape** từng bước, từ trong ra ngoài.
+- Các lựa chọn khác nhau về `axis` hoặc `keepdims` thường cho kết quả khác chứ không chỉ báo lỗi; hãy so với một cài đặt chậm bằng vòng lặp trên dữ liệu nhỏ.
+- Tên biến theo quy ước: chữ hoa cho ma trận (`X`, `W`), chữ thường cho vector (`w`, `b`, `y`).
+
+## Lỗi thường gặp
+
+- **Dùng `*` thay cho `@`:** cho ra kết quả sai hoặc lỗi shape.
+- **`axis` sai:** chuẩn hóa theo hàng thay vì theo cột; softmax theo cột thay vì theo hàng.
+- **Thiếu `keepdims=True`:** phép chia hoặc trừ broadcast sai trục.
+- **Không ổn định số:** `np.exp(z)` với `z` lớn cho `inf`, rồi `nan`.
+
+Phần "Bài tập" có dạng `np-bug-find` để bạn luyện đúng việc phát hiện những lỗi này trong code.
+
+## Liên hệ với ML
+
+Mọi mô hình ở Phần 6–8 được cài đặt bằng các dòng vector hóa như trên: lớp tuyến tính, hàm mất mát, softmax, khoảng cách (KNN, K-means), chuẩn hóa (BatchNorm, LayerNorm) và attention.
+
+## Tóm tắt
+
+| Việc cần làm | Mẹo |
+| --- | --- |
+| tích ma trận | `@` |
+| từng phần tử | `*`, `**`, `np.exp`, ... |
+| trung bình mẫu / đặc trưng | `axis=0` / `axis=1` |
+| chia hoặc trừ theo hàng | `keepdims=True` |
+| tránh tràn số | trừ giá trị lớn nhất |
+
+<MarkRead client:visible lesson="2.9" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="numpy" lesson="2.9" types={["np-vectorize-choose", "np-bug-find"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Vector hóa và broadcasting: tài liệu NumPy, [numpy.org/doc](https://numpy.org/doc/stable/).
+- Softmax và ổn định số: *Dive into Deep Learning*, mục về softmax regression, [d2l.ai](https://d2l.ai).
+- Công thức hồi quy tuyến tính và sai số bình phương: bài 1.15 của khóa này.

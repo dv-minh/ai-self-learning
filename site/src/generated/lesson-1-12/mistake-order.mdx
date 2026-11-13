@@ -1,0 +1,21 @@
+$$
+\mathbf{A} = \begin{bmatrix} 3 & 0 \\ -10 & -2 \end{bmatrix}
+$$
+
+$$
+\mathbf{P} = \begin{bmatrix} 1 & 0 \\ -2 & 1 \end{bmatrix}
+$$
+
+$\mathbf{P}$ có cột 1 là vector riêng của $\lambda = 3$ và cột 2 là của $\lambda = -2$.
+
+**Sai:** viết $\mathbf{D} = \diag(-2, 3)$ theo thứ tự trị riêng đã tìm, rồi kiểm tra $\mathbf{P}\mathbf{D}\mathbf{P}^{-1}$ thấy khác $\mathbf{A}$:
+
+$$
+\mathbf{P}\mathbf{D}\mathbf{P}^{-1} = \begin{bmatrix} -2 & 0 \\ 10 & 3 \end{bmatrix} \neq \mathbf{A}
+$$
+
+**Đúng:** thứ tự trên đường chéo của $\mathbf{D}$ phải khớp thứ tự các cột của $\mathbf{P}$:
+
+$$
+\mathbf{D} = \diag(3, -2),\qquad \mathbf{P}\mathbf{D}\mathbf{P}^{-1} = \begin{bmatrix} 3 & 0 \\ -10 & -2 \end{bmatrix} = \mathbf{A}
+$$

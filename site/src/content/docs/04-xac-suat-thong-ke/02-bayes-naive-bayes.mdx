@@ -1,0 +1,105 @@
+---
+title: Công thức Bayes và Naive Bayes
+description: Xác suất toàn phần, công thức Bayes, phân loại Naive Bayes
+lesson: "4.2"
+prerequisites: ["4.1"]
+---
+
+import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
+import MarkRead from '../../../components/MarkRead';
+import ExMedical from '../../../generated/lesson-4-2/bayes-medical.mdx';
+import ExNaive from '../../../generated/lesson-4-2/naive-bayes-example.mdx';
+import PropTotal from '../../../generated/lesson-4-2/prop-total-probability.mdx';
+import ExMistake from '../../../generated/lesson-4-2/mistake-base-rate.mdx';
+
+## Mục tiêu
+
+- Tính xác suất toàn phần và áp dụng công thức Bayes.
+- Hiểu vì sao tỉ lệ nền (prior) quan trọng.
+- Phân loại một mẫu bằng Naive Bayes trên bảng dữ liệu nhỏ, có và không có làm trơn Laplace.
+
+## Trực giác
+
+Công thức Bayes cho cách **cập nhật niềm tin** khi có bằng chứng mới: bắt đầu từ niềm tin ban đầu (prior), nhân với mức độ bằng chứng "hợp" với từng khả năng (likelihood), rồi chuẩn hóa. Nó giải thích vì sao một xét nghiệm "chính xác" vẫn có thể cho nhiều kết quả dương giả khi bệnh hiếm: số người khỏe áp đảo.
+
+## Định nghĩa
+
+**Xác suất toàn phần.** Nếu $A_1, \dots, A_k$ chia hết không gian mẫu thành các phần rời nhau thì
+
+$$
+P(B) = \sum_{i=1}^{k} P(B \mid A_i)\,P(A_i).
+$$
+
+**Công thức Bayes:**
+
+$$
+P(A_j \mid B) = \frac{P(B \mid A_j)\,P(A_j)}{\sum_i P(B \mid A_i)\,P(A_i)}.
+$$
+
+Đọc bằng lời: xác suất hậu nghiệm (posterior) $\propto$ likelihood $\times$ prior, rồi chia cho tổng để các xác suất cộng thành $1$.
+
+**Naive Bayes.** Với đặc trưng $\mathbf{x} = (x_1, \dots, x_d)$ và lớp $C$, giả định các đặc trưng **độc lập có điều kiện theo lớp**:
+
+$$
+P(C \mid \mathbf{x}) \;\propto\; P(C)\prod_{j=1}^{d} P(x_j \mid C).
+$$
+
+Ước lượng $P(C)$ và $P(x_j\mid C)$ bằng tần suất trong dữ liệu huấn luyện. **Làm trơn Laplace** cộng $1$ vào mỗi số đếm (và $2$ vào mẫu số cho đặc trưng nhị phân) để tránh xác suất bằng $0$.
+
+## Ví dụ
+
+### Xét nghiệm y khoa
+
+<ExMedical />
+
+### Naive Bayes trên bảng nhỏ
+
+<ExNaive />
+
+## Tính chất
+
+- **Xác suất toàn phần** là mẫu số của công thức Bayes. Ví dụ:
+
+<PropTotal />
+
+- Các xác suất hậu nghiệm của mọi lớp **cộng bằng $1$**.
+- Để **chọn lớp** không cần chuẩn hóa: so sánh $P(C)\prod_j P(x_j\mid C)$ giữa các lớp.
+- Nhiều bằng chứng độc lập nhân dần lại với nhau; prior càng yếu thì dữ liệu càng chi phối.
+
+## Lỗi thường gặp
+
+**Lỗi 1: bỏ qua tỉ lệ nền.**
+
+<ExMistake />
+
+**Lỗi 2: quên chuẩn hóa** khi cần xác suất cụ thể (không chỉ so sánh).
+
+**Lỗi 3: nhầm $P(B\mid A)$ với $P(A\mid B)$** (chiều điều kiện, bài 4.1).
+
+**Lỗi 4: không làm trơn Laplace** khi một giá trị đặc trưng chưa từng xuất hiện cùng một lớp: xác suất $0$ làm cả tích bằng $0$.
+
+## Liên hệ với ML
+
+- **Lọc thư rác:** $P(\text{rác}\mid\text{các từ})$ bằng Naive Bayes với mỗi từ là một đặc trưng.
+- **Phân loại sinh (generative classifier):** mô hình hóa $P(\mathbf{x}\mid C)$ và $P(C)$ rồi dùng Bayes để suy ra $P(C\mid\mathbf{x})$.
+- **Suy luận Bayes** là nền của MAP (bài 4.5) và các mô hình xác suất nói chung.
+
+## Tóm tắt
+
+| Khái niệm | Công thức |
+| --- | --- |
+| Xác suất toàn phần | $\sum_i P(B\mid A_i)P(A_i)$ |
+| Bayes | $P(A\mid B) = P(B\mid A)P(A)/P(B)$ |
+| Naive Bayes | $P(C)\prod_j P(x_j\mid C)$ |
+| Laplace | $(\text{đếm}+1)/(\text{tổng}+\text{số giá trị})$ |
+
+<MarkRead client:visible lesson="4.2" />
+
+## Bài tập
+
+<ExercisePlayer client:visible part="probability" lesson="4.2" types={["bayes-rule", "naive-bayes"]} perLevel={{ 1: 3, 2: 3, 3: 4, 4: 4, 5: 1 }} />
+
+## Tham khảo
+
+- Công thức Bayes, xác suất toàn phần: *Mathematics for Machine Learning*, chương về xác suất và phân phối, [mml-book.github.io](https://mml-book.github.io).
+- Naive Bayes: *Dive into Deep Learning*, mục về phân loại Naive Bayes, [d2l.ai](https://d2l.ai); và [machinelearningcoban.com](https://machinelearningcoban.com), bài về Naive Bayes classifier.

@@ -1,0 +1,3 @@
+**Sai:** dùng thống kê của batch hiện tại khi suy luận (BatchNorm), khiến đầu ra của một mẫu phụ thuộc vào các mẫu khác trong batch.
+
+**Đúng:** khi huấn luyện dùng $\mu, \sigma^2$ của batch và cập nhật trung bình động (running mean, running variance); khi suy luận (`model.eval()`) dùng các giá trị đã lưu. LayerNorm không có vấn đề này.

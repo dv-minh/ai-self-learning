@@ -1,0 +1,17 @@
+```python
+import numpy as np
+
+A = np.arange(1, 10).reshape(3, 3)   # trong toán: a_11 ... a_33
+
+print(A[0, 0])   # a_11
+print(A[1, 2])   # a_23: hàng 2, cột 3 trong toán
+```
+
+Kết quả in ra:
+
+```text
+1
+6
+```
+
+Toán đếm từ $1$ ($a_{23}$ là hàng $2$, cột $3$), NumPy đếm từ $0$ (`A[1, 2]`).
