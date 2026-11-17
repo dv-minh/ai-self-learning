@@ -7,6 +7,9 @@ prerequisites: ["6.7", "5.2"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import BoostingViz from '../../../components/viz/BoostingViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExRound from '../../../generated/lesson-6-8/gbm-one-round.mdx';
 import ExTwo from '../../../generated/lesson-6-8/gbm-two-rounds.mdx';
 import PropGrad from '../../../generated/lesson-6-8/prop-residual-gradient.mdx';
@@ -22,6 +25,10 @@ import ExMistake from '../../../generated/lesson-6-8/mistake-no-shrinkage.mdx';
 
 Random forest trồng nhiều cây độc lập rồi lấy trung bình. Gradient boosting làm khác: trồng các cây **nối tiếp**, mỗi cây nhỏ (thường rất nông) sửa lỗi của tổng các cây trước. Bắt đầu bằng một dự đoán hằng (trung bình), tính phần dư, khớp một cây nhỏ vào phần dư, cộng một phần (shrinkage $\nu$) của cây đó vào mô hình, lặp lại. Mỗi vòng giảm bớt sai số còn lại.
 
+Kéo thanh "số cây" từ $0$ lên dần. Ở tầng dưới, các đoạn đỏ là phần dư hiện tại và đường cam là stump sẽ được thêm vào tiếp theo: nó chỉ là một bậc thang hai mức, khớp **trung bình** phần dư ở hai bên ngưỡng. Mỗi bước, mô hình ở tầng trên nhích lại gần dữ liệu thêm một chút.
+
+<BoostingViz client:only="react" />
+
 ## Định nghĩa
 
 Với mất mát bình phương $\ell = \frac{1}{2}(y - F)^2$:
@@ -33,6 +40,56 @@ Với mất mát bình phương $\ell = \frac{1}{2}(y - F)^2$:
    - **Cập nhật:** $F_m(x) = F_{m-1}(x) + \nu\,h_m(x)$ với $0 < \nu \le 1$ là shrinkage (learning rate).
 
 Với mất mát khác (log-loss, v.v.) thì $r_i$ là âm gradient $-\partial\ell/\partial F$ tại $F_{m-1}(x_i)$ (gọi là **phần dư giả**, pseudo-residual); khung thuật toán giữ nguyên.
+
+## Biến đổi từng bước
+
+<Derivation title="Phần dư chính là âm gradient của mất mát bình phương">
+<Step title="Mất mát của một mẫu, xem F(xᵢ) là biến">
+
+$$
+\ell_i(F) = \frac{1}{2}\big(y_i - F\big)^2.
+$$
+
+</Step>
+<Step title="Đạo hàm theo F">
+
+$$
+\frac{\partial\ell_i}{\partial F} = -(y_i - F).
+$$
+
+</Step>
+<Step title="Đổi dấu tại F = F_{m−1}(xᵢ)">
+
+$$
+-\frac{\partial\ell_i}{\partial F}\Big|_{F = F_{m-1}(x_i)} = y_i - F_{m-1}(x_i) = r_i.
+$$
+
+Vậy cộng thêm $\nu h_m$ với $h_m \approx r$ chính là một bước **gradient descent trong không gian hàm**: mỗi giá trị dự đoán $F(x_i)$ đi một bước ngược gradient, và cây $h_m$ là cách "tổng quát hóa" bước đó ra các điểm $x$ khác.
+
+</Step>
+</Derivation>
+
+<Derivation title="Giá trị lá tốt nhất là trung bình phần dư trong lá">
+<Step title="Lá chứa các mẫu i ∈ A, cần chọn một hằng số c">
+
+$$
+\mathrm{SSE}(c) = \sum_{i \in A}(r_i - c)^2.
+$$
+
+</Step>
+<Step title="Đạo hàm theo c bằng 0">
+
+$$
+\frac{d\,\mathrm{SSE}}{dc} = -2\sum_{i \in A}(r_i - c) = 0 \;\Longrightarrow\; c = \frac{1}{|A|}\sum_{i \in A} r_i.
+$$
+
+</Step>
+<Step title="Cùng lý do, F₀ = ȳ">
+
+Ở bước khởi tạo chưa có cây nào, "phần dư" là chính $y_i$ và chỉ có một lá chứa mọi mẫu, nên hằng số tốt nhất là $\bar{y}$ — đúng là đường nằm ngang khi số cây bằng $0$ trong hình.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

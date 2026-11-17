@@ -7,6 +7,10 @@ prerequisites: ["1.5", "1.11", "6.2"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import NeuronViz from '../../../components/viz/NeuronViz';
+import ReluSumViz from '../../../components/viz/ReluSumViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExForward from '../../../generated/lesson-7-1/mlp-forward-example.mdx';
 import ExGates from '../../../generated/lesson-7-1/perceptron-gates.mdx';
 import ExParams from '../../../generated/lesson-7-1/param-count-example.mdx';
@@ -24,6 +28,14 @@ import ExMistake from '../../../generated/lesson-7-1/mistake-no-activation.mdx';
 
 Một **nơ-ron** nhân mỗi đầu vào với một trọng số, cộng lại, thêm hệ số chặn rồi cho qua một hàm kích hoạt. Một **lớp** là nhiều nơ-ron chạy song song cùng đọc một đầu vào, nên là một phép nhân ma trận. **MLP** (multilayer perceptron) xếp các lớp nối tiếp: đầu ra của lớp trước là đầu vào lớp sau. Mỗi lớp ẩn biến đổi biểu diễn của dữ liệu để lớp sau dễ phân loại hơn.
 
+**Một nơ-ron chỉ vẽ được một đường thẳng.** Trong hình dưới, thử chỉnh $w_1, w_2, b$ để tách đúng AND, rồi OR — dễ. Sau đó chuyển sang XOR: không cách nào được 4/4. Bật lớp ẩn để thấy lớp ẩn **dời các điểm sang tọa độ mới**, nơi một đường thẳng lại đủ dùng.
+
+<NeuronViz client:only="react" />
+
+**Nhiều nơ-ron cộng lại uốn được mọi đường cong.** Mỗi nơ-ron ReLU một đầu vào là một "bản lề": phẳng rồi gãy tại một điểm. Cộng nhiều bản lề có trọng số cho một đường gãy khúc; tăng số nơ-ron thì đường gãy bám sát bất kỳ đường cong liên tục nào.
+
+<ReluSumViz client:only="react" />
+
 ## Định nghĩa
 
 Một lớp kết nối đầy đủ (fully connected) từ $n_{i}$ đến $n_{i+1}$ chiều:
@@ -37,6 +49,56 @@ với $\mathbf{W}_{i+1} \in \R^{n_{i+1}\times n_i}$, $\mathbf{b}_{i+1} \in \R^{n
 **Perceptron** (nơ-ron bước): $\hat{y} = \mathbb{1}[\mathbf{w}\T\mathbf{x} + b > 0]$. **ReLU:** $\phi(z) = \max(0, z)$.
 
 **Số tham số** lớp $i \to i+1$: $n_in_{i+1} + n_{i+1}$ (có chặn). **MAC** một lần forward cho một mẫu (chỉ phép nhân ma trận–vector): $\sum_i n_in_{i+1}$.
+
+## Biến đổi từng bước
+
+<Derivation title="Một lớp = một phép nhân ma trận, viết ra từng nơ-ron">
+<Step title="Nơ-ron thứ i của lớp: tổng có trọng số của mọi đầu vào">
+
+$$
+z_i = w_{i1}a_1 + w_{i2}a_2 + \dots + w_{in}a_n + b_i = \sum_{j=1}^{n} w_{ij}a_j + b_i.
+$$
+
+</Step>
+<Step title="Xếp m nơ-ron thành m hàng: hàng i của W là trọng số của nơ-ron i">
+
+$$
+\begin{bmatrix} z_1 \\ \vdots \\ z_m \end{bmatrix} = \begin{bmatrix} w_{11} & \cdots & w_{1n} \\ \vdots & & \vdots \\ w_{m1} & \cdots & w_{mn} \end{bmatrix}\begin{bmatrix} a_1 \\ \vdots \\ a_n \end{bmatrix} + \begin{bmatrix} b_1 \\ \vdots \\ b_m \end{bmatrix} \quad\Longleftrightarrow\quad \mathbf{z} = \mathbf{W}\mathbf{a} + \mathbf{b}.
+$$
+
+$\mathbf{W}$ có $m$ hàng (số nơ-ron ra) và $n$ cột (số đầu vào): $mn$ trọng số và $m$ chặn.
+
+</Step>
+<Step title="Áp dụng hàm kích hoạt cho từng phần tử">
+
+$$
+\mathbf{a}' = \phi(\mathbf{z}) = \big(\phi(z_1), \dots, \phi(z_m)\big)\T.
+$$
+
+</Step>
+</Derivation>
+
+<Derivation title="Vì sao phải có hàm kích hoạt phi tuyến">
+<Step title="Xếp hai lớp tuyến tính, không có φ">
+
+$$
+\mathbf{y} = \mathbf{W}_2(\mathbf{W}_1\mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2.
+$$
+
+</Step>
+<Step title="Khai triển">
+
+$$
+\mathbf{y} = (\mathbf{W}_2\mathbf{W}_1)\,\mathbf{x} + (\mathbf{W}_2\mathbf{b}_1 + \mathbf{b}_2) = \mathbf{W}'\mathbf{x} + \mathbf{b}'.
+$$
+
+</Step>
+<Step title="Kết luận">
+
+Hai lớp tuyến tính gộp lại vẫn chỉ là **một** lớp tuyến tính, với $\mathbf{W}' = \mathbf{W}_2\mathbf{W}_1$. Xếp bao nhiêu lớp cũng vậy — biên quyết định vẫn là đường thẳng, không giải được XOR. Hàm kích hoạt phi tuyến (như ReLU tạo "bản lề") là thứ ngăn sự gộp này và cho mạng sức biểu diễn.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

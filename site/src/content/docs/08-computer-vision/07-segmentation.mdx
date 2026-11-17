@@ -7,6 +7,9 @@ prerequisites: ["8.3", "8.6"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import SegViz from '../../../components/viz/SegViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExMetrics from '../../../generated/lesson-8-7/seg-metrics-example.mdx';
 import ExUnet from '../../../generated/lesson-8-7/unet-shapes.mdx';
 import ExMistake from '../../../generated/lesson-8-7/mistake-pixel-accuracy.mdx';
@@ -21,6 +24,10 @@ import ExMistake from '../../../generated/lesson-8-7/mistake-pixel-accuracy.mdx'
 
 Detection cho một hộp mỗi vật thể; **phân đoạn** gán một nhãn cho **từng pixel**, cho ranh giới chính xác của vật thể. Mạng phải vừa hiểu ngữ nghĩa (đây là gì, cần các lớp sâu có trường tiếp nhận rộng) vừa giữ chi tiết không gian (ranh giới chính xác, cần độ phân giải cao). **U-Net** giải quyết bằng bộ mã hóa thu nhỏ rồi bộ giải mã phóng to, **nối** đặc trưng độ phân giải cao của bộ mã hóa vào bộ giải mã tương ứng.
 
+Phân đoạn ngữ nghĩa là bài toán phân loại **cho từng pixel**. Hình dưới cho thấy cách chấm điểm một mặt nạ: đếm pixel đúng, thừa, thiếu. Thử thu bán kính về rất nhỏ: pixel accuracy vẫn cao vì nền chiếm phần lớn ảnh, trong khi IoU và Dice tụt hẳn.
+
+<SegViz client:only="react" />
+
 ## Định nghĩa
 
 Với bản đồ nhãn thật (GT) và dự đoán (Pred) cùng cỡ, và tập pixel $A$, $B$ của một lớp trong GT và Pred:
@@ -34,6 +41,37 @@ $$
 **Các dạng phân đoạn:** ngữ nghĩa (mỗi pixel một lớp), thực thể (tách từng vật thể riêng), toàn cảnh (panoptic, kết hợp cả hai). **U-Net:** bộ mã hóa giảm kích thước và tăng kênh; bộ giải mã tăng kích thước (upsample hoặc conv chuyển vị), **nối** (concat) với đặc trưng cùng độ phân giải của bộ mã hóa; số kênh sau nối là tổng hai nhánh.
 
 **SAM (Segment Anything):** mô hình nền tảng phân đoạn theo **gợi ý** (điểm, hộp, mặt nạ): bộ mã hóa ảnh ViT cỡ lớn tính embedding một lần, bộ giải mã mặt nạ nhẹ sinh mặt nạ cho từng gợi ý.
+
+## Biến đổi từng bước
+
+<Derivation title="Quan hệ giữa Dice và IoU">
+<Step title="Đặt I = |A ∩ B| và U = |A ∪ B|">
+
+$$
+U = |A| + |B| - I \quad\Longrightarrow\quad |A| + |B| = U + I.
+$$
+
+</Step>
+<Step title="Thay vào Dice">
+
+$$
+\mathrm{Dice} = \frac{2I}{|A| + |B|} = \frac{2I}{U + I}.
+$$
+
+</Step>
+<Step title="Chia tử và mẫu cho U">
+
+$$
+\mathrm{Dice} = \frac{2\,I/U}{1 + I/U} = \frac{2\,\mathrm{IoU}}{1 + \mathrm{IoU}}.
+$$
+
+</Step>
+<Step title="Hệ quả">
+
+Vì $\mathrm{IoU} \le 1$ nên $1 + \mathrm{IoU} \le 2$ và $\mathrm{Dice} \ge \mathrm{IoU}$, bằng nhau chỉ khi cả hai bằng $0$ hoặc $1$. Hàm $x \mapsto 2x/(1+x)$ tăng, nên xếp hạng các mô hình theo Dice hay theo IoU (trên cùng một ảnh, một lớp) cho cùng thứ tự. Theo ngôn ngữ bài 6.4, Dice chính là $F_1$ trên pixel: $\dfrac{2\,TP}{2\,TP + FP + FN}$.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

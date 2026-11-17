@@ -7,6 +7,9 @@ prerequisites: ["4.4", "7.3", "8.7"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import DiffusionViz from '../../../components/viz/DiffusionViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExDiff from '../../../generated/lesson-8-9/diffusion-example.mdx';
 import ExAlpha from '../../../generated/lesson-8-9/alpha-bar-table.mdx';
 import PropVar from '../../../generated/lesson-8-9/prop-variance-preserving.mdx';
@@ -21,6 +24,10 @@ import ExMistake from '../../../generated/lesson-8-9/mistake-what-is-predicted.m
 ## Trực giác
 
 Hãy làm hỏng một ảnh bằng cách thêm nhiễu Gauss nhỏ nhiều lần cho tới khi chỉ còn nhiễu thuần túy. Quá trình này dễ và ta biết chính xác nó. **Mô hình khuếch tán** học **đảo ngược** quá trình đó: một mạng được huấn luyện để, nhìn một ảnh nhiễu ở mức $t$, đoán phần nhiễu đã bị thêm vào. Để sinh ảnh, bắt đầu từ nhiễu thuần và khử nhiễu dần qua nhiều bước nhỏ. Điều đẹp là nhiều bước nhiễu nhỏ gộp thành **một** công thức đóng, nên huấn luyện chỉ cần chọn $t$ ngẫu nhiên và nhiễu ngẫu nhiên.
+
+Để dễ nhìn, "ảnh" ở đây là một tập điểm hai chiều hình xoắn ốc. Kéo $t$ từ $0$ lên $T$: cấu trúc xoắn ốc mờ dần rồi biến mất hẳn vào một đám mây Gauss. Đồ thị bên phải cho thấy hai hệ số trong công thức đóng: tín hiệu giảm, nhiễu tăng.
+
+<DiffusionViz client:only="react" />
 
 ## Định nghĩa
 
@@ -37,6 +44,54 @@ $$
 $$
 
 Trong các bài tập, $\bar{\alpha}_t$ được chọn (bộ ba Pythagoras, ví dụ $9/25$) để cả hai căn là số hữu tỉ. Phần sinh ảnh (khử nhiễu lặp, lấy mẫu) chỉ nêu ở mức khái niệm.
+
+## Biến đổi từng bước
+
+<Derivation title="Vì sao có công thức đóng cho x_t: gộp hai bước nhiễu">
+<Step title="Mỗi bước thêm một chút nhiễu Gauss độc lập">
+
+$$
+\mathbf{x}_s = \sqrt{\alpha_s}\,\mathbf{x}_{s-1} + \sqrt{1 - \alpha_s}\,\boldsymbol{\varepsilon}_s.
+$$
+
+</Step>
+<Step title="Viết hai bước đầu và thế x₁ vào x₂">
+
+$$
+\mathbf{x}_2 = \sqrt{\alpha_2}\big(\sqrt{\alpha_1}\,\mathbf{x}_0 + \sqrt{1-\alpha_1}\,\boldsymbol{\varepsilon}_1\big) + \sqrt{1-\alpha_2}\,\boldsymbol{\varepsilon}_2.
+$$
+
+</Step>
+<Step title="Tách phần tín hiệu và phần nhiễu">
+
+$$
+\mathbf{x}_2 = \sqrt{\alpha_1\alpha_2}\,\mathbf{x}_0 + \Big(\sqrt{\alpha_2(1-\alpha_1)}\,\boldsymbol{\varepsilon}_1 + \sqrt{1-\alpha_2}\,\boldsymbol{\varepsilon}_2\Big).
+$$
+
+</Step>
+<Step title="Tổng hai Gauss độc lập là Gauss, phương sai cộng lại">
+
+$$
+\alpha_2(1-\alpha_1) + (1 - \alpha_2) = 1 - \alpha_1\alpha_2.
+$$
+
+Vậy phần nhiễu có cùng phân phối với $\sqrt{1 - \alpha_1\alpha_2}\,\boldsymbol{\varepsilon}$, với $\boldsymbol{\varepsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$:
+
+$$
+\mathbf{x}_2 = \sqrt{\bar{\alpha}_2}\,\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_2}\,\boldsymbol{\varepsilon},\qquad \bar{\alpha}_2 = \alpha_1\alpha_2.
+$$
+
+</Step>
+<Step title="Quy nạp cho mọi t, rồi đảo ngược để ước lượng x₀">
+
+Lặp lý luận trên cho công thức đóng với $\bar{\alpha}_t = \prod_{s \le t}\alpha_s$. Nếu mạng dự đoán được nhiễu $\hat{\boldsymbol{\varepsilon}}$, giải phương trình tuyến tính đó theo $\mathbf{x}_0$:
+
+$$
+\hat{\mathbf{x}}_0 = \frac{\mathbf{x}_t - \sqrt{1 - \bar{\alpha}_t}\,\hat{\boldsymbol{\varepsilon}}}{\sqrt{\bar{\alpha}_t}}.
+$$
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

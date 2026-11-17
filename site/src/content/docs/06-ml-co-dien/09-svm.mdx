@@ -7,6 +7,9 @@ prerequisites: ["6.2", "5.2", "1.2"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import SvmViz from '../../../components/viz/SvmViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExMargin from '../../../generated/lesson-6-9/margin-width.mdx';
 import ExHinge from '../../../generated/lesson-6-9/hinge-loss-values.mdx';
 import ExObj from '../../../generated/lesson-6-9/soft-margin-objective.mdx';
@@ -23,6 +26,10 @@ import ExMistake from '../../../generated/lesson-6-9/mistake-scaling-svm.mdx';
 ## Trực giác
 
 Có nhiều đường thẳng phân tách hai lớp. SVM chọn đường **cách đều và xa nhất** hai lớp: lề (margin) lớn nhất. Ý tưởng: ranh giới càng xa dữ liệu thì càng bền với nhiễu. Chỉ những điểm nằm sát lề (support vector) quyết định đường này; bỏ các điểm khác đi thì đường không đổi. Khi dữ liệu không tách hoàn hảo, ta cho phép một vài điểm vi phạm lề với một khoản phạt: SVM lề mềm.
+
+Trong hình, dải tô màu giữa hai đường nét đứt là **lề**. Chỉ các điểm có vòng đen (support vector) "chống" lề; kéo điểm đỏ có viền cam đi quanh: khi nó ở xa, đường không đổi; khi nó lấn vào lề, đường phải xoay hoặc lề phải hẹp lại. Đổi $C$ để thấy sự đánh đổi giữa lề rộng và việc xếp đúng mọi điểm.
+
+<SvmViz client:only="react" />
 
 ## Định nghĩa
 
@@ -47,6 +54,67 @@ $$
 $$
 
 $C$ lớn: phạt vi phạm mạnh, lề hẹp, dễ overfit; $C$ nhỏ: ưu tiên lề rộng, dễ underfit.
+
+## Biến đổi từng bước
+
+<Derivation title="Vì sao độ rộng lề là 2/‖w‖">
+<Step title="Lấy một điểm x₊ nằm trên lề dương">
+
+$$
+\mathbf{w}\T\mathbf{x}_{+} + b = 1.
+$$
+
+</Step>
+<Step title="Đi từ x₊ theo hướng vuông góc −w/‖w‖ một đoạn d tới lề âm">
+
+$$
+\mathbf{x}_{-} = \mathbf{x}_{+} - d\,\frac{\mathbf{w}}{\|\mathbf{w}\|},\qquad \mathbf{w}\T\mathbf{x}_{-} + b = -1.
+$$
+
+</Step>
+<Step title="Thay x₋ vào và dùng wᵀw = ‖w‖²">
+
+$$
+\mathbf{w}\T\mathbf{x}_{+} + b - d\,\frac{\mathbf{w}\T\mathbf{w}}{\|\mathbf{w}\|} = 1 - d\,\|\mathbf{w}\| = -1.
+$$
+
+</Step>
+<Step title="Giải ra d">
+
+$$
+d = \frac{2}{\|\mathbf{w}\|}.
+$$
+
+Muốn lề rộng thì $\|\mathbf{w}\|$ phải nhỏ: tối đa hóa lề tương đương tối thiểu $\frac{1}{2}\|\mathbf{w}\|^2$ (bình phương cho đạo hàm đẹp, không đổi nghiệm).
+
+</Step>
+</Derivation>
+
+<Derivation title="Hinge loss làm gì với từng điểm">
+<Step title="Định nghĩa với lề hàm m = y·z">
+
+$$
+\ell(m) = \max(0,\ 1 - m),\qquad m = y_i(\mathbf{w}\T\mathbf{x}_i + b).
+$$
+
+</Step>
+<Step title="Ba vùng">
+
+- $m \ge 1$: đúng và ngoài lề, $\ell = 0$, gradient $0$ — điểm **không** ảnh hưởng tới nghiệm.
+- $0 < m < 1$: đúng nhưng nằm trong lề, bị phạt $1 - m$.
+- $m \le 0$: phân loại sai, bị phạt $1 - m \ge 1$, tăng tuyến tính theo độ sai.
+
+</Step>
+<Step title="Gradient theo w của một điểm vi phạm (m < 1)">
+
+$$
+\frac{\partial}{\partial\mathbf{w}}\big(1 - y_i(\mathbf{w}\T\mathbf{x}_i + b)\big) = -y_i\,\mathbf{x}_i.
+$$
+
+Cộng $C$ lần các số hạng này với gradient $\mathbf{w}$ của $\frac{1}{2}\|\mathbf{w}\|^2$ cho công thức trong phần Định nghĩa. Chỉ các điểm vi phạm lề góp mặt — đó là lý do chỉ support vector quyết định đường.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

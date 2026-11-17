@@ -7,6 +7,10 @@ prerequisites: ["5.4"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import EmaViz from '../../../components/viz/EmaViz';
+import OptimizerRace from '../../../components/viz/OptimizerRace';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExEma from '../../../generated/lesson-5-5/ema-bias.mdx';
 import ExAdam from '../../../generated/lesson-5-5/adam-first-step.mdx';
 import ExAda from '../../../generated/lesson-5-5/adagrad-345.mdx';
@@ -23,6 +27,14 @@ import ExMistake from '../../../generated/lesson-5-5/mistake-bias-correction.mdx
 ## Trực giác
 
 Gradient descent dùng **một** learning rate cho mọi tham số. Nhưng có tham số gradient luôn lớn (dễ dao động), có tham số gradient rất nhỏ (học chậm). Các thuật toán thích ứng chia bước đi của mỗi tham số cho một ước lượng "độ lớn gradient gần đây" của chính tham số đó: tham số có gradient lớn bước nhỏ lại, tham số có gradient nhỏ được bước dài hơn. Adam thêm hai ý: giữ momentum (trung bình động của gradient) và hiệu chỉnh độ chệch do khởi tạo bằng $0$.
+
+Xem bốn optimizer chạy cùng lúc. Chọn **"hai tham số lệch thang đo"**: theo trục ngang gradient rất nhỏ, theo trục dọc gradient lớn. GD (xanh dương) phải chọn $\eta$ đủ nhỏ cho trục dọc nên gần như không nhích theo trục ngang; Adam (tím) chia bước của mỗi trục cho độ lớn gradient của chính trục đó, nên cả hai trục đều tiến với tốc độ cỡ $\eta$.
+
+<OptimizerRace client:only="react" />
+
+Adam bắt đầu với $m_0 = 0$ nên các trung bình động ban đầu bị **kéo về 0**. Hình dưới cho thấy độ chệch đó và cách chia cho $1 - \beta^t$ sửa nó.
+
+<EmaViz client:only="react" mode="adam" />
 
 ## Định nghĩa
 
@@ -51,6 +63,65 @@ $$
 $$
 
 Đọc bằng lời: $m$ là trung bình động của gradient, $v$ là trung bình động của bình phương gradient; chia cho $1-\beta^t$ để bù việc khởi tạo từ $0$ làm các giá trị đầu bị nhỏ. Có thể kiểm tra $\hat{m}_t$ chính là **trung bình có trọng số** $\beta_1^{t-i}$ của các $g_i$ với tổng trọng số bằng $1$.
+
+## Biến đổi từng bước
+
+<Derivation title="Vì sao phải chia cho 1 − βᵗ (hiệu chỉnh độ chệch)">
+<Step title="Mở công thức trung bình động với m₀ = 0">
+
+$$
+m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t = (1-\beta_1)\sum_{k=1}^{t}\beta_1^{\,t-k}\,g_k.
+$$
+
+</Step>
+<Step title="Cộng các trọng số: chúng KHÔNG cộng lại bằng 1">
+
+$$
+(1-\beta_1)\sum_{k=1}^{t}\beta_1^{\,t-k} = (1-\beta_1)\cdot\frac{1-\beta_1^{t}}{1-\beta_1} = 1 - \beta_1^{t}.
+$$
+
+Ở bước đầu ($t = 1$) tổng trọng số chỉ là $1 - \beta_1$; với $\beta_1$ gần $1$ thì $m_1$ rất nhỏ so với gradient thật.
+
+</Step>
+<Step title="Chia cho tổng trọng số để được trung bình thật sự">
+
+$$
+\hat{m}_t = \frac{m_t}{1-\beta_1^{t}} = \sum_{k=1}^{t}\frac{(1-\beta_1)\beta_1^{\,t-k}}{1-\beta_1^{t}}\,g_k.
+$$
+
+Bây giờ các trọng số (phân số đứng trước $g_k$) cộng lại đúng bằng $1$: $\hat{m}_t$ là một trung bình có trọng số thực sự.
+
+</Step>
+<Step title="Kiểm tra với gradient không đổi g">
+
+$$
+m_t = (1-\beta_1^{t})\,g \quad\Longrightarrow\quad \hat{m}_t = g \quad (\forall\, t).
+$$
+
+Không hiệu chỉnh thì $m_1 = (1-\beta_1)g$; có hiệu chỉnh thì $\hat{m}_1 = g$ ngay từ đầu. $v_t$ được sửa giống hệt với $\beta_2$.
+
+</Step>
+</Derivation>
+
+<Derivation title="Vì sao bước của Adam không phụ thuộc thang đo gradient">
+<Step title="Giả sử gradient của một tọa độ giữ nguyên bằng g ≠ 0">
+
+Theo bước trên, sau hiệu chỉnh: $\hat{m}_t = g$ và $\hat{v}_t = g^2$.
+
+</Step>
+<Step title="Thay vào công thức cập nhật (bỏ qua ε)">
+
+$$
+\theta_t - \theta_{t-1} = -\eta\,\frac{\hat{m}_t}{\sqrt{\hat{v}_t}} = -\eta\,\frac{g}{\sqrt{g^2}} = -\eta\,\frac{g}{|g|} = -\eta\,\mathrm{sign}(g).
+$$
+
+</Step>
+<Step title="Đọc kết quả">
+
+Nhân gradient với $100$ hay chia cho $100$, bước đi vẫn là $\eta$: Adam **tự chuẩn hóa** theo từng tọa độ. GD thì bước tỷ lệ thuận với $g$, nên tham số có gradient nhỏ gần như đứng yên — đúng như hình "lệch thang đo" ở trên. Khi gradient dao động dấu, $|\hat{m}_t|$ nhỏ hơn $\sqrt{\hat{v}_t}$ nên bước tự ngắn lại.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

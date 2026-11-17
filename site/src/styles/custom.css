@@ -255,3 +255,52 @@
 	border-radius: 0.5rem;
 	padding: 0.7em 0.5em;
 }
+
+/* ===== Hình minh họa tương tác (components/viz/common.tsx) ===== */
+:root {
+	--viz-red: #d1242f; --viz-blue: #2563eb; --viz-green: #16a34a; --viz-orange: #ea580c; --viz-purple: #7c3aed;
+}
+:root[data-theme='dark'] {
+	--viz-red: #ff7b72; --viz-blue: #60a5fa; --viz-green: #4ade80; --viz-orange: #fb923c; --viz-purple: #a78bfa;
+}
+.viz { margin: 1.4rem 0; border: 1px solid var(--sl-color-gray-5); border-radius: 0.7rem; padding: 0.9rem; background: var(--sl-color-bg-nav); font-size: 1rem; }
+.viz-title { font-weight: 700; margin-bottom: 0.6rem; }
+.viz svg { display: block; width: 100%; height: auto; margin: 0 auto; background: var(--sl-color-bg); border-radius: 0.5rem; touch-action: none; user-select: none; }
+.viz svg text { font-family: var(--sl-font); }
+.viz-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); gap: 0.5rem 1rem; margin-bottom: 0.7rem; }
+.viz-slider { display: grid; gap: 0.15rem; font-size: var(--sl-text-sm); }
+.viz-slider input { width: 100%; accent-color: var(--sl-color-accent); }
+.viz-choice { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; font-size: var(--sl-text-sm); }
+.viz-choice-label { margin-right: 0.2rem; }
+.viz-choice button, .viz-buttons button, .derivation-nav button {
+	border: 1px solid var(--sl-color-gray-5); border-radius: 0.4rem; background: var(--sl-color-bg); color: var(--sl-color-text);
+	padding: 0.3rem 0.7rem; cursor: pointer; font: inherit; font-size: var(--sl-text-sm);
+}
+.viz-choice button.on { background: var(--sl-color-accent); border-color: var(--sl-color-accent); color: var(--sl-color-black); font-weight: 600; }
+.viz-buttons, .derivation-nav { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin: 0.6rem 0; }
+.viz-buttons button.primary, .derivation-nav button.primary { background: var(--sl-color-accent); border-color: var(--sl-color-accent); color: var(--sl-color-black); font-weight: 600; }
+.viz-buttons button:disabled, .derivation-nav button:disabled { opacity: 0.45; cursor: default; }
+.viz-step-count, .derivation-count { font-size: var(--sl-text-sm); color: var(--sl-color-gray-3); margin-left: 0.3rem; }
+.viz figcaption { font-size: var(--sl-text-sm); margin-top: 0.6rem; line-height: 1.6; }
+.viz-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0.8rem; align-items: start; }
+.viz-note { font-size: var(--sl-text-sm); padding: 0.5rem 0.7rem; border-left: 3px solid var(--sl-color-accent); background: var(--sl-color-bg); border-radius: 0.3rem; margin-top: 0.6rem; line-height: 1.6; }
+.viz-table { border-collapse: collapse; font-size: var(--sl-text-sm); margin: 0.4rem auto; }
+.viz-table th, .viz-table td { border: 1px solid var(--sl-color-gray-5); padding: 0.25rem 0.55rem; text-align: center; }
+.viz-table td.hl { background: var(--sl-color-accent-low); font-weight: 600; }
+.viz-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: var(--sl-text-sm); margin-top: 0.4rem; justify-content: center; }
+.viz-legend span::before { content: ''; display: inline-block; width: 0.9rem; height: 0.25rem; margin-right: 0.35rem; vertical-align: middle; background: var(--c); border-radius: 2px; }
+.viz-kv { display: flex; flex-wrap: wrap; gap: 0.3rem 1.2rem; font-size: var(--sl-text-sm); justify-content: center; margin-top: 0.4rem; }
+.viz-kv b { font-variant-numeric: tabular-nums; }
+
+/* ===== Biến đổi từng bước (components/viz/Derivation.astro) ===== */
+.derivation { margin: 1.4rem 0; border: 1px solid var(--sl-color-gray-5); border-left: 4px solid var(--sl-color-accent); border-radius: 0.6rem; padding: 0.8rem 1rem; background: var(--sl-color-bg-nav); }
+.derivation-title { font-weight: 700; margin-bottom: 0.3rem; }
+.derivation-steps { list-style: none; counter-reset: dstep; padding-left: 0; margin: 0; }
+.derivation-steps > .derivation-step { counter-increment: dstep; position: relative; padding: 0.5rem 0 0.5rem 2.4rem; margin: 0 !important; border-top: 1px dashed var(--sl-color-gray-5); }
+.derivation-steps > .derivation-step:first-child { border-top: none; }
+.derivation-steps > .derivation-step::before { content: counter(dstep); position: absolute; left: 0; top: 0.6rem; width: 1.7rem; height: 1.7rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.85rem; font-weight: 700; background: var(--sl-color-gray-6); color: var(--sl-color-text); }
+.derivation-steps > .derivation-step.current::before { background: var(--sl-color-accent); color: var(--sl-color-black); }
+.derivation-step-title { font-weight: 600; }
+.derivation-step-body > :first-child { margin-top: 0.3rem !important; }
+.derivation-step-body .katex-display { margin: 0.6em 0; }
+.derivation-step[hidden] { display: none; }

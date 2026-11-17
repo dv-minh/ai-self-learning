@@ -7,6 +7,9 @@ prerequisites: ["5.2", "5.5", "1.9"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import RegGeometryViz from '../../../components/viz/RegGeometryViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExRidge from '../../../generated/lesson-5-7/ridge-small.mdx';
 import ExWd from '../../../generated/lesson-5-7/weight-decay-form.mdx';
 import ExL1 from '../../../generated/lesson-5-7/l1-soft-threshold.mdx';
@@ -23,6 +26,13 @@ import ExMistake from '../../../generated/lesson-5-7/mistake-l1-l2.mdx';
 ## Trực giác
 
 Mô hình quá linh hoạt dễ **overfit**: học thuộc cả nhiễu, thể hiện bằng các trọng số rất lớn. Regularization thêm một "khoản phạt" cho độ lớn trọng số, buộc mô hình ưu tiên lời giải đơn giản. L2 phạt bình phương nên **co** mọi trọng số về gần $0$; L1 phạt trị tuyệt đối nên còn **ép nhiều trọng số về đúng $0$** (nghiệm thưa).
+
+Hình dưới là cách nhìn hình học quen thuộc nhất. Mỗi elip xám là một đường đồng mức của mất mát; nghiệm có regularization là chỗ một elip **vừa chạm** vùng "ngân sách" của trọng số — hình thoi với L1, hình tròn với L2. Kéo chấm đen (nghiệm không regularization) đi khắp nơi và tăng $\lambda$:
+
+- Với L1, chấm đỏ rất hay dính vào **góc** của hình thoi, tức nằm trên một trục: một trọng số bằng đúng $0$.
+- Với L2, chấm đỏ trượt dần về gốc theo đường cong trơn, hầu như không chạm trục trước khi tới gốc.
+
+<RegGeometryViz client:only="react" />
 
 ## Định nghĩa
 
@@ -61,6 +71,85 @@ $$
 $$
 \mathbf{w}^{+} = S_{\eta\lambda}\big(\mathbf{w} - \eta\nabla f(\mathbf{w})\big).
 $$
+
+## Biến đổi từng bước
+
+<Derivation title="Soft-thresholding: giải bài toán L1 một biến">
+<Step title="Hàm cần cực tiểu (z là nghiệm khi không có phạt)">
+
+$$
+h(w) = \frac{1}{2}(w - z)^2 + \lambda\,|w|,\qquad \lambda > 0.
+$$
+
+</Step>
+<Step title="Trường hợp w > 0: |w| = w, đạo hàm bằng 0">
+
+$$
+h'(w) = w - z + \lambda = 0 \;\Longrightarrow\; w = z - \lambda.
+$$
+
+Nghiệm này chỉ hợp lệ khi nó dương, tức $z > \lambda$.
+
+</Step>
+<Step title="Trường hợp w < 0: |w| = −w">
+
+$$
+h'(w) = w - z - \lambda = 0 \;\Longrightarrow\; w = z + \lambda,
+$$
+
+hợp lệ khi $z < -\lambda$.
+
+</Step>
+<Step title="Còn lại |z| ≤ λ: không có nghiệm khác 0, nên cực tiểu tại góc w = 0">
+
+Tại $w = 0$ hàm $|w|$ có góc nhọn. Bên phải $0$ đạo hàm là $-z + \lambda \ge 0$, bên trái là $-z - \lambda \le 0$: hàm đi xuống rồi đi lên, nên $w = 0$ là cực tiểu.
+
+</Step>
+<Step title="Gộp ba trường hợp">
+
+$$
+w^\star = S_\lambda(z) = \mathrm{sign}(z)\,\max\big(|z| - \lambda,\ 0\big).
+$$
+
+Mọi $z$ trong đoạn $[-\lambda, \lambda]$ đều cho **đúng** $0$ — đây là nguồn gốc của nghiệm thưa.
+
+</Step>
+<Step title="So sánh với L2 cùng bài toán">
+
+$$
+\frac{d}{dw}\Big[\frac{1}{2}(w - z)^2 + \frac{\lambda}{2}w^2\Big] = w - z + \lambda w = 0 \;\Longrightarrow\; w^\star = \frac{z}{1 + \lambda}.
+$$
+
+L2 chỉ **co** $z$ theo tỷ lệ $\dfrac{1}{1+\lambda}$: bằng $0$ chỉ khi $z = 0$.
+
+</Step>
+</Derivation>
+
+<Derivation title="L2 trong gradient descent chính là weight decay">
+<Step title="Gradient của hàm mục tiêu có L2">
+
+$$
+J(\mathbf{w}) = L(\mathbf{w}) + \frac{\lambda}{2}\|\mathbf{w}\|^2 \;\Longrightarrow\; \nabla J(\mathbf{w}) = \nabla L(\mathbf{w}) + \lambda\,\mathbf{w}.
+$$
+
+</Step>
+<Step title="Một bước gradient descent">
+
+$$
+\mathbf{w} \leftarrow \mathbf{w} - \eta\,\nabla L(\mathbf{w}) - \eta\lambda\,\mathbf{w}.
+$$
+
+</Step>
+<Step title="Gom các số hạng chứa w">
+
+$$
+\mathbf{w} \leftarrow (1 - \eta\lambda)\,\mathbf{w} - \eta\,\nabla L(\mathbf{w}).
+$$
+
+Trước khi bước theo mất mát, trọng số bị nhân với $1 - \eta\lambda < 1$: mỗi bước "phân rã" một chút về $0$.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

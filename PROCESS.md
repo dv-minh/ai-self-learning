@@ -1,10 +1,10 @@
 # PROCESS.md — Trạng thái dự án và việc cần làm tiếp
 
-Cập nhật lần cuối: 13/11/2026, sau GĐ6 và Review toán Phần 5–8 (toàn bộ 8 phần đã có nội dung). Đọc file này trước, rồi `CLAUDE.md` và `docs/spec.md` (mục 10 là nhật ký quyết định).
+Cập nhật lần cuối: 17/11/2026, sau khi thêm hình minh họa và biến đổi từng bước cho Phần 5–8 (mục 3.2c). Đọc file này trước, rồi `CLAUDE.md` và `docs/spec.md` (mục 10 là nhật ký quyết định).
 
 ## 1. Tóm tắt một dòng
 
-Website tĩnh tự học AI (Astro + Starlight, generator Python). **GĐ0–GĐ6 đã xong** (Phần 1–8). Còn các việc dọn dẹp và soát chất lượng ở mục 3. **Chưa commit lần nào** (đã `git init`, chưa có commit).
+Website tĩnh tự học AI (Astro + Starlight, generator Python). **GĐ0–GĐ6 đã xong** (Phần 1–8); Phần 5–8 đã có hình tương tác và "Biến đổi từng bước" (mục 3.2c). Còn các việc dọn dẹp và soát chất lượng ở mục 3. Repo đã có commit, remote `origin` trên GitHub; cấu hình deploy Cloudflare Workers (static assets) ở `wrangler.jsonc`.
 
 ## 2. Đã làm
 
@@ -45,20 +45,28 @@ Việc còn dở của GĐ5: (1) làm thử từng dạng mới trên giao diệ
 
 Phần 7: `generator/gen/topics/dl/` (15 dạng), ví dụ `examples/part7.py`, 7 bài MDX. Phần 8: `generator/gen/topics/cv/` (14 dạng), ví dụ `examples/part8.py`, 9 bài MDX. Mã phần trong kho bài: `deep-learning`, `computer-vision`. Softmax/attention dùng điểm dạng k ln 2 để xác suất là số hữu tỉ; khuếch tán dùng ᾱ là bộ ba Pythagoras. Chi tiết quyết định: `docs/spec.md` mục 10, "Bổ sung ở GĐ6".
 
-**Review toán (13/11/2026):** đã chạy cho Phần 5 và Phần 6 (hai phiên agent riêng, chỉ báo cáo; giải lại toàn bộ 4.200 và 3.400 bài, 0 lệch đáp án). **Chưa chạy cho 24 bài mới của Phần 7–8.** Các lỗi nội dung đã sửa ngay: ví dụ support vector 6.9 (không phải nghiệm SVM), ví dụ hinge gõ tay, lời giải MAE, đề kfold-cv mức 4, hint adam-bias, phát biểu Nesterov/PyTorch, điều kiện hội tụ GD, điều kiện g≠0 của Adam, nguồn RMSProp. **Chưa sửa (từ báo cáo review, mức "thiếu"/"văn phong")**: thiếu câu đọc bằng lời dưới nhiều công thức display; "Lỗi thường gặp" chỉ lỗi 1 có ví dụ sai→sửa; dùng `\|...\|` thay `
-orm`; thiếu thuật ngữ Anh ở một số chỗ; một số ví dụ nên thêm (R² hiệu chỉnh, F_β, macro-F1, quét ngưỡng Gini, ví dụ K-means thứ hai với phản ví dụ khởi tạo, KNN có trọng số khác khoảng cách); quy ước bước t từ 0 hay 1 và d, W của lịch Transformer chưa định nghĩa; `adamw-step` chưa có công thức trong display của đề; mục "Tham khảo" thiếu URL bài cụ thể cho machinelearningcoban.com; Q xoay của `gd-max-lr` có mẫu số tới 841 (nặng khi tính tay); đề `gd-converge` lệch nhãn (phân kỳ 61%).
+**Review toán (13/11/2026):** đã chạy cho Phần 5 và Phần 6 (hai phiên agent riêng, chỉ báo cáo; giải lại toàn bộ 4.200 và 3.400 bài, 0 lệch đáp án). **Chưa chạy cho 24 bài mới của Phần 7–8.** Các lỗi nội dung đã sửa ngay: ví dụ support vector 6.9 (không phải nghiệm SVM), ví dụ hinge gõ tay, lời giải MAE, đề kfold-cv mức 4, hint adam-bias, phát biểu Nesterov/PyTorch, điều kiện hội tụ GD, điều kiện g≠0 của Adam, nguồn RMSProp. **Chưa sửa (từ báo cáo review, mức "thiếu"/"văn phong")**: thiếu câu đọc bằng lời dưới nhiều công thức display; "Lỗi thường gặp" chỉ lỗi 1 có ví dụ sai→sửa; dùng `\|...\|` thay `\norm`; thiếu thuật ngữ Anh ở một số chỗ; một số ví dụ nên thêm (R² hiệu chỉnh, F_β, macro-F1, quét ngưỡng Gini, ví dụ K-means thứ hai với phản ví dụ khởi tạo, KNN có trọng số khác khoảng cách); quy ước bước t từ 0 hay 1 và d, W của lịch Transformer chưa định nghĩa; `adamw-step` chưa có công thức trong display của đề; mục "Tham khảo" thiếu URL bài cụ thể cho machinelearningcoban.com; Q xoay của `gd-max-lr` có mẫu số tới 841 (nặng khi tính tay); đề `gd-converge` lệch nhãn (phân kỳ 61%).
 
 ### 3.2b Chỉnh giao diện đọc (13/11/2026)
 
 `site/src/lib/remark-lesson-layout.mjs` (đăng ký ở `astro.config.mjs`): (1) gộp các display `nhãn = [ma trận/vector]` liên tiếp vào một hàng khi đủ rộng (ngưỡng `MAX_ROW_WIDTH`); (2) bọc các mục Định nghĩa / Tính chất / Lỗi thường gặp / Liên hệ với ML / Tóm tắt thành khung `.lesson-box-*` (CSS ở `custom.css`, có dark mode). Cỡ chữ thân bài 18px, KaTeX 1,2em; `rraystretch` giảm 1,7 → 1,3; mẫu số phân số được đẩy xuống bằng CSS (`.katex .mfrac .vlist`). Chưa xem trên điện thoại thật cho mọi bài; mới xem 1.1 và 4.4.
 
+### 3.2c Soạn lại Phần 5–8: hình minh họa tương tác và biến đổi từng bước (17/11/2026)
+
+Người dùng phản hồi bài học "chỉ toàn công thức, khó hiểu". Đã thêm vào cả 32 bài của Phần 5–8:
+
+- **Hình tương tác** (React, SVG, `site/src/components/viz/`, dùng chung `common.tsx`): 37 hình mới, đặt trong mục "Trực giác" kèm đoạn dẫn "hãy thử…". Phần 5: `ConvexViz`, `QuadFormViz`, `Gd1DViz` (từng bước GD có tiếp tuyến), `SgdViz` (mây gradient mini-batch), `EmaViz` (momentum / bias correction), `OptimizerRace`, `LrScheduleViz`, `RegGeometryViz` (L1 thoi vs L2 tròn). Phần 6: `LinRegViz` (ô vuông phần dư), `LogisticViz`, `PolyFitViz` (chữ U train/test), `ThresholdViz` (ngưỡng → ma trận nhầm lẫn → ROC), `KnnViz`, `KMeansViz` (từng nửa bước), `TreeSplitViz`, `BoostingViz`, `SvmViz`. Phần 7: `NeuronViz` (XOR, lớp ẩn), `ReluSumViz`, `ActivationViz`, `SoftmaxViz`, `BackpropViz` (đồ thị tính toán forward/backward từng bước), `InitViz`, `NormViz`, `DropoutViz`, `ResidualViz`, `AttentionViz`, `LoraViz`. Phần 8: `ConvViz`, `ReceptiveFieldViz`, `PatchViz`, `AugmentViz`, `IouViz`, `NmsViz`, `SegViz`, `ClipViz`, `DiffusionViz`.
+- **Mục mới "## Biến đổi từng bước"** (sau Định nghĩa, trước Ví dụ): các chứng minh/suy luận viết thành `<Derivation>`/`<Step>` (`viz/Derivation.astro`, `viz/Step.astro`), hiện từng bước khi bấm "Bước tiếp"; không có JS thì hiện hết. Chỉ chứa biến đổi ký hiệu, không có số gõ tay.
+- Hình dùng `client:only="react"`: số thực tính ở Node và trình duyệt lệch chữ số cuối gây cảnh báo hydration; hình không có ý nghĩa khi tắt JS. Hình chỉ để xem, không dùng để chấm (FR10). `GdPath` cũ vẫn giữ.
+- Kiểm tra: `pnpm typecheck`, Vitest 276, `pnpm build` (không lỗi KaTeX), pytest 339 đều qua; đã mở dev server xem và bấm thử các hình chính (GD từng bước, cuộc đua optimizer, SVM, K-means, backprop, attention, tích chập, ViT), xem điện thoại 375px + dark mode bài 5.7.
+- **Chưa làm:** chưa bấm thử từng hình một trên giao diện (mới thử khoảng một nửa); chưa có hình cho Phần 1–4; "Review toán" cho các mục "Biến đổi từng bước" mới chưa chạy bằng phiên agent riêng.
+
 ### 3.3 Việc dọn dẹp và rủi ro đã biết
 
-- **"Review toán"** (prompt ở `docs/spec.md` mục 9, chạy bằng phiên agent mới; spec yêu cầu trước khi merge): đã chạy cho Phần 5–6 (xem 3.2); đã chạy cho Phần 7–8 (giải lại 3.000 và 2.800 bài, 0 lệch đáp án; đã sửa: công thức `W^\T` lỗi KaTeX, câu giải thích ReLU gõ tay sai, đề BatchNorm với γ theo đặc trưng, đề mlp-forward mức 4 (đầu ra giờ tuyến tính), resid-grad (w=−1, w≥1), LeakyReLU α<1, số gõ tay ở 8.7, hint dilation, ví dụ Hungarian); **chưa chạy cho Phần 1–4 (37 bài)**. Còn lại từ báo cáo 7–8 (mức thiếu/văn phong): `torch-shape` chỉ 185 đề khác nhau, nhiều đề có đáp án 0 (backprop-net, mlp-forward), hint `mlp-params` không theo bias/BN, thiếu điều kiện (He cho lớp đầu, running_var chia n−1, định lý xấp xỉ vạn năng, quy ước đếm tham số Transformer, quy ước U-Net, khoảng GIoU), `clip-retrieval` đề nói "khớp đúng" nhưng embedding ngẫu nhiên, dùng `
-orm`.
-- **Chưa commit.** Gợi ý: commit theo từng giai đoạn, thêm remote GitHub; chưa chạy CI thật (workflow ở `.github/workflows/ci.yml`, deploy GitHub Pages cần bật Pages trong repo; `SITE_URL`/`BASE_PATH` tự đặt theo tên repo).
+- **"Review toán"** (prompt ở `docs/spec.md` mục 9, chạy bằng phiên agent mới; spec yêu cầu trước khi merge): đã chạy cho Phần 5–6 (xem 3.2); đã chạy cho Phần 7–8 (giải lại 3.000 và 2.800 bài, 0 lệch đáp án; đã sửa: công thức `W^\T` lỗi KaTeX, câu giải thích ReLU gõ tay sai, đề BatchNorm với γ theo đặc trưng, đề mlp-forward mức 4 (đầu ra giờ tuyến tính), resid-grad (w=−1, w≥1), LeakyReLU α<1, số gõ tay ở 8.7, hint dilation, ví dụ Hungarian); **chưa chạy cho Phần 1–4 (37 bài)**. Còn lại từ báo cáo 7–8 (mức thiếu/văn phong): `torch-shape` chỉ 185 đề khác nhau, nhiều đề có đáp án 0 (backprop-net, mlp-forward), hint `mlp-params` không theo bias/BN, thiếu điều kiện (He cho lớp đầu, running_var chia n−1, định lý xấp xỉ vạn năng, quy ước đếm tham số Transformer, quy ước U-Net, khoảng GIoU), `clip-retrieval` đề nói "khớp đúng" nhưng embedding ngẫu nhiên, dùng `\norm`.
+- **Commit và deploy:** đã có commit đầu (Phần 1–8) và remote `origin`; `wrangler.jsonc` phục vụ `site/dist` bằng Cloudflare Workers (static assets, trang 404 riêng). Workflow GitHub Pages ở `.github/workflows/ci.yml` vẫn còn; chưa xác nhận CI chạy thật trên GitHub. Thay đổi soạn lại Phần 5–8 (mục 3.2c) chưa commit tại thời điểm cập nhật này.
 - **Phần "Tham khảo"** của các bài học trỏ tới nguồn theo mục chung, chưa ghi số bài giảng/trang cụ thể; cần soát khi Review toán.
-- **Chưa xem tận mắt** giao diện điện thoại (FR11) và dark mode của các thành phần mới (GridTransform, GdPath, ô biểu thức, code Shiki, bảng và ma trận có phân số sau khi sửa macro). Phần 5–8: mới làm thử trên giao diện `gd-steps`, `gini-split`, `knn-classify`, `torch-shape`; các dạng còn lại chỉ được bảo đảm bằng kiểm chứng generator, pytest và Vitest. Khung trình duyệt bị ẩn khi thử nên `client:visible` không kích hoạt được; đã kiểm bằng trang thử tạm hoặc `client:load`.
+- **Chưa xem tận mắt** giao diện điện thoại (FR11) và dark mode của các thành phần mới (GridTransform, GdPath, ô biểu thức, code Shiki, bảng và ma trận có phân số sau khi sửa macro). Phần 5–8: mới làm thử trên giao diện `gd-steps`, `gini-split`, `knn-classify`, `torch-shape`; các dạng còn lại chỉ được bảo đảm bằng kiểm chứng generator, pytest và Vitest. Khung trình duyệt bị ẩn khi thử nên `client:visible` không kích hoạt được; đã kiểm bằng trang thử tạm hoặc `client:load`. Hình minh họa nay dùng `client:only="react"` nên chạy được cả khi khung ẩn.
 - **`np-dtype` ít đa dạng** (khoảng 20 biểu thức khác nhau, đề khác nhau chủ yếu ở thứ tự lựa chọn). Nên mở rộng.
 - **Kho bài nặng:** khoảng 42 MB (do ghi cả trường `null`); tải lười theo từng dạng nên chấp nhận được, có thể rút gọn nếu cần.
 - **Bài học 1.x trong spec nói "Gram–Schmidt là mục đọc thêm"**: mới chỉ nhắc, chưa có bài đọc thêm riêng.
@@ -66,8 +74,9 @@ orm`.
 
 ### 3.4 Việc nên làm tiếp (theo thứ tự gợi ý)
 
-1. Commit theo giai đoạn, thêm remote GitHub, chạy CI và bật Pages.
-2. Review toán Phần 1–4 (37 bài) bằng phiên agent mới.
+1. Commit phần soạn lại Phần 5–8; xác nhận CI và chọn một đích deploy (Cloudflare Workers hoặc GitHub Pages).
+2. Review toán Phần 1–4 (37 bài) và các mục "Biến đổi từng bước" mới của Phần 5–8 bằng phiên agent mới (prompt mục 9 đã thêm bước 5).
+2b. Bấm thử từng hình trong `components/viz/` (mới thử khoảng một nửa); thêm hình và "Biến đổi từng bước" cho Phần 1–4 theo cùng quy chuẩn.
 3. Làm thử trên giao diện từng dạng Phần 5–8, kể cả nhập sai; xem điện thoại và dark mode.
 4. Sửa các mục "thiếu/văn phong" còn lại trong báo cáo review Phần 5–8 (mục 3.2 và 3.3).
 5. Mở rộng các dạng ít đề khác nhau (`np-dtype`, `torch-shape`) và giảm đề có đáp án 0.
@@ -102,7 +111,7 @@ Môi trường đã dùng: Node 26, pnpm 12 (cài toàn cục bằng npm), uv, P
 - `generator/gen/examples/` — ví dụ số cho bài học, ghi vào `site/src/generated/lesson-<bài>/*.mdx` (không sửa tay, file này được sinh lại mỗi lần build).
 - `site/public/exercises/<phần>/<bài>/<dạng>.json` và `manifest.json` — kho bài (sinh tự động, đã nằm trong repo để site tải lười).
 - `site/src/lib/math/` — `fraction.ts`, `parse.ts`, `compare.ts` (chấm: exact, eigvec, span, numeric, solution-set, expression), `expr.ts` (phân tích biểu thức), `linalg.ts`.
-- `site/src/components/exercise/` — `ExerciseCard`, `ExercisePlayer`, `PracticeMode`, `ReviewPlayer`, `MatrixInput`, `Code` (Shiki), `Tex`. Khác: `ProgressView`, `MarkRead`, `viz/GridTransform`.
+- `site/src/components/exercise/` — `ExerciseCard`, `ExercisePlayer`, `PracticeMode`, `ReviewPlayer`, `MatrixInput`, `Code` (Shiki), `Tex`. Khác: `ProgressView`, `MarkRead`, `viz/GridTransform`. Hình minh họa Phần 5–8 và khung biến đổi từng bước: `viz/` (xem mục 3.2c).
 - `site/src/content/docs/<NN-tên-phần>/` — bài học MDX; `99-tong-on.mdx` mỗi phần; `luyen-tap.mdx`, `tien-do.mdx`.
 - `site/scripts/validate-banks.mjs` — kiểm LaTeX toàn kho.
 
@@ -116,14 +125,16 @@ Môi trường đã dùng: Node 26, pnpm 12 (cài toàn cục bằng npm), uv, P
 6. **`rehype-katex` và `katex` phải cùng phiên bản** (đang ghim `katex@0.16.47`): lệch phiên bản làm CSS và HTML không khớp tên class (dấu "khác" hiện thành "/="). Sau khi nâng cấp phải xem lại công thức trên trang thật.
 7. Lựa chọn trắc nghiệm có công thức phải bọc `$...$` (`RichText` chỉ render công thức trong cặp `$`); `RichText` hiểu `**đậm**` và `` `mã` ``.
 8. Dạng chỉ có vài tham số rời rạc (ví dụ đếm bootstrap) không đủ 200 đề khác nhau: thêm một tham số hoặc nhiều đại lượng hỏi (đã làm ở `forest-average` mức 5).
-10. **Phân số trong bảng/ma trận:** KaTeX dùng cỡ chữ "text" trong ô nên `\frac` bị co nhỏ và chạm dòng kẻ; `site/src/lib/katex-macros.mjs` (`dfracInEnvs`, plugin remark `remarkDfrac`, cùng hàm dùng ở `Tex.tsx`) đổi `\frac` thành `\dfrac` và thêm thanh chống đầu mỗi dòng trong `array`/`matrix`. Thanh chống đặt **trong** phân số (macro `\frac`) làm vỡ ô bảng nên không dùng. Sửa file cấu hình/macro phải **khởi động lại dev server**. Bố cục: Starlight mặc định dồn nội dung sát mục lục phải; `custom.css` đặt `--sl-content-margin-inline: auto` để căn giữa.
 9. Với công thức cần căn bậc hai, logarit hoặc mũ (Adam, softmax, cosine): chọn số sao cho kết quả hữu tỉ (tìm bằng quét nguyên), hoặc đề cho sẵn giá trị đã tính; đối chiếu bằng NumPy/`math` ở bước kiểm chứng.
+10. **Phân số trong bảng/ma trận:** KaTeX dùng cỡ chữ "text" trong ô nên `\frac` bị co nhỏ và chạm dòng kẻ; `site/src/lib/katex-macros.mjs` (`dfracInEnvs`, plugin remark `remarkDfrac`, cùng hàm dùng ở `Tex.tsx`) đổi `\frac` thành `\dfrac` và thêm thanh chống đầu mỗi dòng trong `array`/`matrix`. Thanh chống đặt **trong** phân số (macro `\frac`) làm vỡ ô bảng nên không dùng. Sửa file cấu hình/macro phải **khởi động lại dev server**. Bố cục: Starlight mặc định dồn nội dung sát mục lục phải; `custom.css` đặt `--sl-content-margin-inline: auto` để căn giữa.
+11. **Hình tương tác dùng `client:only="react"`**: SSR rồi hydrate làm React báo lệch thuộc tính vì số thực tính ở Node và Chrome khác nhau ở chữ số cuối (`cx`, `fillOpacity`...). Dữ liệu ngẫu nhiên của hình dùng `rng(seed)` trong `viz/common.tsx`, không dùng `Math.random`.
+12. **Biến đổi từng bước** viết trong MDX bằng `<Derivation>`/`<Step>` (Astro, có script hiện dần); công thức trong đó vẫn phải không có chữ tiếng Việt — đưa lời giải thích ra ngoài `$$`. Chèn khối lớn vào MDX bằng Write/Edit hoặc script Python đọc file (không heredoc).
 
 ## 7. Cách làm tiếp (gợi ý quy trình mỗi giai đoạn)
 
 1. Đọc mục 3 của file này và `docs/spec.md` mục 3, 7, 8, 10.
 2. Chốt danh sách bài + mã dạng của phần mới (ghi vào `docs/spec.md` mục 10).
 3. Viết generator + test, sinh 200 bài/dạng, chạy `validate:banks`, `pytest`, `pnpm test`.
-4. Viết ví dụ (`examples/`) và bài học MDX theo khung mục 7; thêm trang Tổng ôn.
-5. `pnpm build`, mở dev server và làm thử ≥ 3 bài/dạng kể cả nhập sai.
+4. Viết ví dụ (`examples/`) và bài học MDX theo khung mục 7 (gồm hình tương tác ở Trực giác và mục "Biến đổi từng bước"); thêm trang Tổng ôn.
+5. `pnpm build`, mở dev server và làm thử ≥ 3 bài/dạng kể cả nhập sai; bấm thử từng hình mới, xem console không lỗi, xem ở 375px và dark mode.
 6. Cập nhật file này (mục 2 và 3), `CLAUDE.md` nếu đổi lệnh/quy ước, rồi commit.

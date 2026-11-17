@@ -7,6 +7,9 @@ prerequisites: ["7.4", "7.5", "8.1", "8.2"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import ResidualViz from '../../../components/viz/ResidualViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExCompare from '../../../generated/lesson-8-3/params-compare.mdx';
 import ExBlock from '../../../generated/lesson-8-3/resnet-block-params.mdx';
 import ExShapes from '../../../generated/lesson-8-3/cnn-shapes.mdx';
@@ -23,6 +26,10 @@ import ExMistake from '../../../generated/lesson-8-3/mistake-param-depends-on-si
 ## Trực giác
 
 CNN xếp các khối (tích chập $\to$ chuẩn hóa $\to$ kích hoạt), giảm dần kích thước không gian và tăng dần số kênh: nhiều kênh hơn nghĩa là biểu diễn giàu hơn trên bản đồ nhỏ hơn. Mạng rất sâu gặp khó huấn luyện vì gradient suy giảm; **ResNet** thêm đường tắt $y = x + F(x)$ (bài 7.5) để mỗi khối chỉ học phần **dư** so với đồng nhất, nên mạng hàng chục đến hàng trăm lớp vẫn huấn luyện được. ResNet là kiến trúc thị giác làm nền cho rất nhiều mô hình sau này.
+
+Vì sao ResNet huấn luyện được mạng hàng trăm lớp trong khi mạng "thẳng" cùng độ sâu lại kém hơn? Nhìn gradient đi ngược qua nhiều khối (bài 7.5):
+
+<ResidualViz client:only="react" />
 
 ## Định nghĩa
 
@@ -42,6 +49,56 @@ $$
 - **Bottleneck:** conv $1\times 1$ ($4C\to C$), conv $3\times 3$ ($C\to C$), conv $1\times 1$ ($C\to 4C$): $17C^2$ tham số.
 - **Khối giảm mẫu:** conv đầu stride $2$ đổi số kênh; nhánh tắt dùng conv $1\times 1$ stride $2$ để khớp shape.
 - BatchNorm thêm $2C$ tham số mỗi lớp.
+
+## Biến đổi từng bước
+
+<Derivation title="Đếm tham số của một lớp tích chập">
+<Step title="Một bộ lọc nhìn mọi kênh vào, mỗi kênh một lát k × k">
+
+$$
+\text{one filter: } C_{\mathrm{in}}\cdot k^2 \text{ weights} + 1 \text{ bias}.
+$$
+
+</Step>
+<Step title="Mỗi kênh ra là một bộ lọc riêng">
+
+$$
+\text{params} = C_{\mathrm{out}}\,(C_{\mathrm{in}}k^2 + 1).
+$$
+
+Không phụ thuộc kích thước ảnh: cùng bộ lọc được dùng lại ở mọi vị trí (chia sẻ trọng số).
+
+</Step>
+<Step title="Số phép nhân thì có phụ thuộc kích thước: mỗi vị trí ra làm lại toàn bộ">
+
+$$
+\text{MAC} = \underbrace{C_{\mathrm{out}}\,C_{\mathrm{in}}\,k^2}_{\text{per position}}\cdot H_{\mathrm{out}}W_{\mathrm{out}}.
+$$
+
+</Step>
+</Derivation>
+
+<Derivation title="Vì sao khối bottleneck rẻ hơn (bỏ chặn và BatchNorm)">
+<Step title="Hai khối cùng nhận và trả 4C kênh. Khối cơ bản: hai conv 3 × 3, 4C → 4C">
+
+$$
+2\cdot 9\cdot(4C)^2 = 288\,C^2.
+$$
+
+</Step>
+<Step title="Bottleneck: 1 × 1 giảm còn C kênh, 3 × 3 ở C kênh, 1 × 1 tăng lại 4C">
+
+$$
+\underbrace{4C\cdot C}_{1\times 1} + \underbrace{9\,C\cdot C}_{3\times 3} + \underbrace{C\cdot 4C}_{1\times 1} = 17\,C^2.
+$$
+
+</Step>
+<Step title="So sánh">
+
+Bottleneck dùng khoảng $17/288$ số tham số, vì phép $3\times 3$ đắt đỏ chỉ chạy trên $C$ kênh "nén" thay vì $4C$. Đó là lý do ResNet-50 trở lên dùng bottleneck.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

@@ -7,6 +7,9 @@ prerequisites: ["7.7", "8.3"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import AugmentViz from '../../../components/viz/AugmentViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExAug from '../../../generated/lesson-8-5/aug-example.mdx';
 import ExTransfer from '../../../generated/lesson-8-5/transfer-example.mdx';
 import PropLabel from '../../../generated/lesson-8-5/label-preserving.mdx';
@@ -21,6 +24,8 @@ import ExMistake from '../../../generated/lesson-8-5/mistake-augment-test.mdx';
 ## Trực giác
 
 Dữ liệu có nhãn luôn ít hơn ta muốn. **Augmentation** tạo thêm mẫu bằng các biến đổi mà **không đổi nhãn** (lật, cắt ngẫu nhiên, đổi độ sáng): mô hình thấy nhiều biến thể hơn và học tính bất biến mong muốn. **Transfer learning** tái sử dụng một mô hình đã huấn luyện trên tập dữ liệu rất lớn (ví dụ ImageNet): các lớp đầu đã biết cạnh, kết cấu, bộ phận, chỉ cần thích ứng lớp cuối hoặc vài khối cuối với bài toán mới.
+
+<AugmentViz client:only="react" />
 
 ## Định nghĩa
 
@@ -40,6 +45,41 @@ Với ảnh $\mathbf{X} \in \R^{H\times W}$:
 | LoRA | tham số bổ sung hạng thấp | mô hình rất lớn (bài 7.7) |
 
 Lớp tuyến tính $a\to b$ có chặn: $(a+1)b$ tham số.
+
+## Biến đổi từng bước
+
+<Derivation title="Đọc công thức quay 90° theo chiều kim đồng hồ">
+<Step title="Công thức (ảnh vuông n × n, chỉ số từ 0)">
+
+$$
+Y_{ij} = X_{n-1-j,\ i}.
+$$
+
+</Step>
+<Step title="Góc trên trái của ảnh ra lấy từ đâu?">
+
+$$
+Y_{00} = X_{n-1,\ 0}.
+$$
+
+Đó là góc **dưới trái** của ảnh vào. Quay kim đồng hồ đưa góc dưới trái lên vị trí trên trái — đúng.
+
+</Step>
+<Step title="Hàng đầu tiên của ảnh ra">
+
+$$
+Y_{0j} = X_{n-1-j,\ 0},\qquad j = 0, 1, \dots, n-1.
+$$
+
+Khi $j$ tăng, chỉ số hàng của $X$ giảm từ $n-1$ về $0$: hàng đầu của $Y$ là **cột đầu** của $X$ đọc từ dưới lên.
+
+</Step>
+<Step title="Kiểm tra bằng cách quay bốn lần">
+
+Áp dụng công thức hai lần: $Y^{(2)}_{ij} = Y_{n-1-j,\ i} = X_{n-1-i,\ n-1-j}$ — quay $180^\circ$, đảo cả hàng lẫn cột. Bốn lần thì $X_{ij}$ trở lại nguyên vị trí.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

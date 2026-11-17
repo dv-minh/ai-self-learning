@@ -37,7 +37,7 @@ Sản phẩm là một website tĩnh tự học AI, đi từ toán nền (ma tr�
 | FR7 | Gợi ý theo bậc; lời giải từng bước hiện sau khi nộp hoặc bấm “Xem lời giải” | Bắt buộc |
 | FR8 | Chế độ luyện tập: chọn dạng, kích thước, mức rồi làm liên tục | Bắt buộc |
 | FR9 | Lưu tiến độ trong localStorage; xuất/nhập file JSON để sao lưu | Nên có |
-| FR10 | Hình minh họa tương tác chỉ để xem (biến đổi lưới 2D, đồ thị hàm, đường gradient descent) | Nên có |
+| FR10 | Hình minh họa tương tác chỉ để xem (biến đổi lưới 2D, đồ thị hàm, đường gradient descent; Phần 5–8 mỗi bài có ít nhất một hình) | Nên có |
 | FR11 | Đọc tốt trên điện thoại (responsive) | Nên có |
 
 ### Yêu cầu phi chức năng
@@ -369,8 +369,9 @@ prerequisites: ["1.3", "1.4"]
 ---
 
 ## Mục tiêu            (3–5 gạch đầu dòng: học xong làm được gì)
-## Trực giác           (ý tưởng bằng lời + hình, chưa công thức)
+## Trực giác           (ý tưởng bằng lời + hình tương tác kèm gợi ý "hãy thử…", chưa công thức)
 ## Định nghĩa          (công thức chính thức, giải thích từng ký hiệu)
+## Biến đổi từng bước  (suy luận/chứng minh tách thành <Derivation><Step>; mỗi bước một phép biến đổi + một câu giải thích)
 ## Ví dụ               (ít nhất 2: một nhỏ 2×2, một lớn hơn/không vuông; giải từng bước)
 ## Tính chất           (mỗi tính chất kèm 1 ví dụ số hoặc phản ví dụ)
 ## Lỗi thường gặp      (2–4 lỗi, mỗi lỗi có ví dụ sai → sửa)
@@ -379,6 +380,15 @@ prerequisites: ["1.3", "1.4"]
 ## Bài tập             (<ExercisePlayer ... />)
 ## Tham khảo           (link tới nguồn đối chiếu)
 ```
+
+Mục "Biến đổi từng bước" bắt buộc với bài Phần 5–8 (đã có), nên có với bài mới ở mọi phần. Tiêu đề và vị trí cố định (sau Định nghĩa, trước Ví dụ) để `remark-lesson-layout` không bọc nó vào khung Định nghĩa.
+
+### Hình minh họa và biến đổi từng bước
+
+- **Hình tương tác** là component React trong `site/src/components/viz/`, dùng chung `common.tsx` (`Figure`, `Slider`, `Choice`, `useStepper`, `Axes`, `Contours`, `useSvgDrag`, bảng màu `C` theo biến CSS `--viz-*` có dark mode). Nhúng trong MDX bằng `client:only="react"` (không SSR: số thực ở Node và trình duyệt lệch chữ số cuối gây lỗi hydration).
+- Hình chỉ để xem (FR10): được dùng số thực, dữ liệu sinh bằng `rng(seed)` cố định để lần nào mở cũng giống nhau, **không** dùng để chấm bài và không thay ví dụ số của generator. Chú thích hình mô tả hiện tượng, không ghi kết quả số gõ tay; số hiển thị phải do chính hình tính ra.
+- Mỗi hình có: tiêu đề nói điều cần thấy, điều khiển (thanh trượt, nút "Bước tiếp" khi có quá trình lặp), chú thích giải thích màu và điều nên thử. Bố cục phải dùng được ở bề rộng 375px và dark mode.
+- **Biến đổi từng bước** dùng `<Derivation title="...">` và `<Step title="...">` (`viz/Derivation.astro`, `viz/Step.astro`): hiện một bước mỗi lần bấm, không có JS thì hiện hết. Chỉ chứa biến đổi ký hiệu; mọi giả thiết (độc lập, trung bình 0, ...) phải nêu trong bước đầu. Tiêu đề bước là chữ thường (Unicode được), công thức vẫn tuân quy tắc không có chữ tiếng Việt.
 
 ### Ký hiệu toán (KaTeX)
 
@@ -595,6 +605,9 @@ Bạn là người review toán khó tính. Đọc bài học {ĐƯỜNG DẪN F
 2. Kiểm tra ký hiệu và thuật ngữ đúng docs/spec.md mục 7.
 3. Kiểm tra điều kiện bị thiếu (ví dụ: “nếu A khả nghịch”, “nếu kích thước khớp”).
 4. Lấy ngẫu nhiên 20 bài tập, giải lại độc lập, so với đáp án và lời giải trong JSON.
+5. Kiểm tra từng bước trong các khối <Derivation>/<Step>: mỗi bước suy ra đúng từ bước
+   trước, giả thiết được nêu; đọc mã hình trong components/viz/ được dùng ở bài và xác
+   nhận chú thích hình mô tả đúng điều hình tính.
 Báo cáo dạng bảng: vị trí, vấn đề, mức độ (sai / thiếu / văn phong), đề xuất sửa.
 Không sửa file; chỉ báo cáo.
 ```
@@ -659,3 +672,10 @@ Các quyết định dưới đây phát sinh khi triển khai; spec gốc chưa
 - **Review toán Phần 5–6 (13/11/2026):** hai phiên agent riêng giải lại toàn bộ kho (4.200 và 3.400 bài), 0 lệch đáp án; các lỗi nội dung tìm thấy đã sửa hoặc ghi ở PROCESS.md mục 3.2.
 - **Hình tương tác thứ hai của FR10:** `GdPath` (đường đồng mức và quỹ đạo gradient descent/momentum, dùng số thực, chỉ để xem), gắn ở bài 5.2 và 5.4.
 - **Sửa lỗi giao diện toán (13/11/2026):** rehype-katex dùng KaTeX 0.16 để sinh HTML nhưng CSS lấy từ KaTeX 0.19 (đổi tên class `inner`/`fix` thành `katex-inner`/`katex-fix`), làm dấu "khác" hiện thành "/=". Đã ghim `katex@0.16.47` cho khớp. Ký hiệu chuyển vị dùng macro `\T` = chữ T thẳng nhỏ (mathsf) thay cho `\top`; phân số có "thanh chống" để tử/mẫu không dính vạch; cột mục lục bên phải thu hẹp còn 13,5rem, nội dung giữa rộng 62rem.
+
+### Bổ sung 17/11/2026: soạn lại Phần 5–8 với hình minh họa
+
+- **Lý do:** người dùng phản hồi bài học Phần 5–8 "chỉ toàn công thức, không có hình, rất khó hiểu". Quyết định giữ nguyên chữ, ví dụ generator và bài tập; thêm hình tương tác vào mục Trực giác và thêm mục "Biến đổi từng bước" vào khung bài học (mục 7).
+- **37 hình mới** trong `site/src/components/viz/` (danh sách theo bài ở PROCESS.md mục 3.2c); FR10 nay phủ toàn bộ Phần 5–8.
+- **Hydration:** hình dùng `client:only="react"` thay `client:visible`; `GdPath` cũng chuyển sang. Lý do: sai khác chữ số cuối của số thực giữa Node và trình duyệt làm React báo lệch thuộc tính.
+- **Biến đổi từng bước đã viết:** hàm lồi (Taylor, hoàn thành bình phương), điều kiện hội tụ GD η < 2/λ_max, gradient mini-batch không chệch, mở vận tốc momentum, hiệu chỉnh độ chệch Adam, sàn nhiễu của SGD, soft-thresholding, phương trình chuẩn, đạo hàm sigmoid và log-loss, bias–variance, F₁, K-means, Gini, boosting, lề SVM, softmax/CE, backprop một lớp, khởi tạo He, dropout, residual, attention và √d, LoRA, kích thước đầu ra tích chập, trường tiếp nhận, tham số conv/bottleneck, ViT, IoU, Dice–IoU, CLIP, công thức đóng diffusion. Các mục này chưa qua Review toán bằng phiên agent riêng.

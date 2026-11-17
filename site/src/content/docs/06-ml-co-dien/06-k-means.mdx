@@ -7,6 +7,9 @@ prerequisites: ["1.1", "6.5"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import KMeansViz from '../../../components/viz/KMeansViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExIter from '../../../generated/lesson-6-6/kmeans-iteration.mdx';
 import PropJ from '../../../generated/lesson-6-6/inertia-decreases.mdx';
 import ExMistake from '../../../generated/lesson-6-6/mistake-init.mdx';
@@ -20,6 +23,10 @@ import ExMistake from '../../../generated/lesson-6-6/mistake-init.mdx';
 ## Trực giác
 
 Gom $n$ điểm thành $K$ nhóm mà không có nhãn (học không giám sát). K-means là một vòng lặp hai bước giản dị: (1) mỗi điểm chọn tâm gần nhất, (2) mỗi tâm dời về trung bình của các điểm thuộc nó. Lặp cho tới khi không còn thay đổi. Mỗi bước đều làm "độ tụ" của các cụm tốt hơn hoặc giữ nguyên.
+
+Hình dưới chạy K-means **từng nửa bước**: một lần bấm là "gán", lần sau là "cập nhật". Theo dõi dòng "lịch sử J" — dãy số chỉ đi xuống hoặc đứng yên. Sau đó thử nhiều lần khởi tạo khác nhau để thấy kết quả cuối có thể khác nhau.
+
+<KMeansViz client:only="react" />
 
 ## Định nghĩa
 
@@ -35,6 +42,58 @@ Luân phiên hai bước:
 2. **Cập nhật:** $\boldsymbol{\mu}_j = \dfrac{1}{|C_j|}\sum_{i \in C_j}\mathbf{x}_i$ (trung bình các điểm trong cụm $C_j$).
 
 Bước 2 là nghiệm đúng của bài toán "chọn $\boldsymbol{\mu}$ để tối thiểu tổng bình phương khoảng cách" khi cụm cố định (đạo hàm theo $\boldsymbol{\mu}$ bằng $0$ cho trung bình, bài 5.1).
+
+## Biến đổi từng bước
+
+<Derivation title="Bước cập nhật: vì sao tâm tối ưu là trung bình">
+<Step title="Giữ cụm Cⱼ cố định; chỉ phần J của cụm j phụ thuộc μⱼ">
+
+$$
+J_j(\boldsymbol{\mu}_j) = \sum_{i \in C_j}\|\mathbf{x}_i - \boldsymbol{\mu}_j\|^2.
+$$
+
+</Step>
+<Step title="Lấy gradient theo μⱼ">
+
+$$
+\nabla_{\boldsymbol{\mu}_j}J_j = \sum_{i \in C_j} -2(\mathbf{x}_i - \boldsymbol{\mu}_j) = -2\Big(\sum_{i \in C_j}\mathbf{x}_i - |C_j|\,\boldsymbol{\mu}_j\Big).
+$$
+
+</Step>
+<Step title="Cho bằng 0">
+
+$$
+\boldsymbol{\mu}_j = \frac{1}{|C_j|}\sum_{i \in C_j}\mathbf{x}_i.
+$$
+
+$J_j$ là hàm bậc hai lồi chặt theo $\boldsymbol{\mu}_j$ (Hessian $2|C_j|\mathbf{I}$), nên đây là cực tiểu duy nhất.
+
+</Step>
+</Derivation>
+
+<Derivation title="Vì sao J không bao giờ tăng (và thuật toán dừng)">
+<Step title="Bước gán: giữ tâm, đổi c(i)">
+
+Mỗi điểm chọn tâm gần nhất, nên với từng $i$:
+
+$$
+\|\mathbf{x}_i - \boldsymbol{\mu}_{c_{\text{new}}(i)}\|^2 \le \|\mathbf{x}_i - \boldsymbol{\mu}_{c_{\text{old}}(i)}\|^2.
+$$
+
+Cộng lại: $J$ sau bước gán $\le$ $J$ trước.
+
+</Step>
+<Step title="Bước cập nhật: giữ gán, đổi tâm">
+
+Theo khung trên, trung bình là tâm làm $J_j$ nhỏ nhất, nên tâm mới cho $J_j$ không lớn hơn tâm cũ, với mọi $j$. Cộng lại: $J$ lại không tăng.
+
+</Step>
+<Step title="Kết luận">
+
+$J \ge 0$ và không tăng sau mỗi nửa bước; số cách gán $n$ điểm vào $K$ cụm là hữu hạn. Vậy K-means dừng sau hữu hạn bước — nhưng chỉ ở một **cực tiểu địa phương**, tùy khởi tạo (như hình cho thấy).
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

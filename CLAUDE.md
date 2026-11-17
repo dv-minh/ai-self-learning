@@ -17,7 +17,7 @@ thuật ngữ tiếng Anh. Đặc tả đầy đủ ở docs/spec.md — đọc 
 7. Không chắc một công thức → dừng lại và hỏi, không đoán.
 
 ## Trạng thái
-Xem PROCESS.md (đã làm, còn lại, bản đồ mã nguồn, bài học kinh nghiệm). Hiện xong GĐ0–GĐ6 (Phần 1–8); còn dọn dẹp và Review toán (xem mục 3 của PROCESS.md).
+Xem PROCESS.md (đã làm, còn lại, bản đồ mã nguồn, bài học kinh nghiệm). Hiện xong GĐ0–GĐ6 (Phần 1–8); Phần 5–8 đã có hình tương tác và mục "Biến đổi từng bước" (PROCESS.md mục 3.2c); còn dọn dẹp và Review toán (xem mục 3 của PROCESS.md).
 
 ## Lệnh
 - Site:      pnpm --dir site dev | build | test | typecheck | validate:banks
@@ -30,9 +30,11 @@ Xem PROCESS.md (đã làm, còn lại, bản đồ mã nguồn, bài học kinh 
 - KHÔNG ghi code/LaTeX có dấu `\` bằng Bash heredoc (mất dấu); dùng Write/Edit.
 - KHÔNG đặt chữ tiếng Việt trong công thức LaTeX (kể cả text trong công thức và ô array); `pnpm validate:banks` kiểm.
 - Mỗi dạng cần ≥ 200 đề khác nhau; kiểm chứng độc lập (SymPy/NumPy/liệt kê/sai phân).
+- Bài học cần hình minh họa (mục Trực giác) và mục "Biến đổi từng bước" (`<Derivation>`/`<Step>`); quy tắc ở docs/spec.md mục 7 "Hình minh họa và biến đổi từng bước".
+- Hình tương tác: component trong `site/src/components/viz/`, dùng `common.tsx`, nhúng bằng `client:only="react"` (SSR gây lỗi hydration do lệch số thực). Hình chỉ để xem, không chấm bài; chú thích không ghi số gõ tay.
 - Cập nhật PROCESS.md khi kết thúc mỗi giai đoạn.
 
 ## Definition of Done mỗi task
 - pytest, Vitest, build đều qua; build không có cảnh báo KaTeX.
-- Đã chạy dev server và tự làm thử bài tập mới, kể cả nhập sai.
+- Đã chạy dev server và tự làm thử bài tập mới, kể cả nhập sai; hình mới đã bấm thử, không lỗi console, xem ở 375px và dark mode.
 - Báo cáo ngắn: đã làm gì, file nào đổi, còn gì chưa làm.

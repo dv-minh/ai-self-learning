@@ -7,6 +7,9 @@ prerequisites: ["1.14", "7.6"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import LoraViz from '../../../components/viz/LoraViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExLora from '../../../generated/lesson-7-7/lora-params-example.mdx';
 import ExMerge from '../../../generated/lesson-7-7/lora-merge-example.mdx';
 import ExShape from '../../../generated/lesson-7-7/torch-shape-example.mdx';
@@ -21,6 +24,10 @@ import ExMistake from '../../../generated/lesson-7-7/mistake-freeze.mdx';
 ## Trực giác
 
 Huấn luyện một mô hình lớn từ đầu tốn kém. **Fine-tuning** bắt đầu từ mô hình đã huấn luyện trước (pretrained) rồi tiếp tục huấn luyện trên dữ liệu của bài toán mới. Cập nhật toàn bộ hàng tỉ tham số thì tốn bộ nhớ; thực nghiệm cho thấy **thay đổi cần thiết của trọng số có hạng thấp**. **LoRA** (low-rank adaptation) đóng băng $\mathbf{W}$ và chỉ học hai ma trận nhỏ $\mathbf{B}, \mathbf{A}$ có tích $\mathbf{B}\mathbf{A}$ là bản cập nhật hạng thấp. Khi đọc code PyTorch, thành thạo suy luận shape là kỹ năng thiết yếu để gỡ lỗi.
+
+Hình dưới vẽ **đúng tỉ lệ** ma trận gốc và hai ma trận LoRA. Kéo $d$ lên vài nghìn (cỡ một lớp của mô hình ngôn ngữ) và giữ $r$ nhỏ: hai dải B, A gần như biến mất so với W, và tỉ lệ tham số phải huấn luyện chỉ còn một phần rất nhỏ.
+
+<LoraViz client:only="react" />
 
 ## Định nghĩa
 
@@ -41,6 +48,47 @@ $$
 | LoRA/adapter | tham số bổ sung nhỏ | thấp, gần chất lượng đầy đủ |
 
 **Quy tắc shape của PyTorch:** `nn.Linear(a, b)` đổi chiều cuối từ $a$ thành $b$; `view`/`reshape` giữ tổng số phần tử; `transpose(i, j)` hoán hai chiều; `A @ B` nhân ma trận trên hai chiều cuối và giữ các chiều batch; `mean(dim=k)` bỏ chiều $k$; `torch.cat(dim=k)` cộng độ dài chiều $k$.
+
+## Biến đổi từng bước
+
+<Derivation title="Đếm tham số và hạng của LoRA">
+<Step title="Kích thước hai ma trận">
+
+$$
+\mathbf{B} \in \R^{d_{\mathrm{out}}\times r}: \ d_{\mathrm{out}}\,r \text{ params},\qquad \mathbf{A} \in \R^{r\times d_{\mathrm{in}}}: \ r\,d_{\mathrm{in}} \text{ params}.
+$$
+
+</Step>
+<Step title="Tổng so với cập nhật đầy đủ">
+
+$$
+\frac{r(d_{\mathrm{in}} + d_{\mathrm{out}})}{d_{\mathrm{in}}\,d_{\mathrm{out}}} = r\left(\frac{1}{d_{\mathrm{out}}} + \frac{1}{d_{\mathrm{in}}}\right).
+$$
+
+Với $d_{\mathrm{in}} = d_{\mathrm{out}} = d$, tỉ lệ là $2r/d$: nhỏ khi $r \ll d$.
+
+</Step>
+<Step title="Hạng của phần cập nhật bị chặn bởi r">
+
+Mỗi cột của $\mathbf{B}\mathbf{A}$ là tổ hợp tuyến tính của $r$ cột của $\mathbf{B}$, nên
+
+$$
+\rank(\mathbf{B}\mathbf{A}) \le \rank(\mathbf{B}) \le r.
+$$
+
+LoRA đặt cược rằng thay đổi cần thiết khi fine-tune nằm trong một không gian con có số chiều thấp (bài 1.14, xấp xỉ hạng thấp).
+
+</Step>
+<Step title="Khởi tạo B = 0">
+
+$$
+\mathbf{W}' = \mathbf{W} + \frac{\alpha}{r}\,\mathbf{0}\cdot\mathbf{A} = \mathbf{W}.
+$$
+
+Lúc bắt đầu mô hình y hệt mô hình đã huấn luyện trước; gradient theo $\mathbf{B}$ vẫn khác $0$ (vì $\mathbf{A}$ ngẫu nhiên) nên $\mathbf{B}$ bắt đầu học ngay.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

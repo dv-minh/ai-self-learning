@@ -7,6 +7,9 @@ prerequisites: ["5.2"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import EmaViz from '../../../components/viz/EmaViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import GdPath from '../../../components/viz/GdPath';
 import ExCompare from '../../../generated/lesson-5-4/momentum-vs-gd.mdx';
 import ExTwo from '../../../generated/lesson-5-4/momentum-two-steps.mdx';
@@ -23,6 +26,10 @@ import ExMistake from '../../../generated/lesson-5-4/mistake-v0.mdx';
 ## Trực giác
 
 Quả bóng lăn xuống dốc không dừng lại và đổi hướng theo từng điểm: nó tích lũy **đà**. Momentum làm tương tự: giữ một "vận tốc" $v$ là trung bình có phai dần của các gradient gần đây. Theo hướng gradient luôn cùng dấu, vận tốc tích tụ và bước đi lớn dần; theo hướng gradient đổi dấu liên tục (dao động hai bên thung lũng hẹp), các đóng góp triệt tiêu nhau. Kết quả: đi nhanh dọc đáy thung lũng, ít lắc ngang.
+
+Hình dưới chỉ theo dõi **một** tọa độ. Cột xám là gradient từng bước, đường đỏ là vận tốc $v_t$. Chọn "đổi dấu liên tục" (giống hướng ngang của thung lũng hẹp, gradient lật dấu mỗi bước): đường đỏ gần như phẳng — dao động bị triệt tiêu. Chọn "cùng dấu" (giống hướng dọc đáy thung lũng): đường đỏ lớn dần tới khoảng $1/(1-\beta)$ lần gradient — bước đi được khuếch đại.
+
+<EmaViz client:only="react" mode="momentum" />
 
 ## Định nghĩa
 
@@ -42,6 +49,54 @@ $$
 
 Khi $\beta = 0$ cả hai trở về gradient descent thường.
 
+## Biến đổi từng bước
+
+<Derivation title="Mở vận tốc ra: momentum là tổng có trọng số của các gradient cũ">
+<Step title="Viết công thức hai bước liên tiếp">
+
+$$
+\mathbf{v}_t = \beta\,\mathbf{v}_{t-1} + g_t,\qquad \mathbf{v}_{t-1} = \beta\,\mathbf{v}_{t-2} + g_{t-1}.
+$$
+
+</Step>
+<Step title="Thế bước trước vào bước sau">
+
+$$
+\mathbf{v}_t = \beta\big(\beta\,\mathbf{v}_{t-2} + g_{t-1}\big) + g_t = g_t + \beta\,g_{t-1} + \beta^2\,\mathbf{v}_{t-2}.
+$$
+
+</Step>
+<Step title="Lặp lại cho tới v₀ = 0">
+
+$$
+\mathbf{v}_t = g_t + \beta\,g_{t-1} + \beta^2 g_{t-2} + \dots + \beta^{t-1}g_1 = \sum_{k=0}^{t-1}\beta^{k}\,g_{t-k}.
+$$
+
+Gradient càng cũ càng bị nhân nhiều lần với $\beta < 1$, nên ảnh hưởng của nó **phai dần**.
+
+</Step>
+<Step title="Trường hợp gradient không đổi g: tổng cấp số nhân">
+
+$$
+\mathbf{v}_t = g\,(1 + \beta + \dots + \beta^{t-1}) = g\,\frac{1 - \beta^{t}}{1 - \beta} \;\xrightarrow{\;t\to\infty\;}\; \frac{g}{1 - \beta}.
+$$
+
+Bước đi $\eta\,\mathbf{v}_t$ tiến tới $\dfrac{\eta}{1-\beta}\,g$: momentum giống gradient descent với learning rate hiệu dụng lớn gấp $\dfrac{1}{1-\beta}$ lần theo hướng gradient ổn định.
+
+</Step>
+<Step title="Trường hợp gradient đổi dấu đều: g_t = (−1)^t a">
+
+Thử nghiệm dừng dạng $\mathbf{v}_t = K(-1)^t$:
+
+$$
+K(-1)^t = \beta K(-1)^{t-1} + (-1)^t a \;\Longrightarrow\; K = -\beta K + a \;\Longrightarrow\; K = \frac{a}{1 + \beta}.
+$$
+
+Thành phần dao động bị **chia** cho $1 + \beta$, trong khi thành phần ổn định được **nhân** với $\dfrac{1}{1-\beta}$. Đó là lý do momentum đi nhanh dọc đáy thung lũng nhưng ít lắc ngang.
+
+</Step>
+</Derivation>
+
 ## Ví dụ
 
 ### Momentum so với gradient descent
@@ -52,7 +107,7 @@ Khi $\beta = 0$ cả hai trở về gradient descent thường.
 
 Đặt $k$ lớn (thung lũng hẹp) và $\eta$ vừa phải, rồi tăng $\beta$ từ $0$: quỹ đạo bớt zigzag ngang và tiến nhanh dọc đáy; $\beta$ quá lớn thì vượt qua rồi quay lại.
 
-<GdPath client:visible />
+<GdPath client:only="react" />
 
 ### Hai bước chạy tay
 

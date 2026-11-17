@@ -7,6 +7,10 @@ prerequisites: ["8.3", "8.4"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import IouViz from '../../../components/viz/IouViz';
+import NmsViz from '../../../components/viz/NmsViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExIou from '../../../generated/lesson-8-6/iou-example.mdx';
 import ExNms from '../../../generated/lesson-8-6/nms-example.mdx';
 import ExHung from '../../../generated/lesson-8-6/hungarian-example.mdx';
@@ -23,6 +27,12 @@ import ExMistake from '../../../generated/lesson-8-6/mistake-iou-empty.mdx';
 
 Detection trả lời "có gì và ở đâu": với mỗi vật thể, một hộp bao và một nhãn. Để so hộp dự đoán với hộp thật cần một thước đo trùng khớp: **IoU**, tỉ lệ diện tích giao trên diện tích hợp. Các detector truyền thống sinh rất nhiều hộp chồng nhau quanh cùng một vật; **NMS** giữ hộp điểm cao nhất và loại các hộp trùng nhiều với nó. Các detector hiện đại tránh NMS bằng cách dự đoán một **tập** hộp và ghép **một-một** với vật thật khi huấn luyện (DETR), hoặc dự đoán trực tiếp khoảng cách tới các cạnh hộp (anchor-free).
 
+Hai công cụ trung tâm của bài toán phát hiện vật thể: đo độ trùng hai hộp (IoU), và dọn các hộp trùng nhau (NMS). Kéo hộp đỏ để cảm nhận IoU, rồi chạy NMS từng bước.
+
+<IouViz client:only="react" />
+
+<NmsViz client:only="react" />
+
 ## Định nghĩa
 
 Hộp $(x_1, y_1, x_2, y_2)$ với trục $y$ hướng xuống:
@@ -38,6 +48,41 @@ $$
 **Anchor-free (kiểu FCOS):** với điểm $(x, y)$ trong hộp thật, dự đoán $(l, t, r, b) = (x - x_1,\ y - y_1,\ x_2 - x,\ y_2 - y)$.
 
 **Ghép một-một kiểu DETR:** mạng xuất $N$ dự đoán cố định; huấn luyện tìm hoán vị làm tổng chi phí nhỏ nhất (Hungarian), với chi phí như $C_{ij} = -p_{ij} + \lambda\,\|\mathbf{b}_i - \hat{\mathbf{b}}_j\|_1$. Dự đoán không được ghép học nhãn "không có vật".
+
+## Biến đổi từng bước
+
+<Derivation title="Diện tích giao của hai hộp">
+<Step title="Giao của hai hộp chữ nhật (cạnh song song trục) vẫn là hộp chữ nhật">
+
+Cạnh trái của phần giao là cạnh trái **nằm phải hơn** trong hai hộp, cạnh phải là cạnh phải **nằm trái hơn**:
+
+$$
+x_1^{\cap} = \max(x_1^A, x_1^B),\qquad x_2^{\cap} = \min(x_2^A, x_2^B).
+$$
+
+Tương tự cho $y$.
+
+</Step>
+<Step title="Chiều rộng có thể âm khi hai hộp rời nhau, nên kẹp về 0">
+
+$$
+w^{\cap} = \max\big(0,\ x_2^{\cap} - x_1^{\cap}\big),\qquad h^{\cap} = \max\big(0,\ y_2^{\cap} - y_1^{\cap}\big).
+$$
+
+</Step>
+<Step title="Hợp = tổng hai diện tích trừ phần giao (đếm hai lần)">
+
+$$
+|A\cup B| = |A| + |B| - |A\cap B|,\qquad \mathrm{IoU} = \frac{w^{\cap}h^{\cap}}{|A| + |B| - w^{\cap}h^{\cap}}.
+$$
+
+</Step>
+<Step title="GIoU khi hai hộp rời nhau">
+
+Khi rời nhau, $\mathrm{IoU} = 0$ dù xa hay gần — gradient bằng $0$. GIoU trừ thêm tỉ lệ diện tích "trống" trong hộp bao $C$: hai hộp càng xa, $C$ càng lớn và phần trống càng nhiều, GIoU càng âm (tối thiểu $-1$). Thử kéo hộp đỏ ra xa trong hình để thấy.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

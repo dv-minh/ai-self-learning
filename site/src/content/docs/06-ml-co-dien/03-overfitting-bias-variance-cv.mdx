@@ -7,6 +7,9 @@ prerequisites: ["6.1", "4.3"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import PolyFitViz from '../../../components/viz/PolyFitViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExFolds from '../../../generated/lesson-6-3/kfold-indices.mdx';
 import ExBv from '../../../generated/lesson-6-3/bias-variance-numbers.mdx';
 import ExSelect from '../../../generated/lesson-6-3/select-by-cv.mdx';
@@ -23,6 +26,10 @@ import ExMistake from '../../../generated/lesson-6-3/mistake-leak.mdx';
 
 Mô hình quá đơn giản (đường thẳng cho dữ liệu cong) sai một cách hệ thống: **bias** cao, **underfit**. Mô hình quá linh hoạt (đa thức bậc cao) khớp cả nhiễu nên dự đoán thay đổi mạnh theo từng bộ dữ liệu huấn luyện: **variance** cao, **overfit**. Lỗi huấn luyện luôn giảm khi mô hình phức tạp hơn, nhưng lỗi trên dữ liệu mới giảm rồi lại tăng (hình chữ U). Ta không thể chọn mô hình theo lỗi huấn luyện, nên cần ước lượng lỗi trên dữ liệu chưa thấy: tập validation hoặc cross-validation.
 
+Kéo bậc đa thức $d$ từ $0$ lên tối đa và nhìn **hai** đồ thị cùng lúc. Ở trên, đường khớp đi từ quá cứng (underfit) đến uốn éo đi qua từng điểm (overfit). Ở dưới, lỗi huấn luyện (xanh) giảm đều, còn lỗi test (đỏ) có dạng chữ U: đáy chữ U là độ phức tạp tốt nhất. Với $d$ lớn, bấm "Bộ dữ liệu khác": đường cong nhảy loạn dù dữ liệu chỉ đổi chút nhiễu — đó chính là variance.
+
+<PolyFitViz client:only="react" />
+
 ## Định nghĩa
 
 Tại một điểm $x_0$ với giá trị thật $f(x_0)$ và nhãn quan sát $y = f(x_0) + \varepsilon$ ($\mathbb{E}\varepsilon = 0$, $\mathrm{Var}\,\varepsilon = \sigma^2$), mô hình $\hat{f}$ huấn luyện trên các bộ dữ liệu khác nhau:
@@ -32,6 +39,52 @@ $$
 $$
 
 **Cross-validation $k$-fold:** chia dữ liệu thành $k$ fold (nếu $n$ không chia hết cho $k$, các fold đầu nhận thêm một mẫu); lần lượt dùng mỗi fold làm validation và $k-1$ fold còn lại để huấn luyện; lỗi CV là trung bình lỗi trên các lần lặp (nếu các fold không cùng cỡ, dùng trung bình có trọng số theo kích thước, tức tổng số lỗi chia $n$). Chọn siêu tham số có lỗi CV nhỏ nhất; **tập kiểm tra cuối cùng** (test set) chỉ dùng một lần để báo cáo.
+
+## Biến đổi từng bước
+
+<Derivation title="Phân rã bias – variance">
+<Step title="Đặt ký hiệu tại một điểm x₀ (bỏ x₀ cho gọn)">
+
+$$
+y = f + \varepsilon,\qquad \bar{f} = \mathbb{E}[\hat{f}],\qquad \mathbb{E}\varepsilon = 0,\quad \mathrm{Var}\,\varepsilon = \sigma^2.
+$$
+
+Kỳ vọng lấy trên cả nhiễu $\varepsilon$ của điểm mới và trên bộ dữ liệu huấn luyện (quyết định $\hat{f}$); hai thứ này độc lập.
+
+</Step>
+<Step title="Thêm và bớt f̄ và f bên trong bình phương">
+
+$$
+\hat{f} - y = (\hat{f} - \bar{f}) + (\bar{f} - f) - \varepsilon.
+$$
+
+</Step>
+<Step title="Bình phương ba số hạng rồi lấy kỳ vọng">
+
+$$
+\mathbb{E}(\hat{f} - y)^2 = \mathbb{E}(\hat{f} - \bar{f})^2 + (\bar{f} - f)^2 + \mathbb{E}\varepsilon^2 + \text{(cross terms)}.
+$$
+
+</Step>
+<Step title="Ba tích chéo đều bằng 0">
+
+$\mathbb{E}[\hat{f} - \bar{f}] = 0$ theo định nghĩa của $\bar{f}$; $\bar{f} - f$ là hằng số; $\varepsilon$ có trung bình $0$ và độc lập với $\hat{f}$. Ví dụ:
+
+$$
+\mathbb{E}\big[(\hat{f} - \bar{f})\,\varepsilon\big] = \mathbb{E}[\hat{f} - \bar{f}]\cdot\mathbb{E}[\varepsilon] = 0.
+$$
+
+</Step>
+<Step title="Gọi tên ba số hạng còn lại">
+
+$$
+\mathbb{E}(\hat{f} - y)^2 = \underbrace{(\bar{f} - f)^2}_{\text{bias}^2} + \underbrace{\mathbb{E}(\hat{f} - \bar{f})^2}_{\text{variance}} + \underbrace{\sigma^2}_{\text{noise}}.
+$$
+
+Trong hình: bias là độ lệch giữa đường khớp "trung bình" và hàm thật (nét đứt); variance là mức đường khớp nhảy khi đổi bộ dữ liệu; noise thì không mô hình nào bỏ được.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

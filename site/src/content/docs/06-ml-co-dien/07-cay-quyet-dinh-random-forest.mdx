@@ -7,6 +7,9 @@ prerequisites: ["4.1", "6.3"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import TreeSplitViz from '../../../components/viz/TreeSplitViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExGini from '../../../generated/lesson-6-7/gini-example.mdx';
 import ExExtremes from '../../../generated/lesson-6-7/gini-extremes.mdx';
 import ExOob from '../../../generated/lesson-6-7/oob-probability.mdx';
@@ -23,6 +26,10 @@ import ExMistake from '../../../generated/lesson-6-7/mistake-tree-depth.mdx';
 ## Trực giác
 
 Cây quyết định hỏi liên tiếp các câu hỏi "có/không" về đặc trưng ($x_j \le t$?) để chia dữ liệu thành các nhóm ngày càng thuần nhất. Một nút **thuần** nếu hầu như chỉ chứa một lớp. Tại mỗi nút, thuật toán chọn câu hỏi làm hai nhóm con thuần nhất nhất có thể. Một cây sâu khớp dữ liệu huấn luyện rất tốt nhưng không ổn định (variance cao). **Random forest** trồng nhiều cây trên các mẫu bootstrap khác nhau (và thường chỉ xét một tập đặc trưng ngẫu nhiên ở mỗi nút) rồi lấy trung bình: variance giảm mà bias gần như giữ nguyên.
+
+Cây quyết định làm gì ở mỗi nút? Hình dưới cho bạn tự làm việc đó: chọn đặc trưng, kéo ngưỡng, và nhìn bảng Gini. Đồ thị bên phải là G sau tách theo mọi ngưỡng; cây chọn điểm thấp nhất. Thử cả hai đặc trưng để thấy đặc trưng nào cho câu hỏi tốt hơn.
+
+<TreeSplitViz client:only="react" />
 
 ## Định nghĩa
 
@@ -43,6 +50,50 @@ Với đặc trưng số, các ngưỡng ứng viên là trung điểm giữa ha
 **Bootstrap:** tạo mẫu huấn luyện cho mỗi cây bằng cách rút $n$ lần **có hoàn lại** từ $n$ mẫu. Một mẫu cho trước không xuất hiện trong mẫu bootstrap (out-of-bag, OOB) với xác suất $\left(1 - \frac{1}{n}\right)^{n}$, tiến về $e^{-1} \approx 0{,}368$. **Ước lượng OOB:** mỗi mẫu được dự đoán bằng đa số các cây **không** dùng nó để huấn luyện; cho một ước lượng lỗi kiểm tra không cần tập validation riêng.
 
 **Rừng:** phân loại bằng bầu chọn đa số (hard) hoặc trung bình xác suất lớp rồi chọn lớp lớn nhất (soft); hồi quy bằng trung bình.
+
+## Biến đổi từng bước
+
+<Derivation title="Gini cho hai lớp và cách tính Gini sau tách">
+<Step title="Gini với hai lớp, tỉ lệ lớp 1 là p">
+
+$$
+G = 1 - p^2 - (1-p)^2.
+$$
+
+</Step>
+<Step title="Khai triển (1 − p)²">
+
+$$
+G = 1 - p^2 - (1 - 2p + p^2) = 2p - 2p^2 = 2p(1-p).
+$$
+
+Bằng $0$ khi $p = 0$ hoặc $p = 1$ (nút thuần), lớn nhất $\frac{1}{2}$ khi $p = \frac{1}{2}$.
+
+</Step>
+<Step title="Diễn giải: xác suất đoán sai khi gán nhãn ngẫu nhiên theo tỉ lệ của nút">
+
+Rút một mẫu và một nhãn ngẫu nhiên độc lập theo cùng tỉ lệ; xác suất chúng khác nhau là
+
+$$
+p(1-p) + (1-p)p = 2p(1-p) = G.
+$$
+
+</Step>
+<Step title="Gini sau tách: trung bình có trọng số theo số mẫu">
+
+$$
+G_{\text{split}} = \frac{n_L}{n}G_L + \frac{n_R}{n}G_R.
+$$
+
+Trọng số $n_L/n$ ngăn kiểu tách "gian lận": tách riêng một điểm ra thành lá thuần có $G = 0$ nhưng chỉ đóng góp trọng số $1/n$.
+
+</Step>
+<Step title="Chọn ngưỡng">
+
+Chỉ cần thử các trung điểm giữa hai giá trị liền kề đã sắp xếp: giữa hai giá trị đó, mọi ngưỡng chia dữ liệu y hệt nhau (đồ thị bậc thang trong hình). Ngưỡng tốt nhất là ngưỡng có $G_{\text{split}}$ nhỏ nhất, tức gain $= G_{\text{parent}} - G_{\text{split}}$ lớn nhất.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

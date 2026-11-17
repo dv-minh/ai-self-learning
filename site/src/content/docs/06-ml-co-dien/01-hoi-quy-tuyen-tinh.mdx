@@ -7,6 +7,9 @@ prerequisites: ["1.9", "5.1", "5.7"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import LinRegViz from '../../../components/viz/LinRegViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExNormal from '../../../generated/lesson-6-1/ols-normal-equations.mdx';
 import ExR2 from '../../../generated/lesson-6-1/r-squared.mdx';
 import PropRes from '../../../generated/lesson-6-1/prop-residuals.mdx';
@@ -22,6 +25,10 @@ import ExMistake from '../../../generated/lesson-6-1/mistake-no-intercept.mdx';
 ## Trực giác
 
 Có $n$ điểm dữ liệu $(x_i, y_i)$ và ta muốn một đường thẳng đi "gần" mọi điểm nhất. "Gần" được đo bằng tổng bình phương khoảng cách thẳng đứng từ điểm đến đường. Hình học: vector dự đoán $\mathbf{X}\mathbf{w}$ là hình chiếu của $\mathbf{y}$ lên không gian cột của $\mathbf{X}$ (bài 1.2 và 1.15), nên phần dư vuông góc với mọi cột của $\mathbf{X}$.
+
+Hình dưới biến chữ "bình phương" thành **diện tích** thật. Kéo $w$ và $b$ để làm tổng diện tích các ô vuông nhỏ nhất bằng tay, rồi bấm nút để xem nghiệm chính xác. Bạn sẽ thấy: đường tốt nhất không đi qua điểm nào cả, nhưng cân bằng các phần dư trên và dưới (tổng các phần dư có dấu bằng $0$ khi có hệ số chặn).
+
+<LinRegViz client:only="react" />
 
 ## Định nghĩa
 
@@ -47,6 +54,87 @@ $$
 | MAE | $\dfrac{1}{n}\sum_i \lvert e_i \rvert$ |
 | $R^2$ | $1 - \dfrac{\sum_i e_i^2}{\sum_i (y_i - \bar{y})^2}$ |
 | $R^2$ hiệu chỉnh | $1 - (1 - R^2)\dfrac{n-1}{n-p-1}$ với $p$ đặc trưng |
+
+## Biến đổi từng bước
+
+<Derivation title="Từ hàm mất mát đến phương trình chuẩn (normal equation)">
+<Step title="Viết bình phương độ dài thành tích vô hướng">
+
+$$
+J(\mathbf{w}) = \frac{1}{2}(\mathbf{X}\mathbf{w} - \mathbf{y})\T(\mathbf{X}\mathbf{w} - \mathbf{y}).
+$$
+
+</Step>
+<Step title="Khai triển (hai số hạng chéo bằng nhau vì là số vô hướng)">
+
+$$
+J(\mathbf{w}) = \frac{1}{2}\mathbf{w}\T\mathbf{X}\T\mathbf{X}\mathbf{w} - \mathbf{w}\T\mathbf{X}\T\mathbf{y} + \frac{1}{2}\mathbf{y}\T\mathbf{y}.
+$$
+
+Đây là hàm bậc hai dạng $\frac{1}{2}\mathbf{w}\T\mathbf{H}\mathbf{w} + \mathbf{d}\T\mathbf{w} + c$ với $\mathbf{H} = \mathbf{X}\T\mathbf{X}$ và $\mathbf{d} = -\mathbf{X}\T\mathbf{y}$ (bài 5.1).
+
+</Step>
+<Step title="Lấy gradient theo w">
+
+$$
+\nabla J(\mathbf{w}) = \mathbf{X}\T\mathbf{X}\mathbf{w} - \mathbf{X}\T\mathbf{y} = \mathbf{X}\T(\mathbf{X}\mathbf{w} - \mathbf{y}).
+$$
+
+</Step>
+<Step title="Cho gradient bằng 0">
+
+$$
+\mathbf{X}\T\mathbf{X}\,\mathbf{w}^\star = \mathbf{X}\T\mathbf{y}.
+$$
+
+Vì $\mathbf{X}\T\mathbf{X}$ nửa xác định dương, $J$ lồi, nên mọi nghiệm của phương trình này đều là cực tiểu toàn cục. Đọc hình học: $\mathbf{X}\T(\mathbf{X}\mathbf{w}^\star - \mathbf{y}) = \mathbf{0}$ nghĩa là vector phần dư **vuông góc** với mọi cột của $\mathbf{X}$.
+
+</Step>
+</Derivation>
+
+<Derivation title="Trường hợp một đặc trưng: công thức w và b">
+<Step title="Mất mát với một đặc trưng">
+
+$$
+J(w, b) = \frac{1}{2}\sum_i (wx_i + b - y_i)^2.
+$$
+
+</Step>
+<Step title="Đạo hàm theo b bằng 0 cho b">
+
+$$
+\frac{\partial J}{\partial b} = \sum_i (wx_i + b - y_i) = 0 \;\Longrightarrow\; nb = \sum_i y_i - w\sum_i x_i \;\Longrightarrow\; b = \bar{y} - w\bar{x}.
+$$
+
+Hệ quả: đường thẳng tốt nhất luôn đi qua điểm trung bình $(\bar{x}, \bar{y})$, và tổng các phần dư bằng $0$.
+
+</Step>
+<Step title="Thế b vào: phần dư chỉ còn phụ thuộc độ lệch so với trung bình">
+
+$$
+wx_i + b - y_i = w(x_i - \bar{x}) - (y_i - \bar{y}).
+$$
+
+</Step>
+<Step title="Đạo hàm theo w bằng 0">
+
+$$
+\frac{\partial J}{\partial w} = \sum_i \big[w(x_i - \bar{x}) - (y_i - \bar{y})\big](x_i - \bar{x}) = 0.
+$$
+
+Đạo hàm gốc là $\sum_i e_i x_i$ với $e_i$ là phần dư; vì $\sum_i e_i = 0$ (bước 2) nên $\sum_i e_i x_i = \sum_i e_i (x_i - \bar{x})$, cho thừa số cuối như trên.
+
+</Step>
+<Step title="Giải ra w">
+
+$$
+w = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2}.
+$$
+
+Tử số đo $x$ và $y$ "cùng lên cùng xuống" bao nhiêu (hiệp phương sai), mẫu số đo $x$ trải rộng bao nhiêu (phương sai).
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

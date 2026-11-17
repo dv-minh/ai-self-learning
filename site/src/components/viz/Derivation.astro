@@ -1,0 +1,64 @@
+---
+/**
+ * Khung "biến đổi từng bước": các <Step> con hiện lần lượt khi bấm "Bước tiếp".
+ * Không có JavaScript thì hiện hết (nội dung vẫn đọc được).
+ * Dùng trong MDX:
+ *   <Derivation title="...">
+ *   <Step title="...">  công thức + một câu giải thích  </Step>
+ *   </Derivation>
+ */
+interface Props {
+	title?: string;
+}
+const { title } = Astro.props;
+---
+
+<div class="derivation" data-derivation>
+	{title && <div class="derivation-title">{title}</div>}
+	<ol class="derivation-steps">
+		<slot />
+	</ol>
+	<div class="derivation-nav not-content" hidden>
+		<button type="button" data-act="prev">◀ Lùi</button>
+		<button type="button" data-act="next" class="primary">Bước tiếp ▶</button>
+		<button type="button" data-act="all">Hiện tất cả</button>
+		<span class="derivation-count"></span>
+	</div>
+</div>
+
+<script>
+	function setup(root: HTMLElement) {
+		if (root.dataset.ready) return;
+		root.dataset.ready = '1';
+		const steps = Array.from(root.querySelectorAll<HTMLElement>(':scope > .derivation-steps > .derivation-step'));
+		const nav = root.querySelector<HTMLElement>('.derivation-nav');
+		if (!nav || steps.length < 2) return;
+		nav.hidden = false;
+		const count = nav.querySelector<HTMLElement>('.derivation-count')!;
+		const prev = nav.querySelector<HTMLButtonElement>('[data-act="prev"]')!;
+		const next = nav.querySelector<HTMLButtonElement>('[data-act="next"]')!;
+		const all = nav.querySelector<HTMLButtonElement>('[data-act="all"]')!;
+		let shown = 1;
+		const render = () => {
+			steps.forEach((s, i) => {
+				s.hidden = i >= shown;
+				s.classList.toggle('current', i === shown - 1);
+			});
+			count.textContent = `bước ${shown}/${steps.length}`;
+			prev.disabled = shown <= 1;
+			next.disabled = shown >= steps.length;
+			all.disabled = shown >= steps.length;
+		};
+		prev.addEventListener('click', () => { shown = Math.max(1, shown - 1); render(); });
+		next.addEventListener('click', () => {
+			shown = Math.min(steps.length, shown + 1);
+			render();
+			steps[shown - 1].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+		});
+		all.addEventListener('click', () => { shown = steps.length; render(); });
+		render();
+	}
+	const init = () => document.querySelectorAll<HTMLElement>('[data-derivation]').forEach(setup);
+	init();
+	document.addEventListener('astro:page-load', init);
+</script>

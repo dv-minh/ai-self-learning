@@ -1,0 +1,12 @@
+---
+/** Một bước trong <Derivation>. `title` là câu ngắn nói bước này làm gì. */
+interface Props {
+	title?: string;
+}
+const { title } = Astro.props;
+---
+
+<li class="derivation-step">
+	{title && <div class="derivation-step-title">{title}</div>}
+	<div class="derivation-step-body"><slot /></div>
+</li>

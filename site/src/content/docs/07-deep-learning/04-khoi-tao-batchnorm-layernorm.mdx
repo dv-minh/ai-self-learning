@@ -7,6 +7,10 @@ prerequisites: ["4.3", "7.1", "7.3"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import InitViz from '../../../components/viz/InitViz';
+import NormViz from '../../../components/viz/NormViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExInit from '../../../generated/lesson-7-4/init-variance-demo.mdx';
 import ExBn from '../../../generated/lesson-7-4/batchnorm-example.mdx';
 import ExLn from '../../../generated/lesson-7-4/layernorm-vs-batchnorm.mdx';
@@ -21,6 +25,14 @@ import ExMistake from '../../../generated/lesson-7-4/mistake-epsilon-and-eval.md
 ## Trực giác
 
 Nếu trọng số khởi tạo quá nhỏ, tín hiệu co dần về $0$ qua các lớp; nếu quá lớn, nó phình ra. Cả hai làm gradient biến mất hoặc bùng nổ ngay từ bước đầu. Khởi tạo đúng chọn phương sai trọng số sao cho phương sai kích hoạt giữ nguyên qua các lớp. **Chuẩn hóa** (BatchNorm, LayerNorm) giữ điều đó **trong lúc huấn luyện** bằng cách đưa kích hoạt về trung bình $0$, phương sai $1$ rồi cho mô hình học lại thang đo và độ dịch.
+
+Hình dưới mô phỏng thật một mạng 12 lớp với dữ liệu ngẫu nhiên. Chọn ReLU rồi lần lượt các cách khởi tạo: với $\sigma$ nhỏ, đường độ lệch chuẩn lao dốc theo đường thẳng trên thang log (giảm theo cấp số nhân); với He nó nằm ngang. Đổi sang tanh để thấy Xavier là lựa chọn đúng.
+
+<InitViz client:only="react" />
+
+Chuẩn hóa là "ép" mỗi nhóm số về trung bình $0$, độ lệch chuẩn $1$. Điểm khác nhau duy nhất giữa BatchNorm và LayerNorm là **nhóm nào**:
+
+<NormViz client:only="react" />
 
 ## Định nghĩa
 
@@ -41,6 +53,54 @@ $$
 $$
 
 Đọc bằng lời: trừ trung bình, chia độ lệch chuẩn, rồi co giãn và dịch bằng $\gamma, \beta$ học được. **BatchNorm** chuẩn hóa mỗi đặc trưng **qua các mẫu của batch**; **LayerNorm** chuẩn hóa **qua các đặc trưng của một mẫu**. Trong bài tập đặt $\epsilon = 0$.
+
+## Biến đổi từng bước
+
+<Derivation title="Suy ra khởi tạo He: giữ phương sai qua một lớp ReLU">
+<Step title="Một nơ-ron của lớp ℓ, với n đầu vào">
+
+$$
+z_i = \sum_{j=1}^{n} w_{ij}\,a_j,\qquad a_j = \mathrm{ReLU}(z_j^{\mathrm{prev}}).
+$$
+
+Giả thiết: các $w_{ij}$ độc lập, trung bình $0$, phương sai $\mathrm{Var}(w)$, độc lập với $a_j$; $z^{\mathrm{prev}}$ đối xứng quanh $0$.
+
+</Step>
+<Step title="Phương sai của tổng các số hạng độc lập là tổng phương sai">
+
+$$
+\mathrm{Var}(z_i) = \sum_{j=1}^{n}\mathrm{Var}(w_{ij}a_j) = n\,\mathrm{Var}(w)\,\mathbb{E}[a^2].
+$$
+
+Ở đây dùng $\mathrm{Var}(wa) = \mathbb{E}[w^2]\mathbb{E}[a^2] - (\mathbb{E}[w]\mathbb{E}[a])^2 = \mathrm{Var}(w)\,\mathbb{E}[a^2]$ vì $\mathbb{E}[w] = 0$.
+
+</Step>
+<Step title="ReLU cắt mất nửa âm của một phân phối đối xứng">
+
+$$
+\mathbb{E}[a^2] = \mathbb{E}\big[\max(0, z^{\mathrm{prev}})^2\big] = \frac{1}{2}\mathbb{E}\big[(z^{\mathrm{prev}})^2\big] = \frac{1}{2}\mathrm{Var}(z^{\mathrm{prev}}).
+$$
+
+</Step>
+<Step title="Ghép lại: mỗi lớp nhân phương sai với một hệ số">
+
+$$
+\mathrm{Var}(z) = \frac{n\,\mathrm{Var}(w)}{2}\cdot\mathrm{Var}(z^{\mathrm{prev}}).
+$$
+
+Qua $L$ lớp, hệ số này bị lũy thừa $L$: nhỏ hơn $1$ thì tín hiệu tắt, lớn hơn $1$ thì bùng nổ — đúng như hình.
+
+</Step>
+<Step title="Chọn Var(w) để hệ số bằng 1">
+
+$$
+\frac{n\,\mathrm{Var}(w)}{2} = 1 \;\Longrightarrow\; \mathrm{Var}(w) = \frac{2}{n_{\mathrm{in}}}.
+$$
+
+Với tanh (gần tuyến tính quanh $0$, không cắt nửa nào) bỏ thừa số $\frac{1}{2}$ được $1/n_{\mathrm{in}}$; Xavier lấy trung bình giữa chiều đi tới và chiều đi lui thành $2/(n_{\mathrm{in}} + n_{\mathrm{out}})$.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

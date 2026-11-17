@@ -7,6 +7,10 @@ prerequisites: ["7.3", "7.4", "4.3"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import DropoutViz from '../../../components/viz/DropoutViz';
+import ResidualViz from '../../../components/viz/ResidualViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExDrop from '../../../generated/lesson-7-5/dropout-example.mdx';
 import ExRes from '../../../generated/lesson-7-5/residual-depth.mdx';
 import ExEmb from '../../../generated/lesson-7-5/embedding-example.mdx';
@@ -22,6 +26,14 @@ import ExMistake from '../../../generated/lesson-7-5/mistake-dropout-eval.mdx';
 
 **Dropout** ngẫu nhiên tắt một phần nơ-ron ở mỗi bước huấn luyện, buộc mạng không dựa vào một vài nơ-ron riêng lẻ (giống huấn luyện cả "tập hợp" các mạng con). **Residual connection** cộng đầu vào vào đầu ra của khối: $y = x + F(x)$, tạo một đường tắt cho gradient đi thẳng về các lớp đầu nên mạng hàng trăm lớp vẫn huấn luyện được. **Embedding** biến ID rời rạc (từ, token, người dùng) thành vector thực học được bằng một phép tra bảng.
 
+Bấm "Bước huấn luyện mới" vài lần: mỗi bước là một mạng con khác nhau. Nơ-ron còn sống được nhân lên để bù cho những nơ-ron đã tắt.
+
+<DropoutViz client:only="react" />
+
+Residual giải quyết một vấn đề khác: gradient đi ngược qua nhiều khối bị nhân với nhiều đạo hàm nhỏ. Kéo thanh trượt và so sánh hai đường (thang log — mỗi vạch là gấp $10^4$ lần).
+
+<ResidualViz client:only="react" />
+
 ## Định nghĩa
 
 **Inverted dropout** với xác suất bỏ $p$, mặt nạ $m_i \in \{0, 1\}$ ($P(m_i = 1) = 1 - p$):
@@ -35,6 +47,60 @@ $$
 **Residual:** $y = x + F(x)$, nên $\dfrac{dy}{dx} = 1 + F'(x)$. Qua $n$ khối: gradient là tích $\prod (1 + F_i')$.
 
 **Embedding:** bảng $\mathbf{E} \in \R^{V\times d}$, token $i$ có vector là hàng $i$ ($\mathbf{e}_i\T\mathbf{E}$ với $\mathbf{e}_i$ one-hot). Chuỗi $T$ token cho ma trận $T\times d$; đầu vào Transformer là embedding token **cộng** embedding vị trí. **Weight tying:** logit trên từ vựng $= \mathbf{E}\mathbf{h}$ dùng lại chính $\mathbf{E}$.
+
+## Biến đổi từng bước
+
+<Derivation title="Inverted dropout giữ nguyên kỳ vọng">
+<Step title="Hai khả năng của một phần tử">
+
+$$
+y = \begin{cases} \dfrac{x}{1-p} & \text{with probability } 1 - p, \\[1ex] 0 & \text{with probability } p. \end{cases}
+$$
+
+</Step>
+<Step title="Kỳ vọng">
+
+$$
+\mathbb{E}[y] = (1-p)\cdot\frac{x}{1-p} + p\cdot 0 = x.
+$$
+
+</Step>
+<Step title="Phương sai, qua E[y²]">
+
+$$
+\mathbb{E}[y^2] = (1-p)\cdot\frac{x^2}{(1-p)^2} = \frac{x^2}{1-p},\qquad \mathrm{Var}(y) = \frac{x^2}{1-p} - x^2 = x^2\,\frac{p}{1-p}.
+$$
+
+$p$ càng lớn, nhiễu càng mạnh. Khi suy luận không có nhiễu, và nhờ đã chia $1-p$ lúc huấn luyện nên cũng không cần nhân gì thêm.
+
+</Step>
+</Derivation>
+
+<Derivation title="Đường tắt residual và gradient">
+<Step title="Một khối residual">
+
+$$
+y = x + F(x) \quad\Longrightarrow\quad \frac{dy}{dx} = 1 + F'(x).
+$$
+
+</Step>
+<Step title="Xếp n khối nối tiếp, quy tắc chuỗi nhân các đạo hàm">
+
+$$
+\frac{\partial L}{\partial x_0} = \frac{\partial L}{\partial x_n}\prod_{k=1}^{n}\big(1 + F_k'\big).
+$$
+
+</Step>
+<Step title="So với mạng không có đường tắt">
+
+$$
+\frac{\partial L}{\partial x_0} = \frac{\partial L}{\partial x_n}\prod_{k=1}^{n}F_k'.
+$$
+
+Nếu mọi $|F_k'| \le c < 1$ thì tích này nhỏ hơn $c^n$, tắt theo cấp số nhân. Với residual, mỗi thừa số ở quanh $1$, và khai triển tích luôn chứa số hạng $1$: gradient luôn có một "đường cao tốc" đi thẳng về lớp đầu.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

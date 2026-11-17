@@ -7,6 +7,10 @@ prerequisites: ["3.5", "1.13"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import ConvexViz from '../../../components/viz/ConvexViz';
+import QuadFormViz from '../../../components/viz/QuadFormViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExJensen from '../../../generated/lesson-5-1/jensen.mdx';
 import ExHessian from '../../../generated/lesson-5-1/hessian-quad.mdx';
 import ExMin from '../../../generated/lesson-5-1/minimise-quadratic.mdx';
@@ -24,6 +28,14 @@ import ExMistake from '../../../generated/lesson-5-1/mistake-second-derivative-z
 ## Trực giác
 
 Hàm lồi có đồ thị hình cái bát: đoạn thẳng nối hai điểm bất kỳ trên đồ thị luôn nằm **phía trên** đồ thị. Điều này có một hệ quả rất đẹp: không có "thung lũng phụ". Mọi cực tiểu địa phương đều là cực tiểu toàn cục, nên gradient descent (bài 5.2) không bao giờ bị kẹt ở một nghiệm tồi. Phần lớn mô hình ML cổ điển (hồi quy tuyến tính, hồi quy logistic, SVM) có hàm mất mát lồi; mạng neural thì không, nhưng ý tưởng và công cụ của hàm lồi vẫn là nền tảng.
+
+**Thử bằng tay:** chọn hàm "hai giếng", đặt $a$ và $b$ ở hai bên gốc tọa độ. Đoạn giữa đồ thị cong xuống (nền đỏ) nên điểm tím trên đồ thị vượt lên trên dây cung — hàm không lồi, và nó có hai cực tiểu riêng biệt. Đổi sang $x^2$ thì dù kéo thế nào điểm tím cũng không vượt lên được.
+
+<ConvexViz client:only="react" />
+
+Với hàm nhiều biến, "cái bát" có thể bị méo hoặc lộn ngược theo từng hướng. Hàm bậc hai $\frac{1}{2}\mathbf{x}\T\mathbf{H}\mathbf{x}$ có hình dạng hoàn toàn do **hai trị riêng** của $\mathbf{H}$ quyết định: cùng dương là cái bát, trái dấu là yên ngựa. Kéo thanh trượt để xem cả bốn trường hợp.
+
+<QuadFormViz client:only="react" />
 
 ## Định nghĩa
 
@@ -48,6 +60,72 @@ $$
 Với hàm bậc hai $f(\mathbf{x}) = \frac{1}{2}\mathbf{x}\T\mathbf{H}\mathbf{x} + \mathbf{d}\T\mathbf{x} + c$, Hessian là ma trận hằng $\mathbf{H}$ (đối xứng), và $\nabla f(\mathbf{x}) = \mathbf{H}\mathbf{x} + \mathbf{d}$.
 
 **Cực tiểu của hàm lồi:** nếu $f$ lồi và khả vi thì $\mathbf{x}^\star$ là cực tiểu toàn cục **khi và chỉ khi** $\nabla f(\mathbf{x}^\star) = \mathbf{0}$. Với hàm bậc hai lồi chặt, điều đó cho nghiệm duy nhất $\mathbf{x}^\star = -\mathbf{H}^{-1}\mathbf{d}$.
+
+## Biến đổi từng bước
+
+<Derivation title="Vì sao f″ ≥ 0 thì đồ thị nằm trên mọi tiếp tuyến">
+<Step title="Viết khai triển Taylor tới bậc hai, phần dư dạng Lagrange">
+
+$$
+f(x + h) = f(x) + f'(x)\,h + \frac{1}{2}f''(\xi)\,h^2,
+$$
+
+với $\xi$ là một điểm nằm giữa $x$ và $x + h$.
+
+</Step>
+<Step title="Dùng giả thiết f″ ≥ 0 ở mọi nơi, nên số hạng cuối không âm">
+
+$$
+\frac{1}{2}f''(\xi)\,h^2 \ge 0 \quad\Longrightarrow\quad f(x + h) \ge f(x) + f'(x)\,h.
+$$
+
+Vế phải chính là tiếp tuyến của đồ thị tại $x$, tính ở hoành độ $x + h$.
+
+</Step>
+<Step title="Đọc kết quả bằng hình">
+
+Đồ thị luôn nằm **trên** tiếp tuyến tại mọi điểm. Một hàm khả vi có tính chất này là hàm lồi (tương đương với định nghĩa dây cung). Đặc biệt, nếu $f'(x^\star) = 0$ thì tiếp tuyến nằm ngang, và $f(x^\star + h) \ge f(x^\star)$ với mọi $h$: điểm dừng chính là cực tiểu toàn cục.
+
+</Step>
+</Derivation>
+
+<Derivation title="Cực tiểu của hàm bậc hai: hoàn thành bình phương">
+<Step title="Bắt đầu từ hàm bậc hai với H đối xứng xác định dương">
+
+$$
+f(\mathbf{x}) = \frac{1}{2}\mathbf{x}\T\mathbf{H}\mathbf{x} + \mathbf{d}\T\mathbf{x} + c.
+$$
+
+</Step>
+<Step title="Cho gradient bằng 0 để tìm ứng viên">
+
+$$
+\nabla f(\mathbf{x}) = \mathbf{H}\mathbf{x} + \mathbf{d} = \mathbf{0} \quad\Longrightarrow\quad \mathbf{x}^\star = -\mathbf{H}^{-1}\mathbf{d}.
+$$
+
+</Step>
+<Step title="Khai triển một bình phương có tâm tại x*">
+
+Dùng $\mathbf{H}\mathbf{x}^\star = -\mathbf{d}$ và $\mathbf{H}$ đối xứng:
+
+$$
+\frac{1}{2}(\mathbf{x} - \mathbf{x}^\star)\T\mathbf{H}(\mathbf{x} - \mathbf{x}^\star) = \frac{1}{2}\mathbf{x}\T\mathbf{H}\mathbf{x} - \mathbf{x}\T\mathbf{H}\mathbf{x}^\star + \frac{1}{2}\mathbf{x}^{\star\mathsf{T}}\mathbf{H}\mathbf{x}^\star = \frac{1}{2}\mathbf{x}\T\mathbf{H}\mathbf{x} + \mathbf{d}\T\mathbf{x} + \frac{1}{2}\mathbf{d}\T\mathbf{H}^{-1}\mathbf{d}.
+$$
+
+</Step>
+<Step title="Viết lại f theo bình phương đó">
+
+$$
+f(\mathbf{x}) = \underbrace{\frac{1}{2}(\mathbf{x} - \mathbf{x}^\star)\T\mathbf{H}(\mathbf{x} - \mathbf{x}^\star)}_{\ge\, 0} + \underbrace{c - \frac{1}{2}\mathbf{d}\T\mathbf{H}^{-1}\mathbf{d}}_{=\, f(\mathbf{x}^\star)}.
+$$
+
+</Step>
+<Step title="Kết luận">
+
+Vì $\mathbf{H}$ xác định dương, số hạng đầu dương với mọi $\mathbf{x} \ne \mathbf{x}^\star$, nên $\mathbf{x}^\star$ là cực tiểu toàn cục duy nhất. Về hình: mọi đường đồng mức là elip có tâm $\mathbf{x}^\star$, trục theo các vector riêng của $\mathbf{H}$ (như hình trên).
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

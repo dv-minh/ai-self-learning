@@ -8,6 +8,9 @@ prerequisites: ["3.3", "5.1"]
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
 import GdPath from '../../../components/viz/GdPath';
+import Gd1DViz from '../../../components/viz/Gd1DViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExOneD from '../../../generated/lesson-5-2/gd-1d.mdx';
 import ExTwoD from '../../../generated/lesson-5-2/gd-2d.mdx';
 import ExLr from '../../../generated/lesson-5-2/lr-effect.mdx';
@@ -25,6 +28,16 @@ import ExMistake from '../../../generated/lesson-5-2/mistake-sign.mdx';
 ## Trực giác
 
 Đứng trên sườn núi trong sương mù, bạn chỉ cảm nhận được độ dốc dưới chân. Cách đơn giản nhất để xuống thung lũng: bước một bước nhỏ theo hướng dốc nhất đi xuống, rồi lặp lại. Gradient $\nabla f$ chỉ hướng tăng nhanh nhất, nên hướng giảm nhanh nhất là $-\nabla f$. Độ dài bước do learning rate quyết định.
+
+Với một biến, "độ dốc dưới chân" chính là đạo hàm $f'(x)$, tức hệ số góc của tiếp tuyến. Hình dưới cho bạn đi từng bước và nhìn ba thứ cùng lúc: tiếp tuyến (cam), bước đi trên trục hoành (mũi tên đỏ) và điểm mới.
+
+<Gd1DViz client:only="react" />
+
+Ba điều nên tự thử:
+
+1. Với $f(x) = x^2$, tăng dần $\eta$: dưới $0{,}5$ các điểm tiến về $0$ từ một phía; giữa $0{,}5$ và $1$ chúng nhảy qua lại hai bên đáy nhưng vẫn hội tụ; trên $1$ thì văng ra ngoài.
+2. Với hàm hai giếng, đổi dấu điểm bắt đầu: gradient descent chỉ tìm được cực tiểu **gần nhất** theo hướng dốc, không phải cực tiểu tốt nhất.
+3. Với hàm đáy phẳng, các bước cuối rất ngắn vì đạo hàm gần $0$ — hội tụ chậm dù $\eta$ không nhỏ.
 
 ## Định nghĩa
 
@@ -56,6 +69,86 @@ $$
 \frac{\partial L}{\partial w} = \frac{1}{n}\sum_i e_i x_i,\qquad \frac{\partial L}{\partial b} = \frac{1}{n}\sum_i e_i,\qquad e_i = wx_i + b - y_i.
 $$
 
+## Biến đổi từng bước
+
+<Derivation title="Vì sao đi ngược gradient thì f giảm">
+<Step title="Gọi g là gradient tại điểm hiện tại và đi một bước ngược nó">
+
+$$
+\mathbf{g} = \nabla f(\mathbf{x}),\qquad \mathbf{x}^{+} = \mathbf{x} - \eta\,\mathbf{g}.
+$$
+
+</Step>
+<Step title="Xấp xỉ bậc nhất (Taylor) quanh x với độ dời h = −ηg">
+
+$$
+f(\mathbf{x} + \mathbf{h}) \approx f(\mathbf{x}) + \nabla f(\mathbf{x})\T\mathbf{h} \quad\Longrightarrow\quad f(\mathbf{x}^{+}) \approx f(\mathbf{x}) + \mathbf{g}\T(-\eta\,\mathbf{g}).
+$$
+
+</Step>
+<Step title="Rút gọn: tích vô hướng của g với chính nó là bình phương độ dài">
+
+$$
+f(\mathbf{x}^{+}) \approx f(\mathbf{x}) - \eta\,\|\mathbf{g}\|^2.
+$$
+
+</Step>
+<Step title="Đọc kết quả">
+
+Khi $\mathbf{g} \ne \mathbf{0}$ và $\eta > 0$ thì $-\eta\|\mathbf{g}\|^2 < 0$: hàm giảm, **miễn là $\eta$ đủ nhỏ** để xấp xỉ bậc nhất còn đúng. $\eta$ lớn thì số hạng bậc hai (độ cong) bị bỏ qua lại chiếm ưu thế — đó là lúc bước vượt qua đáy.
+
+</Step>
+</Derivation>
+
+<Derivation title="Điều kiện hội tụ trên hàm bậc hai, từng bước">
+<Step title="Thay gradient của hàm bậc hai vào công thức cập nhật">
+
+$$
+f(\mathbf{x}) = \frac{1}{2}\mathbf{x}\T\mathbf{Q}\mathbf{x},\quad \nabla f(\mathbf{x}) = \mathbf{Q}\mathbf{x} \quad\Longrightarrow\quad \mathbf{x}_{t+1} = \mathbf{x}_t - \eta\,\mathbf{Q}\mathbf{x}_t = (\mathbf{I} - \eta\mathbf{Q})\,\mathbf{x}_t.
+$$
+
+</Step>
+<Step title="Viết x theo các vector riêng trực chuẩn u₁, …, uₙ của Q (Q đối xứng)">
+
+$$
+\mathbf{x}_t = \sum_i c_i^{(t)}\,\mathbf{u}_i,\qquad \mathbf{Q}\mathbf{u}_i = \lambda_i\mathbf{u}_i.
+$$
+
+</Step>
+<Step title="Ma trận I − ηQ chỉ nhân mỗi tọa độ với một số">
+
+$$
+(\mathbf{I} - \eta\mathbf{Q})\,\mathbf{u}_i = (1 - \eta\lambda_i)\,\mathbf{u}_i \quad\Longrightarrow\quad c_i^{(t+1)} = (1 - \eta\lambda_i)\,c_i^{(t)}.
+$$
+
+</Step>
+<Step title="Lặp t lần: mỗi hướng là một cấp số nhân riêng">
+
+$$
+c_i^{(t)} = (1 - \eta\lambda_i)^{t}\,c_i^{(0)}.
+$$
+
+Hướng này về $0$ với mọi $c_i^{(0)}$ khi và chỉ khi $|1 - \eta\lambda_i| < 1$.
+
+</Step>
+<Step title="Giải bất đẳng thức (với λᵢ > 0)">
+
+$$
+-1 < 1 - \eta\lambda_i < 1 \iff 0 < \eta\lambda_i < 2 \iff 0 < \eta < \frac{2}{\lambda_i}.
+$$
+
+</Step>
+<Step title="Mọi hướng cùng phải thỏa, nên hướng cong nhất quyết định">
+
+$$
+0 < \eta < \min_i \frac{2}{\lambda_i} = \frac{2}{\lambda_{\max}}.
+$$
+
+Ba chế độ của hệ số $r = 1 - \eta\lambda$: $0 \le r < 1$ thì tiến về đáy từ một phía; $-1 < r < 0$ thì đổi dấu mỗi bước (nhảy qua lại) nhưng vẫn hội tụ; $|r| > 1$ thì phân kỳ. Đây chính là ba hiện tượng bạn thấy ở hình một biến phía trên (với $f = x^2$ thì $\lambda = 2$).
+
+</Step>
+</Derivation>
+
 ## Ví dụ
 
 ### Một biến
@@ -78,7 +171,7 @@ $$
 
 Kéo thanh trượt để thấy $\eta$ nhỏ thì chậm, $\eta$ vừa thì đi thẳng vào cực tiểu, $\eta$ quá lớn thì dao động rồi phân kỳ. Tăng độ méo $k$ để thấy điều kiện số xấu: quỹ đạo zigzag qua lại thung lũng hẹp.
 
-<GdPath client:visible />
+<GdPath client:only="react" />
 
 ## Tính chất
 

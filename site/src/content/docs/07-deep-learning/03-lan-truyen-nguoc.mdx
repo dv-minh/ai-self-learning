@@ -7,6 +7,9 @@ prerequisites: ["3.2", "3.7", "7.1", "7.2"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import BackpropViz from '../../../components/viz/BackpropViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExScalar from '../../../generated/lesson-7-3/backprop-scalar.mdx';
 import ExMatrix from '../../../generated/lesson-7-3/backprop-matrix.mdx';
 import ExCheck from '../../../generated/lesson-7-3/gradient-check.mdx';
@@ -24,6 +27,10 @@ import ExMistake from '../../../generated/lesson-7-3/mistake-relu-backward.mdx';
 
 Hàm mất mát là một hàm hợp rất sâu của các tham số. Chain rule cho gradient của hàm hợp bằng tích các đạo hàm cục bộ. **Backpropagation** chỉ là cách tổ chức phép nhân đó cho hiệu quả: sau một lượt **forward** (lưu mọi giá trị trung gian), ta đi ngược từ mất mát về tham số, mỗi nút nhận gradient từ phía sau, nhân với đạo hàm cục bộ của mình rồi chuyển cho phía trước. Chi phí của lượt backward cùng bậc với forward. Đây chính là vi phân ngược trên đồ thị tính toán ở bài 3.7.
 
+Hình dưới là một mạng tí hon (một nơ-ron ẩn ReLU, một đầu ra) vẽ dưới dạng đồ thị tính toán. Bấm "Bước tiếp" để đi **forward** từ trái sang phải (tính và lưu giá trị), rồi **backward** từ phải sang trái (tính gradient). Ở mỗi bước, khung chú thích ghi rõ phép nhân đang làm.
+
+<BackpropViz client:only="react" />
+
 ## Định nghĩa
 
 Với lớp $\mathbf{z} = \mathbf{W}\mathbf{a}_{\mathrm{prev}} + \mathbf{b}$, $\mathbf{a} = \phi(\mathbf{z})$, gọi $\mathbf{g}_a = \partial L/\partial\mathbf{a}$ là gradient từ phía sau:
@@ -35,6 +42,52 @@ $$
 Đọc bằng lời: nhân gradient đến với đạo hàm hàm kích hoạt (từng phần tử), gradient trọng số là tích ngoài của gradient đó với đầu vào của lớp, và gradient đi tiếp về phía trước nhân với $\mathbf{W}\T$.
 
 Với mất mát $L = \frac{1}{2}(\hat{y} - y)^2$ ở đầu ra tuyến tính: $\partial L/\partial\hat{y} = \hat{y} - y$. Với softmax và cross-entropy: $\partial L/\partial\mathbf{z} = \mathbf{p} - \mathbf{y}$ (bài 7.2). Với mini-batch, lấy **trung bình** gradient các mẫu.
+
+## Biến đổi từng bước
+
+<Derivation title="Suy ra công thức backprop của một lớp từ quy tắc chuỗi">
+<Step title="Viết lớp theo từng phần tử">
+
+$$
+z_i = \sum_j W_{ij}\,a_j + b_i,\qquad a'_i = \phi(z_i).
+$$
+
+Giả sử đã có $g_i = \partial L/\partial a'_i$ từ các lớp phía sau.
+
+</Step>
+<Step title="Qua hàm kích hoạt: một biến vào, một biến ra">
+
+$$
+\delta_i := \frac{\partial L}{\partial z_i} = \frac{\partial L}{\partial a'_i}\cdot\frac{\partial a'_i}{\partial z_i} = g_i\,\phi'(z_i) \quad\Longrightarrow\quad \boldsymbol{\delta} = \mathbf{g} \odot \phi'(\mathbf{z}).
+$$
+
+</Step>
+<Step title="Gradient theo một trọng số: W_ij chỉ ảnh hưởng z_i, với hệ số a_j">
+
+$$
+\frac{\partial L}{\partial W_{ij}} = \delta_i\cdot\frac{\partial z_i}{\partial W_{ij}} = \delta_i\,a_j \quad\Longrightarrow\quad \frac{\partial L}{\partial\mathbf{W}} = \boldsymbol{\delta}\,\mathbf{a}\T.
+$$
+
+Ma trận có phần tử $(i, j)$ bằng $\delta_i a_j$ chính là tích ngoài $\boldsymbol{\delta}\mathbf{a}\T$, cùng kích thước với $\mathbf{W}$.
+
+</Step>
+<Step title="Gradient theo đầu vào: a_j ảnh hưởng MỌI z_i, nên phải cộng">
+
+$$
+\frac{\partial L}{\partial a_j} = \sum_i \delta_i\cdot\frac{\partial z_i}{\partial a_j} = \sum_i W_{ij}\,\delta_i \quad\Longrightarrow\quad \frac{\partial L}{\partial\mathbf{a}} = \mathbf{W}\T\boldsymbol{\delta}.
+$$
+
+Tổng theo $i$ của $W_{ij}\delta_i$ là cột $j$ của $\mathbf{W}$ nhân với $\boldsymbol{\delta}$, tức hàng $j$ của $\mathbf{W}\T\boldsymbol{\delta}$. Vector này lại là "$\mathbf{g}$" cho lớp phía trước — và quy trình lặp lại.
+
+</Step>
+<Step title="Gradient theo chặn">
+
+$$
+\frac{\partial L}{\partial b_i} = \delta_i\cdot 1 \quad\Longrightarrow\quad \frac{\partial L}{\partial\mathbf{b}} = \boldsymbol{\delta}.
+$$
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

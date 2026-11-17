@@ -7,6 +7,9 @@ prerequisites: ["8.1"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import ReceptiveFieldViz from '../../../components/viz/ReceptiveFieldViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExMax from '../../../generated/lesson-8-2/maxpool-example.mdx';
 import ExAvg from '../../../generated/lesson-8-2/avgpool-example.mdx';
 import ExRf from '../../../generated/lesson-8-2/receptive-field-example.mdx';
@@ -23,6 +26,10 @@ import ExMistake from '../../../generated/lesson-8-2/mistake-pool-params.mdx';
 
 Sau mỗi bước tích chập, ta không cần biết đặc trưng nằm ở vị trí chính xác đến từng pixel; chỉ cần biết nó **có xuất hiện quanh đó**. **Pooling** gộp mỗi cửa sổ nhỏ thành một số, vừa giảm kích thước (nhanh hơn, ít bộ nhớ hơn) vừa tạo tính bất biến với dịch chuyển nhỏ. **Trường tiếp nhận** của một nơ-ron là vùng ảnh đầu vào ảnh hưởng đến nó; càng đi sâu và càng stride lớn thì trường tiếp nhận càng rộng, nên các lớp sâu "nhìn" được vật thể lớn.
 
+Hình dưới vẽ một chiều cho dễ nhìn: mỗi hàng là một lớp, ô cam ở hàng trên cùng là nơ-ron đang xét, các ô tô màu bên dưới là toàn bộ vùng ảnh nó "nhìn thấy". So sánh ba cấu hình: chỉ conv, có pooling, và có dilation.
+
+<ReceptiveFieldViz client:only="react" />
+
 ## Định nghĩa
 
 - **Max pooling** cửa sổ $k\times k$, stride $s$: lấy giá trị lớn nhất mỗi cửa sổ. **Average pooling:** lấy trung bình.
@@ -36,6 +43,37 @@ r \leftarrow r + d(k - 1)\,j,\qquad j \leftarrow j\,s.
 $$
 
 Đọc bằng lời: mỗi lớp mở rộng trường tiếp nhận thêm $d(k-1)$ bước của lớp trước, quy ra đơn vị ảnh đầu vào nhờ $j$.
+
+## Biến đổi từng bước
+
+<Derivation title="Công thức truy hồi của trường tiếp nhận">
+<Step title="Hai đại lượng theo dõi, tính theo đơn vị pixel đầu vào">
+
+$r$: số pixel đầu vào mà một nơ-ron của lớp hiện tại nhìn thấy. $j$: khoảng cách (theo pixel đầu vào) giữa hai nơ-ron kề nhau của lớp hiện tại. Ở ảnh vào: $r = 1$, $j = 1$.
+
+</Step>
+<Step title="Thêm một lớp kernel k, dilation d: nơ-ron mới nhìn k nơ-ron cũ, trải trên d(k − 1) bước">
+
+Hai nơ-ron cũ ở hai đầu cửa sổ cách nhau $d(k-1)$ bước của lớp cũ, tức $d(k-1)\,j$ pixel. Mỗi nơ-ron cũ đã nhìn $r$ pixel, nên
+
+$$
+r_{\mathrm{new}} = r + d(k-1)\,j.
+$$
+
+</Step>
+<Step title="Stride s: hai nơ-ron mới kề nhau cách nhau s nơ-ron cũ">
+
+$$
+j_{\mathrm{new}} = j\,s.
+$$
+
+</Step>
+<Step title="Hệ quả">
+
+Stride không làm $r$ lớn ngay ở lớp đó, nhưng nhân $j$ lên — mọi lớp **sau** nó mở rộng $r$ nhanh gấp $s$ lần. Đó là lý do mạng CNN xen kẽ conv và giảm mẫu: nhìn được cả vật thể lớn chỉ sau vài chục lớp.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

@@ -7,6 +7,9 @@ prerequisites: ["5.2"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import SgdViz from '../../../components/viz/SgdViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExMini from '../../../generated/lesson-5-3/minibatch-step.mdx';
 import ExEpoch from '../../../generated/lesson-5-3/epoch-two-updates.mdx';
 import PropUnbiased from '../../../generated/lesson-5-3/unbiased.mdx';
@@ -23,6 +26,14 @@ import ExMistake from '../../../generated/lesson-5-3/mistake-divide.mdx';
 
 Hàm mất mát thường là trung bình trên hàng triệu mẫu: tính gradient đầy đủ ở mỗi bước rất đắt. Thay vào đó, ta lấy một nhóm nhỏ (mini-batch) làm đại diện, tính gradient trên nhóm đó rồi bước. Gradient này hơi "nhiễu" so với gradient thật, nhưng **trung bình** thì đúng, và vì rẻ nên ta đi được rất nhiều bước. Nhiễu đôi khi còn giúp thoát khỏi điểm yên ngựa.
 
+Hình dưới đặt hai cách đi cạnh nhau trên **cùng một mặt mất mát** của hồi quy tuyến tính (trục ngang là $w$, trục dọc là $b$). Hãy để ý ba điều:
+
+1. Đường đỏ (mini-batch) lảo đảo, nhưng **hướng chung** vẫn trùng đường xanh (full-batch).
+2. Bật "mây gradient": mỗi mũi tên cam là một bước tính từ một mini-batch khác nhau. Chúng tản ra quanh mũi tên đen (bước full-batch) — trung bình của mây chính là mũi tên đen.
+3. Kéo $B$ từ $1$ lên $40$: mây co lại dần, đến $B = N$ thì chỉ còn đúng một mũi tên.
+
+<SgdViz client:only="react" />
+
 ## Định nghĩa
 
 Với mất mát $L(\mathbf{w}) = \dfrac{1}{N}\sum_{i=1}^{N} \ell_i(\mathbf{w})$:
@@ -35,6 +46,69 @@ Với mất mát $L(\mathbf{w}) = \dfrac{1}{N}\sum_{i=1}^{N} \ell_i(\mathbf{w})$
 Với mô hình $\hat{y} = wx + b$ và $\ell_i = \frac{1}{2}(\hat{y}_i - y_i)^2$: $\dfrac{\partial\ell_i}{\partial w} = e_i x_i$ và $\dfrac{\partial\ell_i}{\partial b} = e_i$, với $e_i = \hat{y}_i - y_i$.
 
 **Không chệch (unbiased):** nếu mini-batch được chọn ngẫu nhiên đều, $\mathbb{E}[\mathbf{g}_{\mathcal{B}}] = \mathbf{g}$. Đọc bằng lời: bước đi trung bình của SGD chính là bước của gradient descent thật.
+
+## Biến đổi từng bước
+
+<Derivation title="Gradient mini-batch là ước lượng không chệch">
+<Step title="Viết gradient mini-batch như một tổng trên mọi mẫu, dùng biến chỉ thị">
+
+Gọi $\mathbb{1}[i \in \mathcal{B}]$ bằng $1$ nếu mẫu $i$ được chọn và $0$ nếu không. Khi đó
+
+$$
+\mathbf{g}_{\mathcal{B}} = \frac{1}{B}\sum_{i \in \mathcal{B}}\nabla\ell_i = \frac{1}{B}\sum_{i=1}^{N}\mathbb{1}[i \in \mathcal{B}]\,\nabla\ell_i.
+$$
+
+</Step>
+<Step title="Lấy kỳ vọng; chỉ có biến chỉ thị là ngẫu nhiên">
+
+$$
+\mathbb{E}[\mathbf{g}_{\mathcal{B}}] = \frac{1}{B}\sum_{i=1}^{N}\mathbb{E}\big[\mathbb{1}[i \in \mathcal{B}]\big]\,\nabla\ell_i = \frac{1}{B}\sum_{i=1}^{N}P(i \in \mathcal{B})\,\nabla\ell_i.
+$$
+
+</Step>
+<Step title="Chọn đều B trong N mẫu thì mỗi mẫu có cùng xác suất được chọn">
+
+Có $\binom{N}{B}$ cách chọn; số cách chứa mẫu $i$ là $\binom{N-1}{B-1}$, nên
+
+$$
+P(i \in \mathcal{B}) = \frac{\binom{N-1}{B-1}}{\binom{N}{B}} = \frac{B}{N}.
+$$
+
+</Step>
+<Step title="Thay vào và rút gọn B">
+
+$$
+\mathbb{E}[\mathbf{g}_{\mathcal{B}}] = \frac{1}{B}\cdot\frac{B}{N}\sum_{i=1}^{N}\nabla\ell_i = \frac{1}{N}\sum_{i=1}^{N}\nabla\ell_i = \mathbf{g}.
+$$
+
+Đây đúng là điều mây mũi tên trong hình cho thấy: từng mũi tên lệch, nhưng trung bình trùng với gradient thật.
+
+</Step>
+</Derivation>
+
+<Derivation title="Gradient của một mẫu trong hồi quy tuyến tính">
+<Step title="Mất mát một mẫu và sai số">
+
+$$
+\ell_i = \frac{1}{2}(\hat{y}_i - y_i)^2,\qquad \hat{y}_i = wx_i + b,\qquad e_i = \hat{y}_i - y_i.
+$$
+
+</Step>
+<Step title="Quy tắc chuỗi: đạo hàm ngoài nhân đạo hàm trong">
+
+$$
+\frac{\partial\ell_i}{\partial w} = \underbrace{(\hat{y}_i - y_i)}_{e_i}\cdot\underbrace{\frac{\partial\hat{y}_i}{\partial w}}_{x_i},\qquad \frac{\partial\ell_i}{\partial b} = e_i\cdot\underbrace{\frac{\partial\hat{y}_i}{\partial b}}_{1}.
+$$
+
+</Step>
+<Step title="Kết quả: điểm dự đoán quá cao (e > 0) đẩy w, b đi xuống">
+
+$$
+\nabla\ell_i = \begin{bmatrix} e_i x_i \\ e_i \end{bmatrix},\qquad \begin{bmatrix} w \\ b \end{bmatrix} \leftarrow \begin{bmatrix} w \\ b \end{bmatrix} - \eta\,\frac{1}{B}\sum_{i \in \mathcal{B}}\begin{bmatrix} e_i x_i \\ e_i \end{bmatrix}.
+$$
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

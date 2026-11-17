@@ -7,6 +7,9 @@ prerequisites: ["1.2", "7.2", "8.4"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import ClipViz from '../../../components/viz/ClipViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExSim from '../../../generated/lesson-8-8/clip-similarity.mdx';
 import ExLoss from '../../../generated/lesson-8-8/contrastive-loss-shape.mdx';
 import PropTemp from '../../../generated/lesson-8-8/prop-temperature.mdx';
@@ -22,6 +25,10 @@ import ExMistake from '../../../generated/lesson-8-8/mistake-unnormalized.mdx';
 
 Gán nhãn ảnh rất đắt, nhưng ảnh thì vô tận. **Học tự giám sát** (self-supervised) tạo tín hiệu học từ chính dữ liệu: hai phiên bản biến đổi của cùng một ảnh nên có embedding gần nhau, ảnh khác nhau thì xa nhau (contrastive); hoặc học sinh bắt chước giáo viên là chính nó theo thời gian (DINO). **CLIP** áp dụng ý tưởng này cho cặp (ảnh, chú thích): một bộ mã hóa ảnh và một bộ mã hóa văn bản được huấn luyện để cặp đúng có độ tương tự cao nhất trong cả batch. Kết quả là một không gian chung nơi tìm ảnh bằng câu chữ và phân loại **không cần ví dụ** (zero-shot) chỉ bằng cách so ảnh với mô tả các lớp.
 
+Hình dưới là trái tim của CLIP: ma trận tương đồng giữa mọi ảnh và mọi chú thích trong một batch. Huấn luyện chỉ có một mục tiêu: làm đường chéo (các cặp đúng) nổi bật so với phần còn lại của hàng. Kéo "mức khớp" để mô phỏng mô hình trước và sau khi học.
+
+<ClipViz client:only="react" />
+
 ## Định nghĩa
 
 Với batch $n$ cặp (ảnh, chú thích), embedding đã chuẩn hóa $\mathbf{i}_k, \mathbf{t}_k$ ($\|\cdot\| = 1$ nên cosine bằng tích vô hướng):
@@ -33,6 +40,39 @@ $$
 Đọc bằng lời: mỗi hàng của $\mathbf{S}/\tau$ là logit của một bài toán phân loại $n$ lớp (chú thích nào khớp ảnh $i$) với nhãn đúng là $i$; mất mát là cross-entropy (bài 7.2). Mất mát CLIP trung bình theo hai chiều (ảnh$\to$chữ và chữ$\to$ảnh). $\tau$ là **nhiệt độ** (thường học được).
 
 **Truy hồi top-1:** ảnh $i$ chọn chú thích $\arg\max_j S_{ij}$; đúng nếu bằng $i$. Độ chính xác là tỉ lệ ảnh truy hồi đúng. **DINO/DINOv2/v3:** huấn luyện học sinh khớp phân phối đầu ra của giáo viên (trung bình động của học sinh) trên các góc nhìn khác nhau của cùng ảnh, không cần nhãn; đặc trưng thu được dùng cho nhiều bài toán thị giác.
+
+## Biến đổi từng bước
+
+<Derivation title="Mất mát CLIP là cross-entropy theo từng hàng">
+<Step title="Hàng i của S/τ là logit của bài toán: chú thích nào thuộc ảnh i?">
+
+$$
+z_j = \frac{S_{ij}}{\tau},\qquad j = 1, \dots, n.
+$$
+
+</Step>
+<Step title="Softmax theo hàng, nhãn đúng là j = i">
+
+$$
+p_{ij} = \frac{e^{S_{ij}/\tau}}{\sum_{l} e^{S_{il}/\tau}},\qquad \ell_{i\to t} = -\ln p_{ii}.
+$$
+
+</Step>
+<Step title="Gradient theo S_ij (bài 7.2, chia thêm τ)">
+
+$$
+\frac{\partial\ell_{i\to t}}{\partial S_{ij}} = \frac{1}{\tau}\big(p_{ij} - \mathbb{1}[j = i]\big).
+$$
+
+Ô đường chéo nhận gradient âm (tăng lên khi đi ngược gradient); mọi ô khác trong hàng bị đẩy xuống tỉ lệ với xác suất "nhầm" của nó. Các chú thích khác trong batch đóng vai **mẫu âm** miễn phí.
+
+</Step>
+<Step title="Làm tương tự theo cột và lấy trung bình">
+
+Theo cột: mỗi chú thích phải tìm đúng ảnh của mình ($\ell_{t\to i}$). Mất mát CLIP là trung bình hai chiều trên cả batch. Batch càng lớn, càng nhiều mẫu âm, bài toán càng khó và biểu diễn học được càng tốt.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

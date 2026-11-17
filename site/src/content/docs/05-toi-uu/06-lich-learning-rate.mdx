@@ -7,6 +7,9 @@ prerequisites: ["5.2"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import LrScheduleViz from '../../../components/viz/LrScheduleViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExTable from '../../../generated/lesson-5-6/schedules-table.mdx';
 import ExCos from '../../../generated/lesson-5-6/cosine-table.mdx';
 import ExWarm from '../../../generated/lesson-5-6/warmup-cosine.mdx';
@@ -23,6 +26,10 @@ import ExMistake from '../../../generated/lesson-5-6/mistake-floor.mdx';
 ## Trực giác
 
 Đầu huấn luyện, ta muốn bước dài để tiến nhanh; cuối huấn luyện, ta muốn bước nhỏ để "đáp" chính xác xuống đáy thay vì nhảy qua lại (nhiễu của SGD không tự mất đi). Vì vậy learning rate thường là một **hàm của thời gian** $\eta_t$, giảm dần. Với mô hình lớn (và Adam) còn cần một giai đoạn **warmup** ban đầu: các ước lượng $m, v$ còn thiếu tin cậy nên phải bước thật nhẹ lúc đầu, rồi mới tăng dần lên giá trị đỉnh.
+
+Hình dưới có hai tầng. Tầng trên là **lịch** $\eta_t$; tầng dưới là mất mát của SGD có nhiễu khi chạy theo lịch đó, so với khi giữ $\eta$ không đổi (xám). Chọn "không đổi" rồi chuyển sang "cosine": phần đầu hai đường gần như trùng nhau, nhưng ở cuối đường đỏ nằm sát đáy còn đường xám vẫn rung.
+
+<LrScheduleViz client:only="react" />
 
 ## Định nghĩa
 
@@ -44,6 +51,75 @@ $$
 $$
 
 **Warm restart:** thay $t$ bằng $t \bmod T$ để learning rate quay lại $\eta_{\max}$ sau mỗi $T$ bước. **Warmup rồi cosine:** tăng tuyến tính trong $W$ bước đầu, rồi cosine trên $T - W$ bước còn lại với $t$ thay bằng $t - W$.
+
+## Biến đổi từng bước
+
+<Derivation title="Vì sao η không đổi để lại một “sàn nhiễu”">
+<Step title="SGD trên f(x) = x²/2 với gradient có nhiễu ε (trung bình 0, phương sai σ²)">
+
+$$
+x_{t+1} = x_t - \eta\,(x_t + \varepsilon_t) = (1-\eta)\,x_t - \eta\,\varepsilon_t.
+$$
+
+</Step>
+<Step title="Lấy phương sai hai vế (εₜ độc lập với xₜ)">
+
+$$
+V_{t+1} = (1-\eta)^2\,V_t + \eta^2\sigma^2,\qquad V_t = \mathrm{Var}(x_t).
+$$
+
+</Step>
+<Step title="Tìm điểm dừng V = (1 − η)²V + η²σ²">
+
+$$
+V\big(1 - (1-\eta)^2\big) = \eta^2\sigma^2 \;\Longrightarrow\; V = \frac{\eta^2\sigma^2}{2\eta - \eta^2} = \frac{\eta\,\sigma^2}{2 - \eta}.
+$$
+
+</Step>
+<Step title="Đọc kết quả">
+
+Dù chạy bao lâu, $x$ vẫn rung quanh đáy với phương sai $V$ **tỷ lệ với η** (khi $\eta$ nhỏ, $V \approx \eta\sigma^2/2$). Muốn đáp sát đáy thì phải giảm $\eta$ — đó là lý do cần lịch giảm dần. Đường xám ở tầng dưới của hình chính là sàn nhiễu này.
+
+</Step>
+</Derivation>
+
+<Derivation title="Đọc công thức cosine annealing tại các mốc">
+<Step title="Công thức">
+
+$$
+\eta_t = \eta_{\min} + \frac{1}{2}(\eta_{\max} - \eta_{\min})\left(1 + \cos\frac{\pi t}{T}\right).
+$$
+
+</Step>
+<Step title="Tại t = 0: cos 0 = 1">
+
+$$
+\eta_0 = \eta_{\min} + \frac{1}{2}(\eta_{\max} - \eta_{\min})\cdot 2 = \eta_{\max}.
+$$
+
+</Step>
+<Step title="Tại t = T/2: cos(π/2) = 0">
+
+$$
+\eta_{T/2} = \eta_{\min} + \frac{1}{2}(\eta_{\max} - \eta_{\min}) = \frac{\eta_{\max} + \eta_{\min}}{2}.
+$$
+
+</Step>
+<Step title="Tại t = T: cos π = −1">
+
+$$
+\eta_T = \eta_{\min} + \frac{1}{2}(\eta_{\max} - \eta_{\min})\cdot 0 = \eta_{\min}.
+$$
+
+Đường cong đi xuống chậm ở đầu và cuối (đạo hàm của $\cos$ bằng $0$ tại $0$ và $\pi$), nhanh nhất ở giữa — đúng hình chữ S ngược trong đồ thị.
+
+</Step>
+<Step title="Warmup rồi cosine: hai đoạn nối liền tại t = W">
+
+Đoạn warmup cho $\eta_W = \eta_{\max}\dfrac{W}{W} = \eta_{\max}$; đoạn cosine với $t - W = 0$ cũng cho $\eta_{\max}$. Hai đoạn khớp nhau nên lịch không bị nhảy.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

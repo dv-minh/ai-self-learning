@@ -7,6 +7,9 @@ prerequisites: ["1.2", "6.3"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import KnnViz from '../../../components/viz/KnnViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExKnn from '../../../generated/lesson-6-5/knn-example.mdx';
 import ExReg from '../../../generated/lesson-6-5/knn-regress-example.mdx';
 import ExScale from '../../../generated/lesson-6-5/knn-scaling.mdx';
@@ -22,6 +25,10 @@ import ExMistake from '../../../generated/lesson-6-5/mistake-k-too-small.mdx';
 
 "Hãy nhìn hàng xóm": để đoán nhãn của một điểm mới, tìm $k$ điểm huấn luyện gần nó nhất và để chúng bỏ phiếu. KNN không "học" tham số: nó **ghi nhớ** toàn bộ dữ liệu (lazy learner) và mọi tính toán diễn ra lúc dự đoán. $k$ nhỏ cho biên quyết định gồ ghề (variance cao); $k$ lớn cho biên mượt (bias cao).
 
+Trong hình, bấm hoặc kéo ở bất kỳ đâu để đặt điểm hỏi. Nền màu là câu trả lời của KNN cho **mọi** vị trí. Với $k = 1$, mỗi điểm huấn luyện "chiếm" một vùng quanh nó, kể cả hai điểm lạc loài. Tăng $k$ và quan sát các ốc đảo màu biến mất.
+
+<KnnViz client:only="react" />
+
 ## Định nghĩa
 
 Với điểm cần dự đoán $\mathbf{q}$, gọi $\mathcal{N}_k(\mathbf{q})$ là $k$ điểm huấn luyện gần $\mathbf{q}$ nhất theo một khoảng cách:
@@ -34,6 +41,41 @@ $$
 - **Hồi quy:** $\hat{y} = \dfrac{1}{k}\sum_{i \in \mathcal{N}_k} y_i$, hoặc có trọng số $\hat{y} = \dfrac{\sum w_iy_i}{\sum w_i}$.
 
 So sánh khoảng cách bình phương cho cùng thứ tự với khoảng cách Euclid nên không cần lấy căn.
+
+## Biến đổi từng bước
+
+<Derivation title="Dự đoán một điểm bằng KNN: quy trình">
+<Step title="Tính khoảng cách (bình phương) từ q tới mọi điểm huấn luyện">
+
+$$
+d_i^2 = \sum_j (x_{ij} - q_j)^2,\qquad i = 1, \dots, n.
+$$
+
+Vì $\sqrt{\cdot}$ là hàm tăng, sắp xếp theo $d_i^2$ cho cùng thứ tự với $d_i$ — không cần lấy căn.
+
+</Step>
+<Step title="Sắp xếp tăng dần và giữ k điểm đầu">
+
+$$
+d_{(1)}^2 \le d_{(2)}^2 \le \dots \le d_{(n)}^2,\qquad \mathcal{N}_k(\mathbf{q}) = \{(1), (2), \dots, (k)\}.
+$$
+
+Ký hiệu $(j)$ là chỉ số của điểm đứng thứ $j$ sau khi sắp xếp. Trong hình, đó là các điểm nằm trong vòng tròn nét đứt.
+
+</Step>
+<Step title="Bỏ phiếu (phân loại) hoặc lấy trung bình (hồi quy)">
+
+$$
+\hat{c} = \arg\max_{c}\ \big|\{i \in \mathcal{N}_k : y_i = c\}\big|,\qquad \hat{y} = \frac{1}{k}\sum_{i \in \mathcal{N}_k} y_i.
+$$
+
+</Step>
+<Step title="Lưu ý thang đo">
+
+Khoảng cách cộng trực tiếp các bình phương chênh lệch, nên đặc trưng có đơn vị lớn (ví dụ thu nhập tính bằng đồng) sẽ lấn át đặc trưng đơn vị nhỏ (tuổi). Thường phải **chuẩn hóa** từng đặc trưng (trừ trung bình, chia độ lệch chuẩn) trước khi dùng KNN.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

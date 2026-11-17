@@ -7,6 +7,9 @@ prerequisites: ["7.5", "7.6", "8.1"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import PatchViz from '../../../components/viz/PatchViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExNumbers from '../../../generated/lesson-8-4/vit-numbers.mdx';
 import ExCost from '../../../generated/lesson-8-4/vit-attention-cost.mdx';
 import PropConv from '../../../generated/lesson-8-4/patch-as-conv.mdx';
@@ -22,6 +25,10 @@ import ExMistake from '../../../generated/lesson-8-4/mistake-non-divisible.mdx';
 
 Transformer vốn xử lý chuỗi token. **Vision Transformer (ViT)** biến ảnh thành chuỗi bằng cách cắt thành các **patch** vuông không chồng lấn, duỗi mỗi patch thành vector và chiếu tuyến tính lên $D$ chiều: mỗi patch là một "từ". Thêm token [CLS] (đại diện toàn ảnh) và embedding vị trí (để mô hình biết patch nằm ở đâu), rồi đưa vào Transformer chuẩn (bài 7.6). Không có thiên kiến cục bộ như CNN, nên ViT cần nhiều dữ liệu hoặc huấn luyện trước, nhưng mở rộng rất tốt.
 
+ViT không có tích chập: nó biến ảnh thành một "câu" rồi dùng nguyên Transformer của bài 7.6. Đổi cỡ patch để thấy độ dài câu và kích thước ma trận attention thay đổi thế nào.
+
+<PatchViz client:only="react" />
+
 ## Định nghĩa
 
 Ảnh $H\times W\times 3$, patch $P\times P$:
@@ -33,6 +40,44 @@ $$
 Mỗi patch (duỗi thành $3P^2$ số) qua lớp tuyến tính $3P^2 \to D$: $(3P^2 + 1)D$ tham số (có chặn). Tham số học được thêm: token [CLS] ($D$) và embedding vị trí $(N + 1)D$. Mỗi đầu attention tạo ma trận $(N+1)\times(N+1)$.
 
 Đọc bằng lời: số patch là số ô khi lát ảnh bằng các ô $P\times P$; attention so sánh mọi cặp patch nên có kích thước bình phương số token.
+
+## Biến đổi từng bước
+
+<Derivation title="Từ ảnh đến chuỗi vector đưa vào Transformer">
+<Step title="Lát ảnh H × W × 3 bằng các ô P × P">
+
+$$
+N = \frac{H}{P}\cdot\frac{W}{P}.
+$$
+
+</Step>
+<Step title="Duỗi mỗi patch thành một vector">
+
+Một patch có $P\cdot P$ pixel, mỗi pixel $3$ kênh: vector $\mathbf{x}_k \in \R^{3P^2}$.
+
+</Step>
+<Step title="Chiếu tuyến tính (cùng một ma trận E cho mọi patch)">
+
+$$
+\mathbf{z}_k = \mathbf{E}\,\mathbf{x}_k + \mathbf{b},\qquad \mathbf{E} \in \R^{D\times 3P^2}\ \Rightarrow\ (3P^2 + 1)D \text{ params}.
+$$
+
+</Step>
+<Step title="Thêm [CLS] ở đầu và cộng embedding vị trí">
+
+$$
+\mathbf{Z}_0 = \big[\mathbf{z}_{\mathrm{cls}};\ \mathbf{z}_1;\ \dots;\ \mathbf{z}_N\big] + \mathbf{P}_{\mathrm{pos}},\qquad \mathbf{Z}_0 \in \R^{(N+1)\times D}.
+$$
+
+Embedding vị trí cần thiết vì attention không biết thứ tự: hoán vị các patch thì $\mathrm{softmax}(\mathbf{Q}\mathbf{K}\T)\mathbf{V}$ chỉ hoán vị theo.
+
+</Step>
+<Step title="Chi phí attention">
+
+Ma trận attention mỗi đầu có $(N+1)^2$ phần tử. Giảm $P$ đi một nửa làm $N$ tăng gấp $4$, nên chi phí attention tăng khoảng $16$ lần.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

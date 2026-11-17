@@ -7,6 +7,9 @@ prerequisites: ["6.1", "3.3", "4.6"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import LogisticViz from '../../../components/viz/LogisticViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExLog from '../../../generated/lesson-6-2/logistic-gradient.mdx';
 import ExSoft from '../../../generated/lesson-6-2/softmax-gradient.mdx';
 import ExBoundary from '../../../generated/lesson-6-2/decision-boundary.mdx';
@@ -23,6 +26,10 @@ import ExMistake from '../../../generated/lesson-6-2/mistake-linear-probability.
 ## Trực giác
 
 Hồi quy tuyến tính cho điểm số $z \in \R$ bất kỳ, nhưng xác suất phải nằm trong $[0, 1]$. Hàm **sigmoid** ép $z$ về $(0, 1)$; $z = 0$ ứng với xác suất $1/2$. Mô hình học bằng cách làm cho xác suất gán cho nhãn thật càng lớn càng tốt, tức tối thiểu hóa log-loss. Với $K$ lớp, **softmax** thay sigmoid để các xác suất dương và cộng bằng $1$.
+
+Trong hình dưới, mỗi điểm có một **thanh cam** dài bằng log-loss của nó. Thử đặt $w$ âm: mọi điểm bị đoán ngược và các thanh dài vọt lên. Thử kéo $w$ thật lớn khi còn một điểm bị phân loại sai: sigmoid gần như bậc thang, điểm sai đó bị đoán sai "rất tự tin" nên thanh của nó rất dài. Log-loss vì vậy thưởng cho mô hình vừa đúng vừa **khiêm tốn** ở chỗ dữ liệu chồng lấn.
+
+<LogisticViz client:only="react" />
 
 ## Định nghĩa
 
@@ -41,6 +48,69 @@ $$
 $$
 
 Với regularization L2 thêm $\lambda\mathbf{w}$ vào gradient theo $\mathbf{w}$ (bài 5.7). Trong các bài tập, xác suất $p$ được cho sẵn để tránh $e^{z}$.
+
+## Biến đổi từng bước
+
+<Derivation title="Đạo hàm của sigmoid">
+<Step title="Viết sigmoid dưới dạng lũy thừa âm">
+
+$$
+\sigma(z) = (1 + e^{-z})^{-1}.
+$$
+
+</Step>
+<Step title="Quy tắc chuỗi">
+
+$$
+\sigma'(z) = -(1 + e^{-z})^{-2}\cdot(-e^{-z}) = \frac{e^{-z}}{(1 + e^{-z})^2}.
+$$
+
+</Step>
+<Step title="Tách thành tích hai phân số">
+
+$$
+\sigma'(z) = \frac{1}{1 + e^{-z}}\cdot\frac{e^{-z}}{1 + e^{-z}} = \sigma(z)\cdot\frac{(1 + e^{-z}) - 1}{1 + e^{-z}} = \sigma(z)\big(1 - \sigma(z)\big).
+$$
+
+Lớn nhất bằng $\frac{1}{4}$ tại $z = 0$, và tiến về $0$ ở hai đầu: sigmoid "bão hòa".
+
+</Step>
+</Derivation>
+
+<Derivation title="Vì sao gradient theo z gọn đến bất ngờ: p − y">
+<Step title="Log-loss của một mẫu, với p = σ(z)">
+
+$$
+\ell = -\big[y\ln p + (1-y)\ln(1-p)\big].
+$$
+
+</Step>
+<Step title="Đạo hàm theo p">
+
+$$
+\frac{\partial\ell}{\partial p} = -\frac{y}{p} + \frac{1-y}{1-p} = \frac{p - y}{p(1-p)}.
+$$
+
+</Step>
+<Step title="Nhân với dp/dz = p(1 − p) (quy tắc chuỗi)">
+
+$$
+\frac{\partial\ell}{\partial z} = \frac{p - y}{p(1-p)}\cdot p(1-p) = p - y.
+$$
+
+Thừa số $p(1-p)$ triệt tiêu đúng mẫu số: gradient không bị "bão hòa" dù $z$ rất lớn. Mẫu bị đoán sai tự tin ($p$ gần $1$ khi $y = 0$) cho gradient gần $1$ — lực sửa mạnh nhất.
+
+</Step>
+<Step title="Đi tiếp tới w và b qua z = wᵀx + b">
+
+$$
+\frac{\partial\ell}{\partial\mathbf{w}} = \frac{\partial\ell}{\partial z}\cdot\frac{\partial z}{\partial\mathbf{w}} = (p - y)\,\mathbf{x},\qquad \frac{\partial\ell}{\partial b} = p - y.
+$$
+
+Lấy trung bình trên $n$ mẫu ta được công thức gradient trong phần Định nghĩa.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

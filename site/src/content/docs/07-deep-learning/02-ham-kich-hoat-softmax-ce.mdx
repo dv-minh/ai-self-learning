@@ -7,6 +7,10 @@ prerequisites: ["7.1", "6.2", "4.6"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import ActivationViz from '../../../components/viz/ActivationViz';
+import SoftmaxViz from '../../../components/viz/SoftmaxViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExRelu from '../../../generated/lesson-7-2/relu-family.mdx';
 import ExSoftmax from '../../../generated/lesson-7-2/softmax-ln2-example.mdx';
 import PropShift from '../../../generated/lesson-7-2/softmax-shift-invariance.mdx';
@@ -21,6 +25,14 @@ import ExMistake from '../../../generated/lesson-7-2/mistake-dead-relu.mdx';
 ## Trực giác
 
 Hàm kích hoạt cho mạng khả năng biểu diễn phi tuyến. ReLU cực kỳ rẻ và gradient không biến mất khi $z > 0$, nhưng bằng $0$ khi $z < 0$ nên có thể "chết". Họ hàng của nó giữ một ít gradient phía âm hoặc làm trơn quanh $0$ (GELU, SiLU dùng trong Transformer). Ở đầu ra, **softmax** đổi các logit thành xác suất; **cross-entropy** phạt mạnh khi xác suất gán cho lớp thật thấp.
+
+Chọn lần lượt từng hàm kích hoạt và để ý **đường đạo hàm** (đỏ): khi lan truyền ngược, gradient bị nhân với đúng con số này. Sigmoid có đạo hàm tối đa chỉ một phần tư, nên qua nhiều lớp gradient co rất nhanh; ReLU có đạo hàm bằng 1 ở phía dương.
+
+<ActivationViz client:only="react" />
+
+Softmax biến một vector điểm bất kỳ thành phân phối xác suất. Kéo các logit và nhiệt độ để xem từng giai đoạn biến đổi, cùng gradient mà cross-entropy gửi ngược về.
+
+<SoftmaxViz client:only="react" />
 
 ## Định nghĩa
 
@@ -37,6 +49,63 @@ p_i = \frac{e^{z_i}}{\sum_j e^{z_j}},\qquad \ell = -\ln p_t,\qquad \frac{\partia
 $$
 
 Đọc bằng lời: xác suất là phần của $e^{z_i}$ trong tổng; gradient theo logit đúng bằng dự đoán trừ nhãn one-hot. Trong các bài tập, logit có dạng $z_i = k_i\ln 2$ nên $e^{z_i} = 2^{k_i}$ và mọi xác suất là số hữu tỉ.
+
+## Biến đổi từng bước
+
+<Derivation title="Gradient của cross-entropy theo logit là p − y">
+<Step title="Viết mất mát với lớp thật t, thay p_t bằng công thức softmax">
+
+$$
+\ell = -\ln p_t = -\ln\frac{e^{z_t}}{\sum_j e^{z_j}}.
+$$
+
+</Step>
+<Step title="Tách logarit của thương">
+
+$$
+\ell = -z_t + \ln\sum_{j} e^{z_j}.
+$$
+
+</Step>
+<Step title="Đạo hàm theo một logit z_i bất kỳ">
+
+$$
+\frac{\partial\ell}{\partial z_i} = -\mathbb{1}[i = t] + \frac{1}{\sum_j e^{z_j}}\cdot e^{z_i}.
+$$
+
+Số hạng đầu chỉ khác $0$ khi $i = t$; số hạng sau là đạo hàm của $\ln(\cdot)$ nhân đạo hàm của tổng (chỉ $e^{z_i}$ phụ thuộc $z_i$).
+
+</Step>
+<Step title="Nhận ra p_i và nhãn one-hot">
+
+$$
+\frac{\partial\ell}{\partial z_i} = p_i - y_i,\qquad y_i = \mathbb{1}[i = t] \quad\Longrightarrow\quad \nabla_{\mathbf{z}}\ell = \mathbf{p} - \mathbf{y}.
+$$
+
+</Step>
+</Derivation>
+
+<Derivation title="Softmax không đổi khi cộng cùng một hằng số vào mọi logit">
+<Step title="Cộng c vào mọi logit">
+
+$$
+\frac{e^{z_i + c}}{\sum_j e^{z_j + c}} = \frac{e^{c}\,e^{z_i}}{e^{c}\sum_j e^{z_j}}.
+$$
+
+</Step>
+<Step title="Rút gọn e^c">
+
+$$
+\frac{e^{z_i + c}}{\sum_j e^{z_j + c}} = \frac{e^{z_i}}{\sum_j e^{z_j}} = p_i.
+$$
+
+</Step>
+<Step title="Hệ quả thực hành">
+
+Chọn $c = -\max_j z_j$ thì mọi số mũ đều $\le 0$, nên $e^{(\cdot)}$ không bao giờ tràn số. Mọi thư viện đều tính softmax theo cách này. Chỉ **chênh lệch** giữa các logit là quan trọng.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

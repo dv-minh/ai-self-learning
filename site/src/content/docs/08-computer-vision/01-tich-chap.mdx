@@ -7,6 +7,9 @@ prerequisites: ["1.5", "7.1"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import ConvViz from '../../../components/viz/ConvViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExConv from '../../../generated/lesson-8-1/conv-worked.mdx';
 import ExPad from '../../../generated/lesson-8-1/conv-padding.mdx';
 import ExShape from '../../../generated/lesson-8-1/shape-table.mdx';
@@ -22,6 +25,10 @@ import ExMistake from '../../../generated/lesson-8-1/mistake-flip.mdx';
 ## Trực giác
 
 Một ảnh xám là một ma trận cường độ; ảnh màu có ba kênh (R, G, B) nên là tensor ba chiều. Lớp kết nối đầy đủ trên ảnh $224\times 224\times 3$ cần hàng chục triệu trọng số và bỏ qua cấu trúc không gian. **Tích chập** dùng một **kernel** nhỏ trượt khắp ảnh, tại mỗi vị trí tính tổng có trọng số của cửa sổ: cùng một bộ trọng số (chia sẻ trọng số) phát hiện cùng một mẫu hình ở mọi nơi. Mỗi kernel tạo một bản đồ đặc trưng (feature map); nhiều kernel cho nhiều kênh đầu ra.
+
+Bấm "Bước tiếp" để trượt kernel qua từng vị trí; khung chú thích ghi ra đủ chín phép nhân. Hãy so sánh kết quả của kernel "cạnh dọc" và "cạnh ngang" trên cùng một ảnh: mỗi kernel "sáng lên" ở những chỗ khác nhau. Một lớp tích chập học được hàng chục kernel như thế.
+
+<ConvViz client:only="react" />
 
 ## Định nghĩa
 
@@ -43,6 +50,41 @@ $$
 $$
 n_{\mathrm{out}} = \left\lfloor \frac{n + 2p - d(k-1) - 1}{s} \right\rfloor + 1.
 $$
+
+## Biến đổi từng bước
+
+<Derivation title="Công thức kích thước đầu ra">
+<Step title="Sau khi thêm padding, mỗi chiều dài n + 2p">
+
+Kernel có dilation $d$ phủ một đoạn dài $k_{\mathrm{eff}} = d(k-1) + 1$ ô.
+
+</Step>
+<Step title="Vị trí bắt đầu của cửa sổ là 0, s, 2s, …">
+
+Cửa sổ bắt đầu tại $m s$ phải nằm gọn trong ảnh:
+
+$$
+m s + k_{\mathrm{eff}} \le n + 2p \iff m \le \frac{n + 2p - k_{\mathrm{eff}}}{s}.
+$$
+
+</Step>
+<Step title="Đếm số giá trị nguyên m ≥ 0 thỏa mãn">
+
+$$
+n_{\mathrm{out}} = \left\lfloor \frac{n + 2p - k_{\mathrm{eff}}}{s} \right\rfloor + 1 = \left\lfloor \frac{n + 2p - d(k-1) - 1}{s} \right\rfloor + 1.
+$$
+
+"$+1$" là vì đếm cả vị trí $m = 0$.
+
+</Step>
+<Step title="Trường hợp “same”: k lẻ, d = 1, s = 1, p = (k − 1)/2">
+
+$$
+n_{\mathrm{out}} = n + (k - 1) - (k - 1) - 1 + 1 = n.
+$$
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

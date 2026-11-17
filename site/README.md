@@ -19,7 +19,9 @@ Biến môi trường khi deploy: `SITE_URL` và `BASE_PATH` (CI GitHub Pages t�
 
 - `src/content/docs/<NN-tên-phần>/*.mdx` — bài học (frontmatter có `lesson: "x.y"`); `99-tong-on.mdx` là trang Tổng ôn; `luyen-tap.mdx`, `tien-do.mdx`.
 - `src/components/exercise/` — ExercisePlayer, ExerciseCard, PracticeMode, ReviewPlayer, MatrixInput, Code (Shiki), Tex.
-- `src/components/` — ProgressView, MarkRead; `viz/GridTransform.tsx` (lưới 2D tương tác).
+- `src/components/` — ProgressView, MarkRead.
+- `src/components/viz/` — hình minh họa tương tác (chỉ để xem, không chấm bài): `GridTransform` (lưới 2D), `GdPath`, và 37 hình của Phần 5–8 (`Gd1DViz`, `OptimizerRace`, `BackpropViz`, `AttentionViz`, `ConvViz`, ...). Tiện ích chung ở `common.tsx` (Figure, Slider, Choice, useStepper, Axes, Contours, useSvgDrag, `rng`, màu `--viz-*`). Nhúng bằng `client:only="react"`.
+- `src/components/viz/Derivation.astro`, `Step.astro` — khung "Biến đổi từng bước", hiện dần từng bước khi bấm; dùng trong mục cùng tên của bài học.
 - `src/lib/math/` — `fraction.ts`, `parse.ts`, `compare.ts` (các chế độ chấm), `expr.ts` (biểu thức), `linalg.ts`.
 - `src/lib/` — `progress.ts` (localStorage), `exercises.ts` (tải lười, chọn bài), `katex-macros.mjs`, `lesson-map.mjs`.
 - `public/exercises/` — kho bài và `manifest.json`, **do generator sinh, không sửa tay**.

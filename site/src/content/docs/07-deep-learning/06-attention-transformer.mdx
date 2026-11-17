@@ -7,6 +7,10 @@ prerequisites: ["1.5", "7.2", "7.4", "7.5"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import AttentionViz from '../../../components/viz/AttentionViz';
+import SoftmaxViz from '../../../components/viz/SoftmaxViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExScores from '../../../generated/lesson-7-6/attention-scores-example.mdx';
 import ExOutput from '../../../generated/lesson-7-6/attention-output-example.mdx';
 import ExCausal from '../../../generated/lesson-7-6/causal-mask-example.mdx';
@@ -23,6 +27,10 @@ import ExMistake from '../../../generated/lesson-7-6/mistake-no-scaling.mdx';
 
 Mỗi token đặt một **câu hỏi** (query), mọi token đưa ra một **khóa** (key) mô tả nó chứa gì và một **giá trị** (value) là thông tin sẽ trao đi. Mức khớp giữa query và key (tích vô hướng) cho trọng số; đầu ra là trung bình có trọng số các value. Vì vậy mỗi token **thu thập thông tin có chọn lọc** từ mọi token khác, bất kể khoảng cách. Nhiều đầu (heads) cho phép chú ý đồng thời đến các kiểu quan hệ khác nhau.
 
+Hình dưới đi qua bốn bước attention cho một câu tám từ. Mặc định query là "nó": sau softmax, phần lớn trọng số rơi vào "mèo", nên vector đầu ra của "nó" chủ yếu là value của "mèo" — mô hình đã "hiểu" đại từ chỉ ai. Bấm vào từ khác để đổi query; bấm ô trong bảng cũng được.
+
+<AttentionViz client:only="react" />
+
 ## Định nghĩa
 
 Với $\mathbf{Q}, \mathbf{K} \in \R^{n\times d_k}$, $\mathbf{V} \in \R^{n\times d_v}$ (mỗi hàng là một token):
@@ -38,6 +46,72 @@ $$
 **Multi-head:** $\mathbf{Q}, \mathbf{K}, \mathbf{V}$ được chiếu bằng $\mathbf{W}_Q, \mathbf{W}_K, \mathbf{W}_V$ rồi chia thành $h$ đầu, mỗi đầu chiều $d_k = d_{\mathrm{model}}/h$; các đầu chạy attention song song, được nối lại và qua $\mathbf{W}_O$.
 
 **Tham số một lớp Transformer** (có chặn): attention $4(d^2 + d)$; feed-forward $d\,d_{\mathrm{ff}} + d_{\mathrm{ff}} + d_{\mathrm{ff}}d + d$; hai LayerNorm $2\cdot 2d$. Cộng embedding token $Vd$ (và vị trí $Td$ nếu học được).
+
+## Biến đổi từng bước
+
+<Derivation title="Attention cho một query, viết từng phép tính">
+<Step title="Điểm khớp của query i với mọi key j">
+
+$$
+s_{ij} = \frac{\mathbf{q}_i\T\mathbf{k}_j}{\sqrt{d_k}},\qquad j = 1, \dots, n.
+$$
+
+</Step>
+<Step title="Softmax theo j: trọng số dương, cộng bằng 1">
+
+$$
+\alpha_{ij} = \frac{e^{s_{ij}}}{\sum_{l=1}^{n} e^{s_{il}}},\qquad \sum_j \alpha_{ij} = 1.
+$$
+
+</Step>
+<Step title="Đầu ra: trung bình có trọng số của các value">
+
+$$
+\mathbf{o}_i = \sum_{j=1}^{n}\alpha_{ij}\,\mathbf{v}_j.
+$$
+
+</Step>
+<Step title="Gộp mọi query thành phép nhân ma trận">
+
+Hàng $i$ của $\mathbf{Q}\mathbf{K}\T$ là $(\mathbf{q}_i\T\mathbf{k}_1, \dots, \mathbf{q}_i\T\mathbf{k}_n)$; hàng $i$ của $\mathbf{A}\mathbf{V}$ là $\sum_j\alpha_{ij}\mathbf{v}_j\T$. Vậy
+
+$$
+\mathbf{O} = \underbrace{\mathrm{softmax}\!\left(\frac{\mathbf{Q}\mathbf{K}\T}{\sqrt{d_k}}\right)}_{\mathbf{A}\ \in\ \R^{n\times n}}\mathbf{V}.
+$$
+
+</Step>
+</Derivation>
+
+<Derivation title="Vì sao chia cho √d_k">
+<Step title="Giả sử các thành phần của q và k độc lập, trung bình 0, phương sai 1">
+
+$$
+\mathbf{q}\T\mathbf{k} = \sum_{m=1}^{d_k} q_m k_m.
+$$
+
+</Step>
+<Step title="Mỗi số hạng có trung bình 0, phương sai 1">
+
+$$
+\mathbb{E}[q_mk_m] = \mathbb{E}[q_m]\,\mathbb{E}[k_m] = 0,\qquad \mathrm{Var}(q_mk_m) = \mathbb{E}[q_m^2]\,\mathbb{E}[k_m^2] = 1.
+$$
+
+</Step>
+<Step title="Tổng của d_k số hạng độc lập">
+
+$$
+\mathrm{Var}(\mathbf{q}\T\mathbf{k}) = d_k \quad\Longrightarrow\quad \mathrm{Var}\!\left(\frac{\mathbf{q}\T\mathbf{k}}{\sqrt{d_k}}\right) = \frac{d_k}{d_k} = 1.
+$$
+
+</Step>
+<Step title="Tại sao điều đó quan trọng">
+
+Không chia, điểm có độ lệch chuẩn $\sqrt{d_k}$ (với $d_k = 64$ là $8$): softmax gần như one-hot, giống kéo nhiệt độ $T$ về rất nhỏ trong hình softmax dưới đây — gradient qua softmax gần $0$ và mô hình khó học.
+
+<SoftmaxViz client:only="react" />
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 

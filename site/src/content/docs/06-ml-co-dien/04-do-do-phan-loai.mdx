@@ -7,6 +7,9 @@ prerequisites: ["6.2", "4.1"]
 
 import ExercisePlayer from '../../../components/exercise/ExercisePlayer';
 import MarkRead from '../../../components/MarkRead';
+import ThresholdViz from '../../../components/viz/ThresholdViz';
+import Derivation from '../../../components/viz/Derivation.astro';
+import Step from '../../../components/viz/Step.astro';
 import ExConf from '../../../generated/lesson-6-4/confusion-example.mdx';
 import ExAuc from '../../../generated/lesson-6-4/auc-pairs-example.mdx';
 import PropF1 from '../../../generated/lesson-6-4/prop-f1-harmonic.mdx';
@@ -22,6 +25,10 @@ import ExMistake from '../../../generated/lesson-6-4/mistake-accuracy-imbalance.
 ## Trực giác
 
 "Độ chính xác" bao nhiêu phần trăm nghe hấp dẫn nhưng dễ đánh lừa: nếu chỉ $1\%$ giao dịch là gian lận, mô hình luôn đoán "không gian lận" đạt $99\%$ mà vô dụng. Cần tách hai loại lỗi: **bỏ sót** mẫu dương (false negative) và **báo nhầm** mẫu âm (false positive). Precision hỏi "những gì tôi báo dương thì đúng bao nhiêu"; recall hỏi "trong các ca dương thật, tôi tìm ra bao nhiêu". Đổi ngưỡng quyết định thì đánh đổi giữa hai thứ đó; đường ROC và AUC tóm tắt mọi ngưỡng.
+
+Mô hình phân loại thường cho một **điểm số** (score), còn nhãn dự đoán phụ thuộc vào ngưỡng $\tau$ ta chọn. Hình dưới cho thấy mọi độ đo trong bài đều chỉ là cách đếm bốn ô TP, FP, FN, TN ở một ngưỡng, và đường ROC là "phim" ghi lại tất cả các ngưỡng.
+
+<ThresholdViz client:only="react" />
 
 ## Định nghĩa
 
@@ -47,6 +54,46 @@ $$
 $$
 \mathrm{AUC} = \frac{1}{P_{\#}N_{\#}}\sum_{i \in \text{pos}}\sum_{j \in \text{neg}}\Big(\mathbb{1}[s_i > s_j] + \tfrac{1}{2}\mathbb{1}[s_i = s_j]\Big).
 $$
+
+## Biến đổi từng bước
+
+<Derivation title="F₁ là trung bình điều hòa của precision và recall">
+<Step title="Định nghĩa F₁ bằng trung bình điều hòa">
+
+$$
+F_1 = \frac{2}{\dfrac{1}{P} + \dfrac{1}{R}} = \frac{2PR}{P + R}.
+$$
+
+</Step>
+<Step title="Nghịch đảo của P và R theo các ô đếm">
+
+$$
+\frac{1}{P} = \frac{TP + FP}{TP},\qquad \frac{1}{R} = \frac{TP + FN}{TP}.
+$$
+
+</Step>
+<Step title="Cộng hai nghịch đảo (cùng mẫu số TP)">
+
+$$
+\frac{1}{P} + \frac{1}{R} = \frac{2\,TP + FP + FN}{TP}.
+$$
+
+</Step>
+<Step title="Lấy 2 chia cho tổng đó">
+
+$$
+F_1 = \frac{2\,TP}{2\,TP + FP + FN}.
+$$
+
+TN không xuất hiện: $F_1$ không bị "thổi phồng" bởi rất nhiều mẫu âm dễ, khác với accuracy.
+
+</Step>
+<Step title="Vì sao dùng trung bình điều hòa">
+
+Trung bình điều hòa bị kéo về phía số **nhỏ hơn**. Mô hình báo dương mọi mẫu có $R = 1$ nhưng $P$ nhỏ; trung bình cộng vẫn trên $\frac{1}{2}$, còn $F_1 = \dfrac{2P}{P + 1} < 2P$ thì nhỏ theo $P$. Muốn $F_1$ cao, cả hai phải cùng cao.
+
+</Step>
+</Derivation>
 
 ## Ví dụ
 
