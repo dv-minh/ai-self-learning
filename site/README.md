@@ -13,7 +13,7 @@ pnpm validate:banks   # render mọi LaTeX trong public/exercises bằng KaTeX
 pnpm gen:types        # sinh src/types/exercise.d.ts từ JSON Schema (generator xuất schema)
 ```
 
-Biến môi trường khi deploy: `SITE_URL` và `BASE_PATH` (CI GitHub Pages tự đặt theo tên repo).
+Deploy: site đang chạy trên Cloudflare Workers (https://ai-self-learning.gallery-album.workers.dev). Ở thư mục gốc repo: `pnpm --dir site build` rồi `npx wrangler deploy` (cấu hình ở `../wrangler.jsonc`; lần đầu `npx wrangler login`). Khi build cho Cloudflare không đặt `SITE_URL`/`BASE_PATH`; hai biến này chỉ dùng cho GitHub Pages (CI tự đặt theo tên repo).
 
 ## Cấu trúc
 

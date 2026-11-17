@@ -25,6 +25,7 @@ Xem PROCESS.md (đã làm, còn lại, bản đồ mã nguồn, bài học kinh 
              (một dạng: --part <linalg|numpy|calculus|probability|optimization|classical-ml|deep-learning|computer-vision> --type <mã dạng>)
 - Test:      cd generator && uv run pytest
 - Schema:    cd generator && uv run python -m gen schema && pnpm --dir site gen:types
+- Deploy:    pnpm --dir site build && npx wrangler deploy   (Cloudflare Workers, ở thư mục gốc; https://ai-self-learning.gallery-album.workers.dev)
 
 ## Quy ước rút ra khi làm (chi tiết ở docs/spec.md mục 10 và PROCESS.md mục 6)
 - KHÔNG ghi code/LaTeX có dấu `\` bằng Bash heredoc (mất dấu); dùng Write/Edit.

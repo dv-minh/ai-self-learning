@@ -4,7 +4,7 @@ Cập nhật lần cuối: 17/11/2026, sau khi thêm hình minh họa và biến
 
 ## 1. Tóm tắt một dòng
 
-Website tĩnh tự học AI (Astro + Starlight, generator Python). **GĐ0–GĐ6 đã xong** (Phần 1–8); Phần 5–8 đã có hình tương tác và "Biến đổi từng bước" (mục 3.2c). Còn các việc dọn dẹp và soát chất lượng ở mục 3. Repo đã có commit, remote `origin` trên GitHub; cấu hình deploy Cloudflare Workers (static assets) ở `wrangler.jsonc`.
+Website tĩnh tự học AI (Astro + Starlight, generator Python). **GĐ0–GĐ6 đã xong** (Phần 1–8); Phần 5–8 đã có hình tương tác và "Biến đổi từng bước" (mục 3.2c). Còn các việc dọn dẹp và soát chất lượng ở mục 3. Repo đã có commit, remote `origin` trên GitHub. Site đang chạy trên Cloudflare Workers: https://ai-self-learning.gallery-album.workers.dev (deploy tay bằng `wrangler`, xem mục 4).
 
 ## 2. Đã làm
 
@@ -64,7 +64,7 @@ Người dùng phản hồi bài học "chỉ toàn công thức, khó hiểu". 
 ### 3.3 Việc dọn dẹp và rủi ro đã biết
 
 - **"Review toán"** (prompt ở `docs/spec.md` mục 9, chạy bằng phiên agent mới; spec yêu cầu trước khi merge): đã chạy cho Phần 5–6 (xem 3.2); đã chạy cho Phần 7–8 (giải lại 3.000 và 2.800 bài, 0 lệch đáp án; đã sửa: công thức `W^\T` lỗi KaTeX, câu giải thích ReLU gõ tay sai, đề BatchNorm với γ theo đặc trưng, đề mlp-forward mức 4 (đầu ra giờ tuyến tính), resid-grad (w=−1, w≥1), LeakyReLU α<1, số gõ tay ở 8.7, hint dilation, ví dụ Hungarian); **chưa chạy cho Phần 1–4 (37 bài)**. Còn lại từ báo cáo 7–8 (mức thiếu/văn phong): `torch-shape` chỉ 185 đề khác nhau, nhiều đề có đáp án 0 (backprop-net, mlp-forward), hint `mlp-params` không theo bias/BN, thiếu điều kiện (He cho lớp đầu, running_var chia n−1, định lý xấp xỉ vạn năng, quy ước đếm tham số Transformer, quy ước U-Net, khoảng GIoU), `clip-retrieval` đề nói "khớp đúng" nhưng embedding ngẫu nhiên, dùng `\norm`.
-- **Commit và deploy:** đã có commit đầu (Phần 1–8) và remote `origin`; `wrangler.jsonc` phục vụ `site/dist` bằng Cloudflare Workers (static assets, trang 404 riêng). Workflow GitHub Pages ở `.github/workflows/ci.yml` vẫn còn; chưa xác nhận CI chạy thật trên GitHub. Thay đổi soạn lại Phần 5–8 (mục 3.2c) chưa commit tại thời điểm cập nhật này.
+- **Commit và deploy (17/11/2026):** phần soạn lại Phần 5–8 đã commit (`85fd57f`) và push lên `origin/main`. Deploy chính là **Cloudflare Workers** (static assets): `wrangler.jsonc` phục vụ `site/dist` với trang 404 riêng, URL https://ai-self-learning.gallery-album.workers.dev; deploy tay bằng `wrangler deploy` (tài khoản Cloudflare của người dùng, đăng nhập bằng `npx wrangler login`), chưa có deploy tự động. **GitHub Actions không chạy được**: mọi lần push đều thất bại với "account is locked due to a billing issue" — cần người dùng mở khóa thanh toán GitHub; workflow `.github/workflows/ci.yml` (kiểm tra + GitHub Pages) vẫn giữ, GitHub Pages chưa bật (URL trả 404).
 - **Phần "Tham khảo"** của các bài học trỏ tới nguồn theo mục chung, chưa ghi số bài giảng/trang cụ thể; cần soát khi Review toán.
 - **Chưa xem tận mắt** giao diện điện thoại (FR11) và dark mode của các thành phần mới (GridTransform, GdPath, ô biểu thức, code Shiki, bảng và ma trận có phân số sau khi sửa macro). Phần 5–8: mới làm thử trên giao diện `gd-steps`, `gini-split`, `knn-classify`, `torch-shape`; các dạng còn lại chỉ được bảo đảm bằng kiểm chứng generator, pytest và Vitest. Khung trình duyệt bị ẩn khi thử nên `client:visible` không kích hoạt được; đã kiểm bằng trang thử tạm hoặc `client:load`. Hình minh họa nay dùng `client:only="react"` nên chạy được cả khi khung ẩn.
 - **`np-dtype` ít đa dạng** (khoảng 20 biểu thức khác nhau, đề khác nhau chủ yếu ở thứ tự lựa chọn). Nên mở rộng.
@@ -74,7 +74,7 @@ Người dùng phản hồi bài học "chỉ toàn công thức, khó hiểu". 
 
 ### 3.4 Việc nên làm tiếp (theo thứ tự gợi ý)
 
-1. Commit phần soạn lại Phần 5–8; xác nhận CI và chọn một đích deploy (Cloudflare Workers hoặc GitHub Pages).
+1. Mở khóa thanh toán GitHub để CI chạy lại; cân nhắc deploy Cloudflare tự động (Workers Builds nối repo, hoặc bước `wrangler deploy` trong CI với API token lưu ở GitHub Secrets) và bỏ bước GitHub Pages nếu không dùng.
 2. Review toán Phần 1–4 (37 bài) và các mục "Biến đổi từng bước" mới của Phần 5–8 bằng phiên agent mới (prompt mục 9 đã thêm bước 5).
 2b. Bấm thử từng hình trong `components/viz/` (mới thử khoảng một nửa); thêm hình và "Biến đổi từng bước" cho Phần 1–4 theo cùng quy chuẩn.
 3. Làm thử trên giao diện từng dạng Phần 5–8, kể cả nhập sai; xem điện thoại và dark mode.
@@ -98,6 +98,10 @@ pnpm --dir site build
 
 # Chạy thử
 pnpm --dir site dev                 # http://localhost:4321 (đã có .claude/launch.json tên "site")
+
+# Deploy Cloudflare Workers (chạy ở thư mục gốc repo; lần đầu: npx wrangler login)
+pnpm --dir site build               # không đặt SITE_URL/BASE_PATH: base là /
+npx wrangler deploy                 # tải site/dist theo wrangler.jsonc
 ```
 
 Môi trường đã dùng: Node 26, pnpm 12 (cài toàn cục bằng npm), uv, Python 3.12+ (uv dùng 3.13), Astro 7, Starlight 0.42, React 19, Vitest 5.
